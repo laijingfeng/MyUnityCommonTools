@@ -1,0 +1,225 @@
+﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+/// <summary>
+/// 工具
+/// </summary>
+public class Util
+{
+    #region 查找
+
+    /// <summary>
+    /// 查找
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="parent"></param>
+    /// <param name="name"></param>
+    /// <param name="includeInactive"></param>
+    /// <returns></returns>
+    public static GameObject FindGo<T>(GameObject parent, string name, bool includeInactive = true) where T : Component
+    {
+        if (parent == null)
+        {
+            return null;
+        }
+
+        T t = FindCo<T>(parent.transform, name, includeInactive);
+
+        return (t == null) ? null : t.gameObject;
+    }
+
+    /// <summary>
+    /// 查找
+    /// </summary>
+    /// <param name="parent"></param>
+    /// <param name="name"></param>
+    /// <param name="includeInactive"></param>
+    /// <returns></returns>
+    public static GameObject FindGo(GameObject parent, string name, bool includeInactive = true)
+    {
+        if (parent == null)
+        {
+            return null;
+        }
+
+        Transform t = FindCo<Transform>(parent.transform, name, includeInactive);
+
+        return (t == null) ? null : t.gameObject;
+    }
+
+    /// <summary>
+    /// 查找
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="parent"></param>
+    /// <param name="name"></param>
+    /// <param name="includeInactive"></param>
+    /// <returns></returns>
+    public static T FindCo<T>(GameObject parent, string name, bool includeInactive = true) where T : Component
+    {
+        if (parent == null)
+        {
+            return null;
+        }
+
+        return FindCo<T>(parent.transform, name, includeInactive);
+    }
+
+    /// <summary>
+    /// 查找子结点
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="parent"></param>
+    /// <param name="name"></param>
+    /// <param name="includeInactive"></param>
+    /// <returns></returns>
+    public static T FindCo<T>(Transform parent, string name, bool includeInactive = true) where T : Component
+    {
+        if (parent == null)
+        {
+            return null;
+        }
+
+        foreach (T t in parent.GetComponentsInChildren<T>(includeInactive))
+        {
+            if (t.name.Equals(name))
+            {
+                return t;
+            }
+        }
+
+        return null;
+    }
+
+    #endregion
+
+    #region 删除
+
+    /// <summary>
+    /// 删除所有儿子结点
+    /// </summary>
+    /// <param name="go"></param>
+    public static void DestroyAllChildren(GameObject go)
+    {
+        if (go == null)
+        {
+            return;
+        }
+
+        List<GameObject> list = new List<GameObject>();
+
+        for (int i = 0, imax = go.transform.childCount; i < imax; i++)
+        {
+            list.Add(go.transform.GetChild(i).gameObject);
+        }
+
+        foreach (GameObject g in list)
+        {
+            UnityEngine.Object.Destroy(g);
+        }
+        list.Clear();
+    }
+
+    /// <summary>
+    /// 删除所有儿子结点
+    /// </summary>
+    /// <param name="comp"></param>
+    public static void DestroyAllChildren(Component comp)
+    {
+        if (comp == null)
+        {
+            return;
+        }
+        DestroyAllChildren(comp.gameObject);
+    }
+
+    #endregion 删除
+
+    #region 坐标转化
+
+    /// <summary>
+    /// 计算UI相对父节点的偏移量
+    /// </summary>
+    /// <param name="child"></param>
+    /// <returns></returns>
+    public static Vector2 CalUIPosRelateToCanvas(Transform child, bool includeSelf = false)
+    {
+        Vector2 ret = Vector2.zero;
+        if (child == null)
+        {
+            return ret;
+        }
+        if (includeSelf)
+        {
+            ret += new Vector2(child.localPosition.x, child.localPosition.y);
+        }
+        while (child.parent != null)
+        {
+            child = child.parent;
+            if (child.GetComponent<Canvas>() != null)
+            {
+                break;
+            }
+            ret += new Vector2(child.localPosition.x, child.localPosition.y);
+        }
+        return ret;
+    }
+
+    /// <summary>
+    /// UI位置转屏幕位置
+    /// </summary>
+    /// <param name="canvas"></param>
+    /// <param name="tf"></param>
+    /// <returns></returns>
+    public static Vector2 PosUI2Screen(Canvas canvas, Transform tf)
+    {
+        Vector2 ret = Vector2.zero;
+        if (canvas == null ||
+            tf == null)
+        {
+            return ret;
+        }
+
+        Vector2 pos = CalUIPosRelateToCanvas(tf, true);
+        RectTransform canvasRect = canvas.transform as RectTransform;
+        pos += canvasRect.sizeDelta * 0.5f;
+        pos = new Vector2(pos.x / canvasRect.sizeDelta.x, pos.y / canvasRect.sizeDelta.y);
+        ret = new Vector2(Screen.width * pos.x, Screen.height * pos.y);
+        return ret;
+    }
+
+    /// <summary>
+    /// 鼠标位置转UI位置
+    /// </summary>
+    /// <param name="canvas"></param>
+    /// <returns></returns>
+    public static Vector2 PosMouse2UI(Canvas canvas)
+    {
+        return PosScreen2UI(canvas, Input.mousePosition);
+    }
+
+    /// <summary>
+    /// 屏幕位置转UI位置，得到是相对Canvas的坐标
+    /// </summary>
+    /// <param name="canvas"></param>
+    /// <returns></returns>
+    public static Vector2 PosScreen2UI(Canvas canvas, Vector3 pos)
+    {
+        RectTransform canvasRect = canvas.transform as RectTransform;
+        Vector2 viewportPos = new Vector2(pos.x / Screen.width, pos.y / Screen.height);
+        Vector2 screenPos = new Vector2(viewportPos.x * canvasRect.sizeDelta.x, viewportPos.y * canvasRect.sizeDelta.y) - canvasRect.sizeDelta * 0.5f;
+        return screenPos;
+    }
+
+    #endregion 坐标转化
+
+    #region 时间转化
+
+    public static double DateTime2Timestamp(System.DateTime t)
+    {
+        return t.Subtract(new System.DateTime(1970, 1, 1).ToLocalTime()).TotalSeconds;
+    }
+
+    #endregion 时间转化
+}
