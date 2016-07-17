@@ -139,11 +139,12 @@ public class Util
     #region 坐标转化
 
     /// <summary>
-    /// 计算UI相对父节点的偏移量
+    /// <para>计算UI相对父节点的偏移量</para>
+    /// <para>返回值z轴为0</para>
     /// </summary>
     /// <param name="child"></param>
-    /// <returns></returns>
-    public static Vector2 CalUIPosRelateToCanvas(Transform child, bool includeSelf = false)
+    /// <returns>z轴为0</returns>
+    public static Vector3 CalUIPosRelateToCanvas(Transform child, bool includeSelf = false)
     {
         Vector2 ret = Vector2.zero;
         if (child == null)
@@ -167,12 +168,35 @@ public class Util
     }
 
     /// <summary>
-    /// UI位置转屏幕位置
+    /// <para>World->Canvas</para>
+    /// <para>返回值z轴为0</para>
+    /// </summary>
+    /// <param name="pos">世界位置</param>
+    /// <param name="canvas">UI的Canvas</param>
+    /// <param name="tf">使用结果的UI结点，空则是相对Canvas</param>
+    /// <returns></returns>
+    public static Vector3 PosWorld2Canvas(Vector3 pos, Canvas canvas, Transform tf = null)
+    {
+        Vector3 ret = Vector3.zero;
+        if (canvas == null)
+        {
+            return ret;
+        }
+
+        ret = Camera.main.WorldToScreenPoint(pos);
+        ret = Util.PosScreen2Canvas(canvas, ret, tf);
+
+        return ret;
+    }
+
+    /// <summary>
+    /// <para>Canvas->Screen</para>
+    /// <para>返回值z轴为0</para>
     /// </summary>
     /// <param name="canvas"></param>
     /// <param name="tf"></param>
     /// <returns></returns>
-    public static Vector2 PosUI2Screen(Canvas canvas, Transform tf)
+    public static Vector3 PosCanvas2Screen(Canvas canvas, Transform tf)
     {
         Vector2 ret = Vector2.zero;
         if (canvas == null ||
@@ -181,7 +205,7 @@ public class Util
             return ret;
         }
 
-        Vector2 pos = CalUIPosRelateToCanvas(tf, true);
+        Vector2 pos = Util.CalUIPosRelateToCanvas(tf, true);
         RectTransform canvasRect = canvas.transform as RectTransform;
         pos += canvasRect.sizeDelta * 0.5f;
         pos = new Vector2(pos.x / canvasRect.sizeDelta.x, pos.y / canvasRect.sizeDelta.y);
@@ -190,26 +214,64 @@ public class Util
     }
 
     /// <summary>
-    /// 鼠标位置转UI位置
+    /// <para>Canvas->Screen</para>
+    /// <para>返回值z轴为0</para>
     /// </summary>
     /// <param name="canvas"></param>
+    /// <param name="pos">点</param>
     /// <returns></returns>
-    public static Vector2 PosMouse2UI(Canvas canvas)
+    public static Vector3 PosCanvas2Screen(Canvas canvas, Vector3 pos)
     {
-        return PosScreen2UI(canvas, Input.mousePosition);
+        Vector2 ret = Vector2.zero;
+        if (canvas == null)
+        {
+            return ret;
+        }
+
+        Vector2 pos2 = pos;
+
+        RectTransform canvasRect = canvas.transform as RectTransform;
+        pos2 += canvasRect.sizeDelta * 0.5f;
+        pos2 = new Vector2(pos2.x / canvasRect.sizeDelta.x, pos2.y / canvasRect.sizeDelta.y);
+        ret = new Vector2(Screen.width * pos2.x, Screen.height * pos2.y);
+        return ret;
     }
 
     /// <summary>
-    /// 屏幕位置转UI位置，得到是相对Canvas的坐标
+    /// <para>ScreenMouse->Canvas</para>
+    /// <para>返回值z轴为0</para>
     /// </summary>
-    /// <param name="canvas"></param>
+    /// <param name="canvas">Canvas</param>
+    /// <param name="tf">使用结果的UI结点，空则是相对Canvas</param>
     /// <returns></returns>
-    public static Vector2 PosScreen2UI(Canvas canvas, Vector3 pos)
+    public static Vector3 PosMouse2Canvas(Canvas canvas, Transform tf = null)
+    {
+        return Util.PosScreen2Canvas(canvas, Input.mousePosition, tf);
+    }
+
+    /// <summary>
+    /// <para>Screen->Canvas</para>
+    /// <para>返回值z轴为0</para>
+    /// </summary>
+    /// <param name="canvas">Canvas</param>
+    /// <param name="pos">Screen Position</param>
+    /// <param name="tf">使用结果的UI结点，空则是相对Canvas</param>
+    /// <returns></returns>
+    public static Vector3 PosScreen2Canvas(Canvas canvas, Vector3 pos, Transform tf = null)
     {
         RectTransform canvasRect = canvas.transform as RectTransform;
         Vector2 viewportPos = new Vector2(pos.x / Screen.width, pos.y / Screen.height);
-        Vector2 screenPos = new Vector2(viewportPos.x * canvasRect.sizeDelta.x, viewportPos.y * canvasRect.sizeDelta.y) - canvasRect.sizeDelta * 0.5f;
-        return screenPos;
+        Vector3 ret = new Vector2(viewportPos.x * canvasRect.sizeDelta.x, viewportPos.y * canvasRect.sizeDelta.y) - canvasRect.sizeDelta * 0.5f;
+
+        Vector3 relate = Vector3.zero;
+        if (tf != null)
+        {
+            relate = Util.CalUIPosRelateToCanvas(tf, false);
+        }
+
+        ret = ret - relate;
+
+        return ret;
     }
 
     #endregion 坐标转化
