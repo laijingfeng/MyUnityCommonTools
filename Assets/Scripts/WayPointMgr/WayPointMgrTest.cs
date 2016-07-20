@@ -5,13 +5,14 @@ using System.Collections.Generic;
 public class WayPointMgrTest : MonoBehaviour
 {
     public bool m_DrawGizmos = false;
+    public bool m_Smooth = false;
     public List<Transform> ways = new List<Transform>();
     public float m_Speed = 0.01f;
 
     private WayPointMgr m_WayMgr;
     private float m_PassedDis;
     private bool m_Moving = false;
-
+    
     void Start()
     {
         m_WayMgr = new WayPointMgr();
@@ -36,7 +37,7 @@ public class WayPointMgrTest : MonoBehaviour
         }
 
         m_PassedDis = Mathf.Min(m_PassedDis + m_Speed, m_WayMgr.Length);
-        WayPointMgr.RoutePoint po = m_WayMgr.GetRoutePoint(m_PassedDis, true);
+        WayPointMgr.RoutePoint po = m_WayMgr.GetRoutePoint(m_PassedDis, m_Smooth);
         this.transform.position = po.position;
         this.transform.rotation = Quaternion.LookRotation(po.direction);
 
@@ -67,7 +68,7 @@ public class WayPointMgrTest : MonoBehaviour
 
         if (m_WayMgr != null)
         {
-            m_WayMgr.DrawPath(true, 100);
+            m_WayMgr.DrawPath(m_Smooth, 100);
         }
     }
 }
