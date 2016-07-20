@@ -147,8 +147,6 @@ public class WayPointMgrEditor : MonoBehaviour
             }
         }
 
-        Debug.LogWarning(list.Count);
-
         SetWayPoints(list);
     }
 
