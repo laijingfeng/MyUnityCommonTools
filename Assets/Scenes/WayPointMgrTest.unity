@@ -462,6 +462,18 @@ Prefab:
       propertyPath: m_DrawWay
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 11488438, guid: e9bcf97f0477a3043a95826995118eb4, type: 2}
+      propertyPath: m_DrawStr
+      value: 0,1,4
+      objectReference: {fileID: 0}
+    - target: {fileID: 11488438, guid: e9bcf97f0477a3043a95826995118eb4, type: 2}
+      propertyPath: smoothRoute
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11488438, guid: e9bcf97f0477a3043a95826995118eb4, type: 2}
+      propertyPath: editorVisualisationSubsteps
+      value: 114
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e9bcf97f0477a3043a95826995118eb4, type: 2}
   m_IsPrefabParent: 0
@@ -579,6 +591,14 @@ Prefab:
       propertyPath: ways.Array.data[6]
       value: 
       objectReference: {fileID: 176532617}
+    - target: {fileID: 121200, guid: b656669c641ae1f4da35843a8a5a5201, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11450940, guid: b656669c641ae1f4da35843a8a5a5201, type: 2}
+      propertyPath: m_Smooth
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b656669c641ae1f4da35843a8a5a5201, type: 2}
   m_IsPrefabParent: 0
