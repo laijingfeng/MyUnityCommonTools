@@ -313,4 +313,33 @@ public class Util
         pos.z = 0;
         return pos;
     }
+
+    /// <summary>
+    /// <para>StringToIntArray</para>
+    /// </summary>
+    /// <param name="str"></param>
+    /// <returns></returns>
+    public static int[] StringToIntArray(string str, char separator = ',')
+    {
+        List<int> list = new List<int>();
+
+        if (string.IsNullOrEmpty(str))
+        {
+            return list.ToArray();
+        }
+
+        int tmp;
+
+        string[] str_array = str.Split(separator);
+        foreach (string s in str_array)
+        {
+            if (int.TryParse(s, out tmp) == false)
+            {
+                return list.ToArray();
+            }
+            list.Add(tmp);
+        }
+
+        return list.ToArray();
+    }
 }

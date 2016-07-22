@@ -111,7 +111,7 @@ public class WayPointMgrEditor : MonoBehaviour
             return;
         }
 
-        int[] arr = StringToIntArray(m_DrawStr, ',');
+        int[] arr = Util.StringToIntArray(m_DrawStr, ',');
         m_NodeList.Clear();
         List<Vector3> list = new List<Vector3>();
 
@@ -209,37 +209,4 @@ public class WayPointMgrEditor : MonoBehaviour
             m_Mgr.DrawPath(smoothRoute, editorVisualisationSubsteps);
         }
     }
-
-    #region 工具
-
-    /// <summary>
-    /// <para>StringToIntArray</para>
-    /// </summary>
-    /// <param name="str"></param>
-    /// <returns></returns>
-    public int[] StringToIntArray(string str, char separator = ',')
-    {
-        List<int> list = new List<int>();
-
-        if (string.IsNullOrEmpty(str))
-        {
-            return list.ToArray();
-        }
-
-        int tmp;
-
-        string[] str_array = str.Split(separator);
-        foreach (string s in str_array)
-        {
-            if (int.TryParse(s, out tmp) == false)
-            {
-                return list.ToArray();
-            }
-            list.Add(tmp);
-        }
-
-        return list.ToArray();
-    }
-
-    #endregion 工具
 }

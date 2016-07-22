@@ -4,6 +4,10 @@ using System;
 using UnityEditor;
 #endif
 
+/// <summary>
+/// <para>备注：曲线时，点与点的距离要尽量均匀</para>
+/// <para>CatmullRom(0,1,3,40,0.5)=-0.3</para>
+/// </summary>
 public class WayPointMgr
 {
     #region 变量
@@ -29,6 +33,10 @@ public class WayPointMgr
     private float m_Length;
 
     private float i;
+
+    /// <summary>
+    /// 为了更好的优化，不要破坏pid的值
+    /// </summary>
     private int pid;
 
     #endregion 变量
@@ -39,6 +47,7 @@ public class WayPointMgr
         m_Dis = null;
         m_Length = 0;
         m_NumPoints = 0;
+        pid = 1;
     }
 
     private void Reset()
@@ -48,7 +57,7 @@ public class WayPointMgr
         m_Dis[0] = 0f;
         for (int i = 1; i < m_NumPoints; ++i)
         {
-            m_Length += (m_WayPointList[i] - m_WayPointList[i - 1]).magnitude;
+            m_Length += (m_WayPointList[i + 1] - m_WayPointList[i]).magnitude;
             m_Dis[i] = m_Length;
         }
     }
@@ -153,32 +162,48 @@ public class WayPointMgr
     }
 
     /// <summary>
-    /// 获得路点位置
+    /// 独立出来，期待做一些优化
     /// </summary>
-    /// <param name="dist">已经走过的距离</param>
-    /// <returns></returns>
-    public Vector3 GetRoutePosition(float dist, bool smooth = false)
+    /// <param name="dist"></param>
+    private void GetPid(float dist)
     {
-        for (pid = 1; pid < m_NumPoints; pid++)
+        if (pid <= m_NumPoints - 1 && m_Dis[pid - 1] <= dist)
+        {
+            //keep the value
+        }
+        else
+        {
+            pid = 1;
+        }
+
+        //由于浮点原因，dist可能比Length大，为了限定下标，枚举只到(m_NumPoints-1)
+        for (; pid < m_NumPoints - 1; pid++)
         {
             if (m_Dis[pid] >= dist)
             {
                 break;
             }
         }
+    }
 
+    /// <summary>
+    /// 获得路点位置
+    /// </summary>
+    /// <param name="dist">已经走过的距离</param>
+    /// <returns></returns>
+    public Vector3 GetRoutePosition(float dist, bool smooth = false)
+    {
+        GetPid(dist);
         i = Mathf.InverseLerp(m_Dis[pid - 1], m_Dis[pid], dist);
-
-        pid++;
 
         if (smooth)
         {
-            return CatmullRom(m_WayPointList[pid - 2], m_WayPointList[pid - 1],
-                m_WayPointList[pid], m_WayPointList[pid + 1], i);
+            return CatmullRom(m_WayPointList[pid-1], m_WayPointList[pid],
+                m_WayPointList[pid + 1], m_WayPointList[pid + 2], i);
         }
         else
         {
-            return Vector3.Lerp(m_WayPointList[pid - 1], m_WayPointList[pid], i);
+            return Vector3.Lerp(m_WayPointList[pid], m_WayPointList[pid + 1], i);
         }
     }
 
@@ -192,7 +217,7 @@ public class WayPointMgr
 
     public void DrawPath(bool smooth, int smoothSteps = 100)
     {
-        if (m_NumPoints < 2 || smoothSteps < 2)
+        if (m_NumPoints < 2 || smoothSteps < 1)
         {
             return;
         }
