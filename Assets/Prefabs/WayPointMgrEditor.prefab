@@ -56,7 +56,7 @@ MonoBehaviour:
   _33333333333333333333333333: 0
   m_ResortByName: 0
   _44444444444444444444444444: 0
-  m_DrawStr: 0,1,2,3
+  m_DrawStr: 0,1,2,3,4
   m_DrawRealTime: 1
   m_DrawWay: 0
 --- !u!1001 &100100000
