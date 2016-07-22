@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 
 [ExecuteInEditMode]
 public class WayPointMgrEditor : MonoBehaviour
@@ -22,9 +22,9 @@ public class WayPointMgrEditor : MonoBehaviour
     [Range(2, 500)]
     public int editorVisualisationSubsteps = 100;
 
-    public bool _11111111111111111111111111;
-
     public Transform m_WayFather;
+
+    public bool _11111111111111111111111111;
 
     public Transform m_PointPrefab;
 
@@ -34,14 +34,14 @@ public class WayPointMgrEditor : MonoBehaviour
 
     public int m_CreateCnt = 1;
 
-    public float m_XOffset;
-
-    public float m_ZOffset;
+    public Vector3 m_Offset;
 
     [Tooltip("根据上面的设置创建路点")]
     public bool m_CreatePos;
 
     public bool _22222222222222222222222222;
+
+    public int m_NameFrom = 0;
 
     /// <summary>
     /// 升序重命名
@@ -51,11 +51,20 @@ public class WayPointMgrEditor : MonoBehaviour
 
     public bool _33333333333333333333333333;
 
+    public bool m_ResortByName = false;
+
+    public bool _44444444444444444444444444;
+
     /// <summary>
     /// 要绘制的路径
     /// </summary>
     [Tooltip("要绘制的路径，英文逗号隔开")]
     public string m_DrawStr;
+
+    /// <summary>
+    /// 实时绘制
+    /// </summary>
+    public bool m_DrawRealTime = false;
 
     /// <summary>
     /// 重置路
@@ -65,9 +74,11 @@ public class WayPointMgrEditor : MonoBehaviour
 
     private WayPointMgr m_Mgr = new WayPointMgr();
 
+    private List<Transform> m_NodeList = new List<Transform>();
+
     private void Update()
     {
-        if (m_DrawWay == true)
+        if (m_DrawWay == true || m_DrawRealTime)
         {
             DrawPoint();
             m_DrawWay = false;
@@ -84,6 +95,12 @@ public class WayPointMgrEditor : MonoBehaviour
             m_RenameASC = false;
             RenameASC();
         }
+
+        if (m_ResortByName)
+        {
+            m_ResortByName = false;
+            ResortByName();
+        }
     }
 
     private void DrawPoint()
@@ -95,6 +112,7 @@ public class WayPointMgrEditor : MonoBehaviour
         }
 
         int[] arr = StringToIntArray(m_DrawStr, ',');
+        m_NodeList.Clear();
         List<Vector3> list = new List<Vector3>();
 
         Transform tf;
@@ -103,10 +121,11 @@ public class WayPointMgrEditor : MonoBehaviour
             tf = m_WayFather.FindChild(string.Format("p{0}", id));
             if (tf != null)
             {
+                m_NodeList.Add(tf);
                 list.Add(tf.position);
             }
         }
-        m_Mgr.SetWayPoints(list.ToArray());
+        m_Mgr.SetWayPoints(m_NodeList.ToArray());
     }
 
     /// <summary>
@@ -126,8 +145,28 @@ public class WayPointMgrEditor : MonoBehaviour
             tf = m_WayFather.GetChild(i);
             if (tf != null)
             {
-                tf.name = string.Format("p{0}", i);
+                tf.name = string.Format("p{0}", i + m_NameFrom);
             }
+        }
+    }
+
+    private void ResortByName()
+    {
+        if (m_WayFather == null)
+        {
+            Debug.LogError("WayFather is null");
+            return;
+        }
+
+        Transform tf;
+        for (int i = 0; i < 100; i++)
+        {
+            tf = m_WayFather.FindChild(string.Format("p{0}", i));
+            if (tf == null)
+            {
+                break;
+            }
+            tf.SetAsLastSibling();
         }
     }
 
@@ -158,7 +197,7 @@ public class WayPointMgrEditor : MonoBehaviour
             nGo.transform.localScale = Vector3.one;
             nGo.transform.localRotation = Quaternion.Euler(Vector3.zero);
             vTmp = m_PointPrefab.localPosition;
-            vTmp += new Vector3(m_XOffset, 0f, m_ZOffset) * (i + 1);
+            vTmp += m_Offset * (i + 1);
             nGo.transform.localPosition = vTmp;
         }
     }

@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 using System;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class WayPointMgr
 {
@@ -181,6 +184,10 @@ public class WayPointMgr
 
     #endregion 对外接口
 
+#if UNITY_EDITOR
+
+    private GUIStyle style = new GUIStyle();
+
     #region 调试
 
     public void DrawPath(bool smooth, int smoothSteps = 100)
@@ -190,29 +197,62 @@ public class WayPointMgr
             return;
         }
 
+        style.fontStyle = FontStyle.Bold;
+        style.normal.textColor = Color.white;
         Gizmos.color = Color.green;
 
         Vector3 prev = m_WayPointList[1];
         Vector3 next;
         if (smooth)
         {
+            int nextColorId = 1;
+            float dis;
             for (int i = 1; i <= smoothSteps; i++)
             {
-                next = GetRoutePosition(i * 1.0f / smoothSteps * m_Length, smooth);
+                dis = i * 1.0f / smoothSteps * m_Length;
+                next = GetRoutePosition(dis, smooth);
+                if (dis > m_Dis[nextColorId])
+                {
+                    if (nextColorId < m_NumPoints - 1)
+                    {
+                        nextColorId++;
+                        if (Gizmos.color == Color.green)
+                        {
+                            Gizmos.color = Color.cyan;
+                        }
+                        else
+                        {
+                            Gizmos.color = Color.green;
+                        }
+                    }
+                }
                 Gizmos.DrawLine(prev, next);
                 prev = next;
             }
         }
         else
         {
-            for (int i = 2, imax = m_NumPoints + 1; i < imax; i++)
+            for (int i = 2; i < m_NumPoints + 1; i++)
             {
                 next = m_WayPointList[i];
                 Gizmos.DrawLine(prev, next);
                 prev = next;
+                if (Gizmos.color == Color.green)
+                {
+                    Gizmos.color = Color.cyan;
+                }
+                else
+                {
+                    Gizmos.color = Color.green;
+                }
             }
         }
+
+        Handles.Label(m_WayPointList[1], "Begin", style);
+        Handles.Label(m_WayPointList[m_NumPoints], "End", style);
     }
 
     #endregion 调试
+
+#endif
 }
