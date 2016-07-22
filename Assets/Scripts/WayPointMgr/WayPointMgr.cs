@@ -162,6 +162,21 @@ public class WayPointMgr
         }
     }
 
+    /// <summary>
+    /// <para>索引为idx的点的距离</para>
+    /// <para>模拟非闭合曲线时，第0个点会有些异常，可以从第1个点开始</para>
+    /// </summary>
+    /// <param name="idx"></param>
+    /// <returns></returns>
+    public float GetDisOfIdx(int idx)
+    {
+        if (idx < 0 || idx >= m_Dis.Count)
+        {
+            return 0;
+        }
+        return m_Dis[idx];
+    }
+
     #endregion 对外接口
 
     private Vector3 CatmullRom(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float i)
