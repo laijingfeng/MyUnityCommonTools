@@ -19,8 +19,8 @@ public class WayPointMgrEditor : MonoBehaviour
     /// <summary>
     /// <para>编辑器中路径划分的步数</para>
     /// </summary>
-    [Range(3, 500)]
-    public float editorVisualisationSubsteps = 100;
+    [Range(2, 500)]
+    public int editorVisualisationSubsteps = 100;
 
     public bool _11111111111111111111111111;
 
@@ -62,48 +62,8 @@ public class WayPointMgrEditor : MonoBehaviour
     /// </summary>
     [Tooltip("绘制路径，根据WayFather和DrawStr")]
     public bool m_DrawWay = false;
-    
-    /// <summary>
-    /// 路点列表
-    /// </summary>
-    private List<Vector3> m_WayPointList = new List<Vector3>();
 
-    /// <summary>
-    /// 路点数量
-    /// </summary>
-    private int numPoints;
-
-    /// <summary>
-    /// 到原点的距离
-    /// </summary>
-    private float[] distances;
-
-    /// <summary>
-    /// 总长度
-    /// </summary>
-    private float m_Length = 0f;
-
-    /// <summary>
-    /// 路径总长度
-    /// </summary>
-    public float Length
-    {
-        get
-        {
-            return m_Length;
-        }
-    }
-
-    private int p0n;
-    private int p1n;
-    private int p2n;
-    private int p3n;
-
-    private float i;
-    private Vector3 P0;
-    private Vector3 P1;
-    private Vector3 P2;
-    private Vector3 P3;
+    private WayPointMgr m_Mgr = new WayPointMgr();
 
     private void Update()
     {
@@ -146,8 +106,7 @@ public class WayPointMgrEditor : MonoBehaviour
                 list.Add(tf.position);
             }
         }
-
-        SetWayPoints(list);
+        m_Mgr.SetWayPoints(list.ToArray());
     }
 
     /// <summary>
@@ -204,133 +163,11 @@ public class WayPointMgrEditor : MonoBehaviour
         }
     }
 
-    private void Reset()
-    {
-        if (m_WayPointList.Count > 1)
-        {
-            CacheDistances();
-        }
-        numPoints = m_WayPointList.Count;
-    }
-
-    /// <summary>
-    /// 设置路点
-    /// </summary>
-    /// <param name="points"></param>
-    public void SetWayPoints(List<Vector3> points)
-    {
-        m_WayPointList.Clear();
-        m_Length = 0f;
-        foreach (Vector3 t in points)
-        {
-            m_WayPointList.Add(t);
-        }
-        Reset();
-    }
-
-    /// <summary>
-    /// 获得路点位置
-    /// </summary>
-    /// <param name="dist">已经走过的距离</param>
-    /// <returns></returns>
-    public Vector3 GetRoutePosition(float dist, bool smooth = false)
-    {
-        int point = 0;
-        while (distances[point] < dist)
-        {
-            if (point >= numPoints - 1)
-            {
-                break;
-            }
-            ++point;
-        }
-
-        p1n = ((point - 1) + numPoints) % numPoints;
-        p2n = point;
-
-        i = Mathf.InverseLerp(distances[p1n], distances[p2n], dist);
-
-        if (smooth)
-        {
-            p0n = ((point - 2) + numPoints) % numPoints;
-            p3n = (point + 1) % numPoints;
-
-            P0 = m_WayPointList[p0n];
-            P1 = m_WayPointList[p1n];
-            P2 = m_WayPointList[p2n];
-            P3 = m_WayPointList[p3n];
-
-            return CatmullRom(P0, P1, P2, P3, i);
-        }
-        else
-        {
-            p1n = ((point - 1) + numPoints) % numPoints;
-            p2n = point;
-
-            return Vector3.Lerp(m_WayPointList[p1n], m_WayPointList[p2n], i);
-        }
-    }
-
-    private Vector3 CatmullRom(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float i)
-    {
-        return 0.5f *
-               ((2 * p1) + (-p0 + p2) * i + (2 * p0 - 5 * p1 + 4 * p2 - p3) * i * i +
-                (-p0 + 3 * p1 - 3 * p2 + p3) * i * i * i);
-    }
-
-    private void CacheDistances()
-    {
-        distances = new float[m_WayPointList.Count];
-        distances[0] = 0f;
-        for (int i = 1, imax = m_WayPointList.Count; i < imax; ++i)
-        {
-            distances[i] = distances[i - 1] + (m_WayPointList[i] - m_WayPointList[i - 1]).magnitude;
-        }
-        m_Length = distances[distances.Length - 1];
-    }
-
     private void OnDrawGizmos()
     {
-        DrawGizmos();
-    }
-
-    /// <summary>
-    /// 绘制
-    /// </summary>
-    private void DrawGizmos()
-    {
-        if (m_DrawGizmos == false)
+        if (m_DrawGizmos)
         {
-            return;
-        }
-
-        if (m_WayPointList.Count > 1)
-        {
-            numPoints = m_WayPointList.Count;
-
-            CacheDistances();
-
-            Gizmos.color = Color.yellow;
-
-            Vector3 prev = m_WayPointList[0];
-            if (smoothRoute)
-            {
-                for (float dist = 0; dist <= Length + 0.001f; dist += Length / editorVisualisationSubsteps)
-                {
-                    Vector3 next = GetRoutePosition(dist, smoothRoute);
-                    Gizmos.DrawLine(prev, next);
-                    prev = next;
-                }
-            }
-            else
-            {
-                for (int i = 1, imax = m_WayPointList.Count; i < imax; i++)
-                {
-                    Vector3 next = m_WayPointList[i];
-                    Gizmos.DrawLine(prev, next);
-                    prev = next;
-                }
-            }
+            m_Mgr.DrawPath(smoothRoute, editorVisualisationSubsteps);
         }
     }
 

@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+using System;
 
 public class WayPointMgr
 {
@@ -9,7 +8,7 @@ public class WayPointMgr
     /// <summary>
     /// 路点列表
     /// </summary>
-    private List<Vector3> m_WayPointList;
+    private Vector3[] m_WayPointList;
 
     /// <summary>
     /// 路点数量
@@ -19,165 +18,37 @@ public class WayPointMgr
     /// <summary>
     /// 到原点的距离
     /// </summary>
-    private List<float> m_Dis;
+    private float[] m_Dis;
 
     /// <summary>
     /// 总长度
     /// </summary>
-    private float m_Length = 0f;
-
-    /// <summary>
-    /// 路径总长度
-    /// </summary>
-    public float Length
-    {
-        get
-        {
-            return m_Length;
-        }
-    }
-
-    private int p0n;
-    private int p1n;
-    private int p2n;
-    private int p3n;
+    private float m_Length;
 
     private float i;
-    private Vector3 P0;
-    private Vector3 P1;
-    private Vector3 P2;
-    private Vector3 P3;
+    private int pid;
 
     #endregion 变量
 
     public WayPointMgr()
     {
-        m_WayPointList = new List<Vector3>();
-        m_Dis = new List<float>();
+        m_WayPointList = null;
+        m_Dis = null;
         m_Length = 0;
         m_NumPoints = 0;
     }
 
     private void Reset()
     {
-        m_NumPoints = m_WayPointList.Count;
         m_Length = 0;
-
-        m_Dis.Clear();
-        m_Dis.Add(0);
+        m_Dis = new float[m_NumPoints];
+        m_Dis[0] = 0f;
         for (int i = 1; i < m_NumPoints; ++i)
         {
             m_Length += (m_WayPointList[i] - m_WayPointList[i - 1]).magnitude;
-            m_Dis.Add(m_Length);
+            m_Dis[i] = m_Length;
         }
     }
-
-    #region 对外接口
-
-    /// <summary>
-    /// 设置路点
-    /// </summary>
-    /// <param name="points"></param>
-    public void SetWayPoints(List<Vector3> points)
-    {
-        m_WayPointList.Clear();
-        m_Length = 0f;
-        foreach (Vector3 t in points)
-        {
-            m_WayPointList.Add(t);
-        }
-        Reset();
-    }
-
-    /// <summary>
-    /// 设置路点
-    /// </summary>
-    /// <param name="points"></param>
-    public void SetWayPoints(List<Transform> points)
-    {
-        List<Vector3> vPoints = new List<Vector3>();
-        foreach (Transform t in points)
-        {
-            if (t != null)
-            {
-                vPoints.Add(t.position);
-            }
-        }
-        SetWayPoints(vPoints);
-    }
-
-    /// <summary>
-    /// 获得路点
-    /// </summary>
-    /// <param name="dist">已经走过的距离</param>
-    /// <returns></returns>
-    public RoutePoint GetRoutePoint(float dist, bool smooth = false)
-    {
-        Vector3 p1 = GetRoutePosition(dist, smooth);
-        Vector3 p2 = GetRoutePosition(dist + 0.01f, smooth);
-        Vector3 delta = p2 - p1;
-        return new RoutePoint(p1, delta.normalized);
-    }
-
-    /// <summary>
-    /// 获得路点位置
-    /// </summary>
-    /// <param name="dist">已经走过的距离</param>
-    /// <returns></returns>
-    public Vector3 GetRoutePosition(float dist, bool smooth = false)
-    {
-        int point = 0;
-        while (m_Dis[point] < dist)
-        {
-            if (point >= m_NumPoints - 1)
-            {
-                break;
-            }
-            ++point;
-        }
-
-        p1n = ((point - 1) + m_NumPoints) % m_NumPoints;
-        p2n = point;
-
-        i = Mathf.InverseLerp(m_Dis[p1n], m_Dis[p2n], dist);
-
-        if (smooth)
-        {
-            p0n = ((point - 2) + m_NumPoints) % m_NumPoints;
-            p3n = (point + 1) % m_NumPoints;
-
-            P0 = m_WayPointList[p0n];
-            P1 = m_WayPointList[p1n];
-            P2 = m_WayPointList[p2n];
-            P3 = m_WayPointList[p3n];
-
-            return CatmullRom(P0, P1, P2, P3, i);
-        }
-        else
-        {
-            p1n = ((point - 1) + m_NumPoints) % m_NumPoints;
-            p2n = point;
-
-            return Vector3.Lerp(m_WayPointList[p1n], m_WayPointList[p2n], i);
-        }
-    }
-
-    /// <summary>
-    /// <para>索引为idx的点的距离</para>
-    /// <para>模拟非闭合曲线时，第0个点会有些异常，可以从第1个点开始</para>
-    /// </summary>
-    /// <param name="idx"></param>
-    /// <returns></returns>
-    public float GetDisOfIdx(int idx)
-    {
-        if (idx < 0 || idx >= m_Dis.Count)
-        {
-            return 0;
-        }
-        return m_Dis[idx];
-    }
-
-    #endregion 对外接口
 
     private Vector3 CatmullRom(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float i)
     {
@@ -208,32 +79,135 @@ public class WayPointMgr
         }
     }
 
+    #region 对外接口
+
+    /// <summary>
+    /// 路径总长度
+    /// </summary>
+    public float Length
+    {
+        get
+        {
+            return m_Length;
+        }
+    }
+
+    /// <summary>
+    /// 设置路点
+    /// </summary>
+    /// <param name="points">路点</param>
+    public void SetWayPoints(Vector3[] points)
+    {
+        if (points == null || points.Length < 2)
+        {
+            Debug.LogError("points is null, or less than 2 points");
+            return;
+        }
+
+        m_NumPoints = points.Length;
+        m_WayPointList = new Vector3[m_NumPoints + 2];
+
+        Array.Copy(points, 0, m_WayPointList, 1, points.Length);
+        if (points[0].Equals(points[m_NumPoints - 1]))
+        {
+            m_WayPointList[0] = points[m_NumPoints - 2];
+            m_WayPointList[m_NumPoints + 1] = points[1];
+        }
+        else
+        {
+            m_WayPointList[0] = points[0] + (points[0] - points[1]);
+            m_WayPointList[m_NumPoints + 1] = points[m_NumPoints - 1] + (points[m_NumPoints - 1] - points[m_NumPoints - 2]);
+        }
+
+        Reset();
+    }
+
+    /// <summary>
+    /// 设置路点
+    /// </summary>
+    /// <param name="points">路点</param>
+    public void SetWayPoints(Transform[] points)
+    {
+        Vector3[] po = new Vector3[points.Length];
+        for (int i = 0; i < points.Length; i++)
+        {
+            po[i] = points[i].position;
+        }
+        SetWayPoints(po);
+    }
+
+    /// <summary>
+    /// 获得路点
+    /// </summary>
+    /// <param name="dist">已经走过的距离</param>
+    /// <returns></returns>
+    public RoutePoint GetRoutePoint(float dist, bool smooth = false)
+    {
+        Vector3 p1 = GetRoutePosition(dist, smooth);
+        Vector3 p2 = GetRoutePosition(dist + 0.01f, smooth);
+        Vector3 delta = p2 - p1;
+        return new RoutePoint(p1, delta.normalized);
+    }
+
+    /// <summary>
+    /// 获得路点位置
+    /// </summary>
+    /// <param name="dist">已经走过的距离</param>
+    /// <returns></returns>
+    public Vector3 GetRoutePosition(float dist, bool smooth = false)
+    {
+        for (pid = 1; pid < m_NumPoints; pid++)
+        {
+            if (m_Dis[pid] >= dist)
+            {
+                break;
+            }
+        }
+
+        i = Mathf.InverseLerp(m_Dis[pid - 1], m_Dis[pid], dist);
+
+        pid++;
+
+        if (smooth)
+        {
+            return CatmullRom(m_WayPointList[pid - 2], m_WayPointList[pid - 1],
+                m_WayPointList[pid], m_WayPointList[pid + 1], i);
+        }
+        else
+        {
+            return Vector3.Lerp(m_WayPointList[pid - 1], m_WayPointList[pid], i);
+        }
+    }
+
+    #endregion 对外接口
+
     #region 调试
 
-    public void DrawPath(bool smooth, float smoothSteps = 100)
+    public void DrawPath(bool smooth, int smoothSteps = 100)
     {
-        if(m_NumPoints <= 0)
+        if (m_NumPoints < 2 || smoothSteps < 2)
         {
             return;
         }
 
         Gizmos.color = Color.green;
 
-        Vector3 prev = m_WayPointList[0];
+        Vector3 prev = m_WayPointList[1];
+        Vector3 next;
         if (smooth)
         {
-            for (float dist = 0; dist <= Length + 0.001f; dist += Length / smoothSteps)
+            for (int i = 1; i <= smoothSteps; i++)
             {
-                Vector3 next = GetRoutePosition(dist, smooth);
+                next = GetRoutePosition(i * 1.0f / smoothSteps * m_Length, smooth);
                 Gizmos.DrawLine(prev, next);
                 prev = next;
             }
         }
         else
         {
-            for (int i = 1, imax = m_WayPointList.Count; i < imax; i++)
+            for (int i = 2, imax = m_NumPoints + 1; i < imax; i++)
             {
-                Vector3 next = m_WayPointList[i];
+                next = m_WayPointList[i];
                 Gizmos.DrawLine(prev, next);
                 prev = next;
             }

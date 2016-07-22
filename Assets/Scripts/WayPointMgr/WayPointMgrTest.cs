@@ -16,7 +16,7 @@ public class WayPointMgrTest : MonoBehaviour
     void Start()
     {
         m_WayMgr = new WayPointMgr();
-        m_WayMgr.SetWayPoints(ways);
+        m_WayMgr.SetWayPoints(ways.ToArray());
         m_PassedDis = 0f;
         m_Moving = true;
     }
