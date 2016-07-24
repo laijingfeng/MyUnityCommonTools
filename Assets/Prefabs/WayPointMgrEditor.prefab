@@ -40,23 +40,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_DrawGizmos: 1
-  smoothRoute: 1
-  editorVisualisationSubsteps: 100
   m_WayFather: {fileID: 0}
-  _11111111111111111111111111: 0
+  ShowCreatePoints: 0
   m_PointPrefab: {fileID: 0}
   m_NameStart: 0
   m_NameAdd: 1
   m_CreateCnt: 1
   m_Offset: {x: 0, y: 0, z: 0}
   m_CreatePos: 0
-  _22222222222222222222222222: 0
+  ShowRenamePoints: 0
   m_NameFrom: 0
   m_RenameASC: 0
-  _33333333333333333333333333: 0
   m_ResortByName: 0
-  _44444444444444444444444444: 0
-  m_DrawStr: 0,1,2,3,4
+  ShowDrawWays: 1
+  smoothRoute: 1
+  editorVisualisationSubsteps: 100
+  m_DrawStr: 0,1,2,3
   m_DrawRealTime: 1
   m_DrawWay: 0
 --- !u!1001 &100100000

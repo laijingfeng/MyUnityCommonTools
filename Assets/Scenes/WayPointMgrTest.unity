@@ -459,32 +459,16 @@ Prefab:
       value: 
       objectReference: {fileID: 506739661}
     - target: {fileID: 11488438, guid: e9bcf97f0477a3043a95826995118eb4, type: 2}
-      propertyPath: smoothRoute
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11488438, guid: e9bcf97f0477a3043a95826995118eb4, type: 2}
-      propertyPath: m_DrawGizmos
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11488438, guid: e9bcf97f0477a3043a95826995118eb4, type: 2}
-      propertyPath: m_DrawRealTime
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11488438, guid: e9bcf97f0477a3043a95826995118eb4, type: 2}
-      propertyPath: m_DrawWay
+      propertyPath: ShowDrawWays
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11488438, guid: e9bcf97f0477a3043a95826995118eb4, type: 2}
-      propertyPath: editorVisualisationSubsteps
-      value: 118
-      objectReference: {fileID: 0}
-    - target: {fileID: 11488438, guid: e9bcf97f0477a3043a95826995118eb4, type: 2}
-      propertyPath: m_ResortByName
+      propertyPath: _ShowRenamePoints
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11488438, guid: e9bcf97f0477a3043a95826995118eb4, type: 2}
-      propertyPath: m_DrawStr
-      value: 0,1,2,3
+      propertyPath: HI__ShowCreatePoints
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e9bcf97f0477a3043a95826995118eb4, type: 2}

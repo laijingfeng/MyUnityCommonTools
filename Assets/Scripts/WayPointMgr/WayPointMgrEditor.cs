@@ -10,65 +10,76 @@ public class WayPointMgrEditor : MonoBehaviour
     /// </summary>
     public bool m_DrawGizmos = false;
 
-    /// <summary>
-    /// 是否光滑
-    /// </summary>
-    [SerializeField]
-    private bool smoothRoute = true;
-
-    /// <summary>
-    /// <para>编辑器中路径划分的步数</para>
-    /// </summary>
-    [Range(2, 500)]
-    public int editorVisualisationSubsteps = 100;
-
     public Transform m_WayFather;
 
-    public bool _11111111111111111111111111;
+    public bool HI__ShowCreatePoints = false;
 
+    [ConditionalHide("HI__ShowCreatePoints")]
     public Transform m_PointPrefab;
 
+    [ConditionalHide("HI__ShowCreatePoints")]
     public int m_NameStart = 0;
 
+    [ConditionalHide("HI__ShowCreatePoints")]
     public int m_NameAdd = 1;
 
+    [ConditionalHide("HI__ShowCreatePoints")]
     public int m_CreateCnt = 1;
 
+    [ConditionalHide("HI__ShowCreatePoints")]
     public Vector3 m_Offset;
 
+    [ConditionalHide("HI__ShowCreatePoints")]
     [Tooltip("根据上面的设置创建路点")]
     public bool m_CreatePos;
 
-    public bool _22222222222222222222222222;
+    public bool HI__ShowRenamePoints = false;
 
+    [ConditionalHide("HI__ShowRenamePoints")]
     public int m_NameFrom = 0;
 
     /// <summary>
     /// 升序重命名
     /// </summary>
+    [ConditionalHide("HI__ShowRenamePoints")]
     [Tooltip("对WayFather下的路点重命名")]
     public bool m_RenameASC;
 
-    public bool _33333333333333333333333333;
-
+    [ConditionalHide("HI__ShowRenamePoints")]
     public bool m_ResortByName = false;
 
-    public bool _44444444444444444444444444;
+    public bool HI__ShowDrawWays = false;
+
+    /// <summary>
+    /// 是否光滑
+    /// </summary>
+    [SerializeField]
+    [ConditionalHide("HI__ShowDrawWays")]
+    private bool smoothRoute = true;
+
+    /// <summary>
+    /// <para>编辑器中路径划分的步数</para>
+    /// </summary>
+    [ConditionalHide("HI__ShowDrawWays")]
+    public int editorVisualisationSubsteps = 100;
 
     /// <summary>
     /// 要绘制的路径
     /// </summary>
+    [ConditionalHide("HI__ShowDrawWays")]
     [Tooltip("要绘制的路径，英文逗号隔开")]
     public string m_DrawStr;
 
     /// <summary>
     /// 实时绘制
     /// </summary>
+    [ConditionalHide("HI__ShowDrawWays")]
     public bool m_DrawRealTime = false;
 
     /// <summary>
     /// 重置路
     /// </summary>
+    [ConditionalHide("HI__ShowDrawWays")]
     [Tooltip("绘制路径，根据WayFather和DrawStr")]
     public bool m_DrawWay = false;
 
@@ -78,6 +89,8 @@ public class WayPointMgrEditor : MonoBehaviour
 
     private void Update()
     {
+        editorVisualisationSubsteps = Mathf.Clamp(editorVisualisationSubsteps, 1, 500);
+
         if (m_DrawWay == true || m_DrawRealTime)
         {
             DrawPoint();
