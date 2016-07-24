@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using UnityEditor;
 
 [ExecuteInEditMode]
 public class WayPointMgrEditor : MonoBehaviour
