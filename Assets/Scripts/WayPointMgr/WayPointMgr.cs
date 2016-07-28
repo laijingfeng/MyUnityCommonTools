@@ -198,7 +198,7 @@ public class WayPointMgr
 
         if (smooth)
         {
-            return CatmullRom(m_WayPointList[pid-1], m_WayPointList[pid],
+            return CatmullRom(m_WayPointList[pid - 1], m_WayPointList[pid],
                 m_WayPointList[pid + 1], m_WayPointList[pid + 2], i);
         }
         else
@@ -211,9 +211,9 @@ public class WayPointMgr
 
 #if UNITY_EDITOR
 
-    private GUIStyle style = new GUIStyle();
-
     #region 调试
+
+    private GUIStyle style = new GUIStyle();
 
     public void DrawPath(bool smooth, int smoothSteps = 100)
     {

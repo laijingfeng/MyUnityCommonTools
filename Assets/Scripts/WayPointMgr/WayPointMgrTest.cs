@@ -13,7 +13,10 @@ public class WayPointMgrTest : MonoBehaviour
     private WayPointMgr m_WayMgr;
     private float m_PassedDis;
     private bool m_Moving = false;
+
+#if UNITY_EDITOR
     private int m_Step = 1;
+#endif
 
     void Start()
     {
@@ -35,7 +38,9 @@ public class WayPointMgrTest : MonoBehaviour
         m_WayMgr.SetWayPoints(list.ToArray());
         m_PassedDis = 0f;
         m_Moving = true;
+#if UNITY_EDITOR
         m_Step = (int)(m_WayMgr.Length / m_Speed);
+#endif
     }
 
     void Update()
@@ -81,6 +86,7 @@ public class WayPointMgrTest : MonoBehaviour
     /// </summary>
     void OnDrawGizmos()
     {
+#if UNITY_EDITOR
         if (m_DrawGizmos == false)
         {
             return;
@@ -90,5 +96,6 @@ public class WayPointMgrTest : MonoBehaviour
         {
             m_WayMgr.DrawPath(m_Smooth, m_Step);
         }
+#endif
     }
 }
