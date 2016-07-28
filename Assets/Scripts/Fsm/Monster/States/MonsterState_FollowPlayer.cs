@@ -12,7 +12,7 @@ public class MonsterState_FollowPlayer : State
     {
         base.Update();
 
-        MonsterFsm mgr = m_StateMgr as MonsterFsm;
+        MonsterFsm mgr = m_Fsm as MonsterFsm;
 
         Vector3 moveDir = mgr.Player.position - mgr.Trans.position;
         if (moveDir.magnitude < 0.1f)

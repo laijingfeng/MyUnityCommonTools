@@ -23,7 +23,7 @@ public class PlayerState_Walk : State
     {
         base.Draw();
 #if UNITY_EDITOR
-        Handles.Label(m_StateMgr.Trans.position, "Walk");
+        Handles.Label(m_Fsm.Trans.position, "Walk");
 #endif
     }
 
@@ -33,20 +33,20 @@ public class PlayerState_Walk : State
         
         frame++;
 
-        PlayerFsm mgr = m_StateMgr as PlayerFsm;
+        PlayerFsm fsm = m_Fsm as PlayerFsm;
 
-        if (mgr.path == null || mgr.path.Length <= 0)
+        if (fsm.path == null || fsm.path.Length <= 0)
         {
             return;
         }
 
-        Vector3 moveDir = mgr.path[mgr.curIdx].position - mgr.Trans.position;
+        Vector3 moveDir = fsm.path[fsm.curIdx].position - fsm.Trans.position;
         if (moveDir.magnitude < 0.1f)
         {
-            mgr.curIdx = (mgr.curIdx + 1) % mgr.path.Length;
-            moveDir = mgr.path[mgr.curIdx].position - mgr.Trans.position;
+            fsm.curIdx = (fsm.curIdx + 1) % fsm.path.Length;
+            moveDir = fsm.path[fsm.curIdx].position - fsm.Trans.position;
         }
-        mgr.Trans.rotation = Quaternion.LookRotation(moveDir);
-        mgr.Trans.position = mgr.Trans.position + mgr.Trans.forward * 0.015f;
+        fsm.Trans.rotation = Quaternion.LookRotation(moveDir);
+        fsm.Trans.position = fsm.Trans.position + fsm.Trans.forward * 0.015f;
     }
 }

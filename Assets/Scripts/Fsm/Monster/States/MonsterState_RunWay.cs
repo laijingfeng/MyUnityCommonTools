@@ -26,7 +26,7 @@ public class MonsterState_RunWay : State
             return;
         }
 
-        MonsterFsm mgr = m_StateMgr as MonsterFsm;
+        MonsterFsm mgr = m_Fsm as MonsterFsm;
 
         Vector3 moveDir = path[curIdx].position - mgr.Trans.position;
         if (moveDir.magnitude < 0.1f)

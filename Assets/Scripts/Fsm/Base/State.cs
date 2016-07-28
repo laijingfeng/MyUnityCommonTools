@@ -11,19 +11,19 @@ namespace JerryFsm
 
         protected List<Transition> m_Transitions;
 
-        protected Fsm m_StateMgr;
+        protected Fsm m_Fsm;
 
-        public Fsm Mgr
+        public Fsm CurFsm
         {
             get
             {
-                return m_StateMgr;
+                return m_Fsm;
             }
         }
 
         public void SetStateMgr(Fsm mgr)
         {
-            m_StateMgr = mgr;
+            m_Fsm = mgr;
         }
 
         public State()
@@ -50,7 +50,7 @@ namespace JerryFsm
         /// </summary>
         public virtual void Update()
         {
-            if (m_StateMgr == null)
+            if (m_Fsm == null)
             {
                 return;
             }
@@ -59,7 +59,7 @@ namespace JerryFsm
             {
                 if (m_Transitions[i] != null && m_Transitions[i].Check())
                 {
-                    m_StateMgr.ChangeState(m_Transitions[i].NextID());
+                    m_Fsm.ChangeState(m_Transitions[i].NextID());
                     return;
                 }
             }
@@ -103,7 +103,7 @@ namespace JerryFsm
             base.Draw();
 
 #if UNITY_EDITOR
-            Handles.Label(m_StateMgr.Trans.position, Name());
+            Handles.Label(m_Fsm.Trans.position, Name());
 #endif
         }
     }

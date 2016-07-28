@@ -10,8 +10,8 @@ public class Tr_Idle_RunWay2Idle : Transition
 
     public override bool Check()
     {
-        MonsterFsm mgr = m_CurState.Mgr as MonsterFsm;
-        if (Vector3.Distance(mgr.Player.position, mgr.Trans.position) >= 2)
+        MonsterFsm fsm = m_CurState.CurFsm as MonsterFsm;
+        if (Vector3.Distance(fsm.Player.position, fsm.Trans.position) >= 2)
         {
             return true;
         }
