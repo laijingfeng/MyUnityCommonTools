@@ -25,6 +25,7 @@ namespace JerryFsm
         }
 
         public bool m_DoDraw;
+        public bool m_DoDrawSelected;
 
         public State CurrentState
         {
@@ -63,6 +64,7 @@ namespace JerryFsm
         {
             m_Running = false;
             m_DoDraw = false;
+            m_DoDrawSelected = false;
             m_CurState = null;
             m_States = new List<State>();
         }
@@ -125,6 +127,20 @@ namespace JerryFsm
                     break;
                 }
             }
+        }
+
+        public virtual void DrawSelected()
+        {
+#if UNITY_EDITOR
+            if (m_DoDrawSelected == false)
+            {
+                return;
+            }
+            if (m_CurState != null)
+            {
+                m_CurState.DrawSelected();
+            }
+#endif
         }
 
         public virtual void Draw()

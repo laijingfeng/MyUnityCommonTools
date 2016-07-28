@@ -32,7 +32,7 @@ public class PlayerAIMgr_Move : AIMgr
     public override void MakeFsm()
     {
         m_Fsm = new PlayerFsm(path);
-        m_Fsm.m_DoDraw = true;
+        m_Fsm.m_DoDrawSelected = true;
         
         PlayerState_Walk walk = new PlayerState_Walk();
         walk.AddTransition(new Tr_Move_Walk2Run());

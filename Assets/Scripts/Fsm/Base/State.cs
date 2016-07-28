@@ -84,6 +84,10 @@ namespace JerryFsm
         public virtual void Draw()
         {
         }
+
+        public virtual void DrawSelected()
+        {
+        }
     }
 
     public class DrawNameState : State
@@ -101,6 +105,15 @@ namespace JerryFsm
         public override void Draw()
         {
             base.Draw();
+
+#if UNITY_EDITOR
+            Handles.Label(m_Fsm.Trans.position, Name());
+#endif
+        }
+
+        public override void DrawSelected()
+        {
+            base.DrawSelected();
 
 #if UNITY_EDITOR
             Handles.Label(m_Fsm.Trans.position, Name());

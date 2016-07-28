@@ -41,6 +41,16 @@ namespace JerryFsm
             }
         }
 
+        public virtual void OnDrawGizmosSelected()
+        {
+#if UNITY_EDITOR
+            if (m_Fsm != null)
+            {
+                m_Fsm.DrawSelected();
+            }
+#endif
+        }
+
         public virtual void OnDrawGizmos()
         {
 #if UNITY_EDITOR
