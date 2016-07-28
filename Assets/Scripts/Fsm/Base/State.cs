@@ -1,26 +1,10 @@
 ﻿using System.Collections.Generic;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace JerryFsm
 {
-    /// <summary>
-    /// 转换条件
-    /// </summary>
-    public abstract class Transition
-    {
-        /// <summary>
-        /// 判条件的时候要用到state的信息
-        /// </summary>
-        protected State m_CurState;
-
-        public void SetState(State s)
-        {
-            m_CurState = s;
-        }
-
-        public abstract int NextID();
-        public abstract bool Check();
-    }
-
     public abstract class State
     {
         private int i, m_TransitionCnt;
@@ -45,11 +29,6 @@ namespace JerryFsm
         public State()
         {
             m_Transitions = new List<Transition>();
-        }
-
-        public virtual string Name()
-        {
-            return string.Empty;
         }
 
         /// <summary>
@@ -100,6 +79,32 @@ namespace JerryFsm
             {
                 m_Transitions.Add(t);
             }
+        }
+
+        public virtual void Draw()
+        {
+        }
+    }
+
+    public class DrawNameState : State
+    {
+        public virtual string Name()
+        {
+            return ID().ToString();
+        }
+
+        public override int ID()
+        {
+            return 0;
+        }
+
+        public override void Draw()
+        {
+            base.Draw();
+
+#if UNITY_EDITOR
+            Handles.Label(m_StateMgr.Trans.position, Name());
+#endif
         }
     }
 }

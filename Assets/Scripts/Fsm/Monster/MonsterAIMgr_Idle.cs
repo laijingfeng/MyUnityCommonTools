@@ -6,9 +6,17 @@ public class MonsterAIMgr_Idle : AIMgr
     public Transform[] path;
     public Transform player;
 
+    public override void Start()
+    {
+        base.Start();
+
+        StartFsm();
+    }
+
     public override void MakeFsm()
     {
         m_Fsm = new MonsterFsm(player);
+        m_Fsm.m_DoDraw = true;
 
         MonsterState_Idle idle = new MonsterState_Idle();
         idle.AddTransition(new Tr_Idle_Idle2RunWay());

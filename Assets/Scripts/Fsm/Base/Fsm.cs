@@ -1,9 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using System;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace JerryFsm
 {
@@ -15,7 +11,20 @@ namespace JerryFsm
 
         private Transform m_Trans;
 
-        public bool m_ShowStateName;
+        /// <summary>
+        /// 运行中
+        /// </summary>
+        private bool m_Running;
+
+        public bool Running
+        {
+            get
+            {
+                return m_Running;
+            }
+        }
+
+        public bool m_DoDraw;
 
         public State CurrentState
         {
@@ -52,13 +61,37 @@ namespace JerryFsm
 
         public Fsm()
         {
-            m_ShowStateName = false;
+            m_Running = false;
+            m_DoDraw = false;
             m_CurState = null;
             m_States = new List<State>();
         }
 
+        public void Start()
+        {
+            if (m_CurState == null)
+            {
+                if (m_States.Count > 0)
+                {
+                    m_CurState = m_States[0];
+                    m_CurState.Enter();
+                }
+            }
+            m_Running = true;
+        }
+
+        public void Stop()
+        {
+            m_Running = false;
+        }
+
         public void Update()
         {
+            if (m_Running == false)
+            {
+                return;
+            }
+
             if (m_CurState != null)
             {
                 m_CurState.Update();
@@ -73,13 +106,6 @@ namespace JerryFsm
             }
 
             state.SetStateMgr(this);
-
-            if (m_States.Count == 0)
-            {
-                m_States.Add(state);
-                m_CurState = state;
-                return;
-            }
 
             if (m_States.Contains(state) == false)
             {
@@ -104,14 +130,16 @@ namespace JerryFsm
         public virtual void Draw()
         {
 #if UNITY_EDITOR
-            if (m_ShowStateName)
+            if (m_DoDraw == false)
             {
-                if (m_CurState != null)
-                {
-                    Handles.Label(m_Trans.position, m_CurState.Name());
-                }
+                return;
             }
-        }
+
+            if (m_CurState != null)
+            {
+                m_CurState.Draw();
+            }
 #endif
+        }
     }
 }

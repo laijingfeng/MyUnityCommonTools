@@ -6,12 +6,28 @@ namespace JerryFsm
     {
         protected Fsm m_Fsm;
 
-        void Start()
+        public virtual void Start()
         {
             MakeFsm();
             if (m_Fsm != null)
             {
                 m_Fsm.SetTrans(this.transform);
+            }
+        }
+
+        public void StartFsm()
+        {
+            if (m_Fsm != null)
+            {
+                m_Fsm.Start();
+            }
+        }
+
+        public void StopFsm()
+        {
+            if (m_Fsm != null)
+            {
+                m_Fsm.Stop();
             }
         }
 

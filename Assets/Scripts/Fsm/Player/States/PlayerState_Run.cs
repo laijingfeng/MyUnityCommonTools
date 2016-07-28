@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using JerryFsm;
 
-public class PlayerState_Run : State
+public class PlayerState_Run : DrawNameState
 {
     public int frame;
 
@@ -11,20 +11,20 @@ public class PlayerState_Run : State
         frame = 0;
     }
 
-    public override string Name()
-    {
-        return "Run";
-    }
-
     public override int ID()
     {
         return (int)PlayerStateID.Run;
     }
 
+    public override string Name()
+    {
+        return "Run";
+    }
+
     public override void Update()
     {
         base.Update();
-
+        
         frame++;
 
         PlayerFsm mgr = m_StateMgr as PlayerFsm;

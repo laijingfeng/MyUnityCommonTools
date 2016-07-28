@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 using JerryFsm;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class PlayerState_Walk : State
 {
@@ -10,21 +13,24 @@ public class PlayerState_Walk : State
         return (int)PlayerStateID.Walk;
     }
 
-    public override string Name()
-    {
-        return "Walk";
-    }
-
     public override void Enter()
     {
         base.Enter();
         frame = 0;
     }
 
+    public override void Draw()
+    {
+        base.Draw();
+#if UNITY_EDITOR
+        Handles.Label(m_StateMgr.Trans.position, "Walk");
+#endif
+    }
+
     public override void Update()
     {
         base.Update();
-
+        
         frame++;
 
         PlayerFsm mgr = m_StateMgr as PlayerFsm;
