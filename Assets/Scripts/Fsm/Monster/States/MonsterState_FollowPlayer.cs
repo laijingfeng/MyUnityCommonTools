@@ -12,14 +12,14 @@ public class MonsterState_FollowPlayer : State
     {
         base.Update();
 
-        MonsterStateMgr mgr = m_StateMgr as MonsterStateMgr;
+        MonsterFsm mgr = m_StateMgr as MonsterFsm;
 
-        Vector3 moveDir = mgr.Player.position - mgr.Self.position;
+        Vector3 moveDir = mgr.Player.position - mgr.Trans.position;
         if (moveDir.magnitude < 0.1f)
         {
             return;
         }
-        mgr.Self.rotation = Quaternion.LookRotation(moveDir);
-        mgr.Self.position = mgr.Self.position + mgr.Self.forward * 0.01f;
+        mgr.Trans.rotation = Quaternion.LookRotation(moveDir);
+        mgr.Trans.position = mgr.Trans.position + mgr.Trans.forward * 0.01f;
     }
 }

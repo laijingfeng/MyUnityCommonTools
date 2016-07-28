@@ -8,14 +8,14 @@ public class MonsterAIMgr_Idle : AIMgr
 
     public override void MakeFsm()
     {
-        m_StateMgr = new MonsterStateMgr(player, this.transform);
+        m_Fsm = new MonsterFsm(player);
 
         MonsterState_Idle idle = new MonsterState_Idle();
         idle.AddTransition(new Tr_Idle_Idle2RunWay());
-        m_StateMgr.AddState(idle);
+        m_Fsm.AddState(idle);
 
         MonsterState_RunWay run = new MonsterState_RunWay(path);
         run.AddTransition(new Tr_Idle_RunWay2Idle());
-        m_StateMgr.AddState(run);
+        m_Fsm.AddState(run);
     }
 }

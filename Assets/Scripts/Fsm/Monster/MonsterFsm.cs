@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 using JerryFsm;
 
-public class MonsterStateMgr : StateMgr
+public class MonsterFsm : Fsm
 {
     private Transform player;
-    private Transform self;
 
     public Transform Player
     {
@@ -14,18 +13,9 @@ public class MonsterStateMgr : StateMgr
         }
     }
 
-    public Transform Self
-    {
-        get
-        {
-            return self;
-        }
-    }
-
-    public MonsterStateMgr(Transform p, Transform s)
+    public MonsterFsm(Transform p)
     {
         player = p;
-        self = s;
     }
 }
 

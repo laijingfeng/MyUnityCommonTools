@@ -26,15 +26,15 @@ public class MonsterState_RunWay : State
             return;
         }
 
-        MonsterStateMgr mgr = m_StateMgr as MonsterStateMgr;
+        MonsterFsm mgr = m_StateMgr as MonsterFsm;
 
-        Vector3 moveDir = path[curIdx].position - mgr.Self.position;
+        Vector3 moveDir = path[curIdx].position - mgr.Trans.position;
         if (moveDir.magnitude < 0.1f)
         {
             curIdx = (curIdx + 1) % path.Length;
-            moveDir = path[curIdx].position - mgr.Self.position;
+            moveDir = path[curIdx].position - mgr.Trans.position;
         }
-        mgr.Self.rotation = Quaternion.LookRotation(moveDir);
-        mgr.Self.position = mgr.Self.position + mgr.Self.forward * 0.01f;
+        mgr.Trans.rotation = Quaternion.LookRotation(moveDir);
+        mgr.Trans.position = mgr.Trans.position + mgr.Trans.forward * 0.01f;
     }
 }

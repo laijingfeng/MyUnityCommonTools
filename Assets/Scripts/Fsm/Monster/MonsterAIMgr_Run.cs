@@ -8,14 +8,14 @@ public class MonsterAIMgr_Run : AIMgr
 
     public override void MakeFsm()
     {
-        m_StateMgr = new MonsterStateMgr(player, this.transform);
+        m_Fsm = new MonsterFsm(player);
 
         MonsterState_RunWay run = new MonsterState_RunWay(path);
         run.AddTransition(new Tr_Run_RunWay2FollowPlay());
-        m_StateMgr.AddState(run);
+        m_Fsm.AddState(run);
 
         MonsterState_FollowPlayer follow = new MonsterState_FollowPlayer();
         follow.AddTransition(new Tr_Run_FollowPlay2RunWay());
-        m_StateMgr.AddState(follow);
+        m_Fsm.AddState(follow);
     }
 }

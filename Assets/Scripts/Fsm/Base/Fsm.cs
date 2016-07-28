@@ -1,12 +1,21 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
+using System;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace JerryFsm
 {
-    public class StateMgr
+    public class Fsm
     {
         protected List<State> m_States;
 
         private State m_CurState;
+
+        private Transform m_Trans;
+
+        public bool m_ShowStateName;
 
         public State CurrentState
         {
@@ -16,8 +25,34 @@ namespace JerryFsm
             }
         }
 
-        public StateMgr()
+        public GameObject Go
         {
+            get
+            {
+                return m_Trans.gameObject;
+            }
+        }
+
+        public Transform Trans
+        {
+            get
+            {
+                return m_Trans;
+            }
+        }
+
+        /// <summary>
+        /// System Use
+        /// </summary>
+        /// <param name="tf"></param>
+        public void SetTrans(Transform tf)
+        {
+            m_Trans = tf;
+        }
+
+        public Fsm()
+        {
+            m_ShowStateName = false;
             m_CurState = null;
             m_States = new List<State>();
         }
@@ -65,5 +100,18 @@ namespace JerryFsm
                 }
             }
         }
+
+        public virtual void Draw()
+        {
+#if UNITY_EDITOR
+            if (m_ShowStateName)
+            {
+                if (m_CurState != null)
+                {
+                    Handles.Label(m_Trans.position, m_CurState.Name());
+                }
+            }
+        }
+#endif
     }
 }

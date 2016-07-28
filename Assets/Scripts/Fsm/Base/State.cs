@@ -27,9 +27,9 @@ namespace JerryFsm
 
         protected List<Transition> m_Transitions;
 
-        protected StateMgr m_StateMgr;
+        protected Fsm m_StateMgr;
 
-        public StateMgr Mgr
+        public Fsm Mgr
         {
             get
             {
@@ -37,7 +37,7 @@ namespace JerryFsm
             }
         }
 
-        public void SetStateMgr(StateMgr mgr)
+        public void SetStateMgr(Fsm mgr)
         {
             m_StateMgr = mgr;
         }
@@ -45,6 +45,11 @@ namespace JerryFsm
         public State()
         {
             m_Transitions = new List<Transition>();
+        }
+
+        public virtual string Name()
+        {
+            return string.Empty;
         }
 
         /// <summary>

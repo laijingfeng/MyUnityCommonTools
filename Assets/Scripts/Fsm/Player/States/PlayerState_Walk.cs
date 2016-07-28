@@ -10,6 +10,11 @@ public class PlayerState_Walk : State
         return (int)PlayerStateID.Walk;
     }
 
+    public override string Name()
+    {
+        return "Walk";
+    }
+
     public override void Enter()
     {
         base.Enter();
@@ -22,20 +27,20 @@ public class PlayerState_Walk : State
 
         frame++;
 
-        PlayerStateMgr mgr = m_StateMgr as PlayerStateMgr;
+        PlayerFsm mgr = m_StateMgr as PlayerFsm;
 
         if (mgr.path == null || mgr.path.Length <= 0)
         {
             return;
         }
 
-        Vector3 moveDir = mgr.path[mgr.curIdx].position - mgr.Self.position;
+        Vector3 moveDir = mgr.path[mgr.curIdx].position - mgr.Trans.position;
         if (moveDir.magnitude < 0.1f)
         {
             mgr.curIdx = (mgr.curIdx + 1) % mgr.path.Length;
-            moveDir = mgr.path[mgr.curIdx].position - mgr.Self.position;
+            moveDir = mgr.path[mgr.curIdx].position - mgr.Trans.position;
         }
-        mgr.Self.rotation = Quaternion.LookRotation(moveDir);
-        mgr.Self.position = mgr.Self.position + mgr.Self.forward * 0.015f;
+        mgr.Trans.rotation = Quaternion.LookRotation(moveDir);
+        mgr.Trans.position = mgr.Trans.position + mgr.Trans.forward * 0.015f;
     }
 }
