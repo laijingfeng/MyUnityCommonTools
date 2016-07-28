@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using JerryFsm;
 
 public class MonsterAIMgr_Run : AIMgr
@@ -11,12 +10,12 @@ public class MonsterAIMgr_Run : AIMgr
     {
         m_StateMgr = new MonsterStateMgr(player, this.transform);
 
-        MonsterState_RunWay run = new MonsterState_RunWay((int)MonsterStateID.RunWay, path);
-        run.AddTransition<Tr_Run_RunWay2FollowPlay>((int)MonsterStateID.FollowPlayer);
+        MonsterState_RunWay run = new MonsterState_RunWay(path);
+        run.AddTransition(new Tr_Run_RunWay2FollowPlay());
         m_StateMgr.AddState(run);
 
-        MonsterState_FollowPlayer follow = new MonsterState_FollowPlayer((int)MonsterStateID.FollowPlayer);
-        follow.AddTransition<Tr_Run_FollowPlay2RunWay>((int)MonsterStateID.RunWay);
+        MonsterState_FollowPlayer follow = new MonsterState_FollowPlayer();
+        follow.AddTransition(new Tr_Run_FollowPlay2RunWay());
         m_StateMgr.AddState(follow);
     }
 }

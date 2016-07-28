@@ -5,10 +5,9 @@ public class PlayerState_Walk : State
 {
     public int frame;
 
-    public PlayerState_Walk(int id)
-        : base(id)
+    public override int ID()
     {
-
+        return (int)PlayerStateID.Walk;
     }
 
     public override void Enter()

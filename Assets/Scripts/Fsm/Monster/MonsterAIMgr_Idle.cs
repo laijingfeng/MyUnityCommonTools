@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using JerryFsm;
 
 public class MonsterAIMgr_Idle : AIMgr
@@ -11,12 +10,12 @@ public class MonsterAIMgr_Idle : AIMgr
     {
         m_StateMgr = new MonsterStateMgr(player, this.transform);
 
-        MonsterState_Idle idle = new MonsterState_Idle((int)MonsterStateID.Idle);
-        idle.AddTransition<Tr_Idle_Idle2RunWay>((int)MonsterStateID.RunWay);
+        MonsterState_Idle idle = new MonsterState_Idle();
+        idle.AddTransition(new Tr_Idle_Idle2RunWay());
         m_StateMgr.AddState(idle);
 
-        MonsterState_RunWay run = new MonsterState_RunWay((int)MonsterStateID.RunWay, path);
-        run.AddTransition<Tr_Idle_RunWay2Idle>((int)MonsterStateID.Idle);
+        MonsterState_RunWay run = new MonsterState_RunWay(path);
+        run.AddTransition(new Tr_Idle_RunWay2Idle());
         m_StateMgr.AddState(run);
     }
 }

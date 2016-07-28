@@ -6,11 +6,15 @@ public class MonsterState_RunWay : State
     private int curIdx;
     private Transform[] path;
 
-    public MonsterState_RunWay(int id, Transform[] p)
-        : base(id)
+    public MonsterState_RunWay(Transform[] p)
     {
         path = p;
         curIdx = 0;
+    }
+
+    public override int ID()
+    {
+        return (int)MonsterStateID.RunWay;
     }
 
     public override void Update()

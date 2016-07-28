@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System;
 
 namespace JerryFsm
 {
@@ -8,15 +7,6 @@ namespace JerryFsm
     /// </summary>
     public abstract class Transition
     {
-        protected int m_NextID;
-        public int NextID
-        {
-            get
-            {
-                return m_NextID;
-            }
-        }
-
         /// <summary>
         /// 判条件的时候要用到state的信息
         /// </summary>
@@ -27,25 +17,15 @@ namespace JerryFsm
             m_CurState = s;
         }
 
-        public Transition(int nID)
-        {
-            m_NextID = nID;
-        }
-
-        public virtual bool Check() { return false; }
+        public abstract int NextID();
+        public abstract bool Check();
     }
 
     public abstract class State
     {
+        private int i, m_TransitionCnt;
+
         protected List<Transition> m_Transitions;
-        protected int m_StateID;
-        public int ID
-        {
-            get
-            {
-                return m_StateID;
-            }
-        }
 
         protected StateMgr m_StateMgr;
 
@@ -62,13 +42,24 @@ namespace JerryFsm
             m_StateMgr = mgr;
         }
 
-        public State(int id)
+        public State()
         {
-            m_StateID = id;
             m_Transitions = new List<Transition>();
         }
 
-        public virtual void Enter() { }
+        /// <summary>
+        /// ID
+        /// </summary>
+        /// <returns></returns>
+        public abstract int ID();
+
+        /// <summary>
+        /// base.Enter()需要执行
+        /// </summary>
+        public virtual void Enter()
+        {
+            m_TransitionCnt = m_Transitions.Count;
+        }
 
         /// <summary>
         /// base.Update()需要执行
@@ -80,11 +71,11 @@ namespace JerryFsm
                 return;
             }
 
-            foreach (Transition tr in m_Transitions)
+            for (i = 0; i < m_TransitionCnt; i++)
             {
-                if (tr.Check())
+                if (m_Transitions[i] != null && m_Transitions[i].Check())
                 {
-                    m_StateMgr.ChangeState(tr.NextID);
+                    m_StateMgr.ChangeState(m_Transitions[i].NextID());
                     return;
                 }
             }
@@ -92,9 +83,13 @@ namespace JerryFsm
 
         public virtual void Exit() { }
 
-        public void AddTransition<T>(int nextID) where T : Transition
+        public void AddTransition(Transition t)
         {
-            T t = (T)Activator.CreateInstance(typeof(T), nextID);
+            if (t == null)
+            {
+                return;
+            }
+
             t.SetState(this);
             if (m_Transitions.Contains(t) == false)
             {

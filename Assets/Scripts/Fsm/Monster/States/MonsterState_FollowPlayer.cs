@@ -3,9 +3,9 @@ using JerryFsm;
 
 public class MonsterState_FollowPlayer : State
 {
-    public MonsterState_FollowPlayer(int id)
-        : base(id)
+    public override int ID()
     {
+        return (int)MonsterStateID.FollowPlayer;
     }
 
     public override void Update()

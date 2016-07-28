@@ -2,10 +2,9 @@
 
 public class Tr_Move_Walk2Run : Transition
 {
-    public Tr_Move_Walk2Run(int nID)
-        : base(nID)
+    public override int NextID()
     {
-
+        return (int)PlayerStateID.Run;
     }
 
     public override bool Check()
@@ -15,6 +14,6 @@ public class Tr_Move_Walk2Run : Transition
         {
             return true;
         }
-        return base.Check();
+        return false;
     }
 }

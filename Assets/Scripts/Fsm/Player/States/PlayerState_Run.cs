@@ -5,10 +5,15 @@ public class PlayerState_Run : State
 {
     public int frame;
 
-    public PlayerState_Run(int id)
-        : base(id)
+    public override void Enter()
     {
+        base.Enter();
         frame = 0;
+    }
+
+    public override int ID()
+    {
+        return (int)PlayerStateID.Run;
     }
 
     public override void Update()

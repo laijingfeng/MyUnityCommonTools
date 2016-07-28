@@ -2,9 +2,9 @@
 
 public class MonsterState_Idle : State
 {
-    public MonsterState_Idle(int id)
-        : base(id)
+    public override int ID()
     {
+        return (int)MonsterStateID.Idle;
     }
 
     public override void Update()

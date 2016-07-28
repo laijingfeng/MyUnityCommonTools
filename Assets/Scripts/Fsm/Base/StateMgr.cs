@@ -56,7 +56,7 @@ namespace JerryFsm
         {
             foreach (State state in m_States)
             {
-                if (state.ID == stateID)
+                if (state.ID() == stateID)
                 {
                     m_CurState.Exit();
                     m_CurState = state;

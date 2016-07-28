@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace JerryFsm
 {
-    public class AIMgr : MonoBehaviour
+    public abstract class AIMgr : MonoBehaviour
     {
         protected StateMgr m_StateMgr;
 
@@ -12,11 +11,8 @@ namespace JerryFsm
             MakeFsm();
         }
 
-        public virtual void MakeFsm()
-        {
-            m_StateMgr = null;
-        }
-
+        public abstract void MakeFsm();
+        
         public virtual void Update()
         {
             if (m_StateMgr != null)

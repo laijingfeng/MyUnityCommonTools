@@ -3,18 +3,18 @@ using JerryFsm;
 
 public class Tr_Idle_Idle2RunWay : Transition
 {
-    public Tr_Idle_Idle2RunWay(int nID)
-        : base(nID)
+    public override int NextID()
     {
+        return (int)MonsterStateID.RunWay;
     }
 
     public override bool Check()
     {
-        if (Vector3.Distance((m_CurState.Mgr as MonsterStateMgr).Player.position,
-            (m_CurState.Mgr as MonsterStateMgr).Self.position) < 2)
+        MonsterStateMgr mgr = m_CurState.Mgr as MonsterStateMgr;
+        if (Vector3.Distance(mgr.Player.position, mgr.Self.position) < 2)
         {
             return true;
         }
-        return base.Check();
+        return false;
     }
 }
