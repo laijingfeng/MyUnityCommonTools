@@ -11,13 +11,17 @@ public class RadarChart : Graphic
     [SerializeField]
     private float m_StartDegree;
 
+    #region 编辑器
 #if UNITY_EDITOR
+
     [SerializeField]
     private bool m_DoSet = false;
 
     [SerializeField]
     private bool m_RealTime = false;
+
 #endif
+    #endregion 编辑器
 
     [SerializeField]
     private float m_Radius;
@@ -62,6 +66,15 @@ public class RadarChart : Graphic
 #endif
     }
 
+    #region 对外接口
+
+    /// <summary>
+    /// 新数据
+    /// </summary>
+    /// <param name="sideCnt"></param>
+    /// <param name="radius"></param>
+    /// <param name="p"></param>
+    /// <param name="startDegree"></param>
     public void NewData(int sideCnt, float radius, float[] p, float startDegree = 0)
     {
         if (p == null || p.Length != sideCnt)
@@ -79,6 +92,41 @@ public class RadarChart : Graphic
         m_IsDirty = true;
     }
 
+    /// <summary>
+    /// 设置单个百分比
+    /// </summary>
+    /// <param name="p"></param>
+    public void SetPercent(float p, int idx)
+    {
+        if (idx < 0 || idx >= m_Percents.Length)
+        {
+            return;
+        }
+        m_Percents[idx] = p;
+        m_IsDirty = true;
+    }
+
+    /// <summary>
+    /// 设置百分比
+    /// </summary>
+    /// <param name="p"></param>
+    public void SetPercent(float[] p)
+    {
+        if (p == null || p.Length != m_SideCnt)
+        {
+            return;
+        }
+
+        for (int i = 0; i < m_SideCnt; i++)
+        {
+            m_Percents[i] = p[i];
+        }
+
+        m_IsDirty = true;
+    }
+
+    #endregion 对外接口
+
     private Vector3 CalVecByDegree(float degree)
     {
         Vector3 ret = Vector3.zero;
@@ -90,6 +138,7 @@ public class RadarChart : Graphic
 
     void Update()
     {
+        #region 编辑器
 #if UNITY_EDITOR
         if (m_RealTime)
         {
@@ -106,6 +155,8 @@ public class RadarChart : Graphic
             DoData();
         }
 #endif
+        #endregion 编辑器
+
         if (m_IsDirty)
         {
             m_IsDirty = false;
@@ -113,9 +164,14 @@ public class RadarChart : Graphic
         }
     }
 
-    public void Refresh()
+    /// <summary>
+    /// 刷新数据
+    /// </summary>
+    private void Refresh()
     {
-        if (m_Percents == null || m_Percents.Length != m_SideCnt)
+        //最后一项是为了Copy结点的时候，避免数据为空报错
+        if (m_Percents == null || m_Percents.Length != m_SideCnt 
+            || m_SideDegree == null || m_SideDegree.Length != m_SideCnt)
         {
             return;
         }
@@ -131,7 +187,9 @@ public class RadarChart : Graphic
 
     protected override void OnPopulateMesh(VertexHelper vh)
     {
-        if (m_Percents == null || m_Percents.Length != m_SideCnt)
+        //最后一项是为了Copy结点的时候，避免数据为空报错
+        if (m_Percents == null || m_Percents.Length != m_SideCnt 
+            || m_SideDegree == null || m_SideDegree.Length != m_SideCnt)
         {
             return;
         }
