@@ -9,7 +9,7 @@ public class JerryDebug : MonoBehaviour
     #region 配置
 
     /// <summary>
-    /// 最大日志量
+    /// 单类最大日志量
     /// </summary>
     private const int MAX_MSG_CNT = 100;
 
@@ -32,6 +32,16 @@ public class JerryDebug : MonoBehaviour
     /// LOG文件目录
     /// </summary>
     private static string LOG_FILE_PATH = Application.dataPath + "/../JerryDebug.txt";
+
+    /// <summary>
+    /// 按原始类型输出的类型
+    /// </summary>
+    private static List<string> m_OriginalTypes = new List<string>()
+    {
+        "System.String",//string
+        "System.Int32",//int
+        "System.Single",//float
+    };
 
     #endregion 配置
 
@@ -126,19 +136,31 @@ public class JerryDebug : MonoBehaviour
 
     #region 对外接口
 
-    public static void Log(string strMessage)
+    /// <summary>
+    /// LOG
+    /// </summary>
+    /// <param name="msg"></param>
+    public static void Log(object msg)
     {
-        AddLog(strMessage, LogType.Info);
+        AddLog(msg, LogType.Info);
     }
 
-    public static void LogWarning(string strMessage)
+    /// <summary>
+    /// 警告
+    /// </summary>
+    /// <param name="msg"></param>
+    public static void LogWarning(object msg)
     {
-        AddLog(strMessage, LogType.Warning);
+        AddLog(msg, LogType.Warning);
     }
 
-    public static void LogError(string strMessage)
+    /// <summary>
+    /// 错误
+    /// </summary>
+    /// <param name="msg"></param>
+    public static void LogError(object msg)
     {
-        AddLog(strMessage, LogType.Error);
+        AddLog(msg, LogType.Error);
     }
 
     /// <summary>
@@ -146,9 +168,11 @@ public class JerryDebug : MonoBehaviour
     /// </summary>
     /// <param name="logMsg"></param>
     /// <returns></returns>
-    public static bool LogFile(string logMsg)
+    public static bool LogFile(object msg)
     {
         bool bRet = true;
+
+        string logMsg = HandleInfo(msg);
 
         FileMode fileMode = FileMode.Create;
 
@@ -162,7 +186,7 @@ public class JerryDebug : MonoBehaviour
             FileStream fileStream = new FileStream(LOG_FILE_PATH, fileMode);
             StreamWriter streamWriter = new StreamWriter(fileStream);
 
-            streamWriter.WriteLine(string.Format("{0} {1}", System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), logMsg));
+            streamWriter.WriteLine(string.Format("{0}\n{1}", System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), logMsg));
 
             streamWriter.Close();
         }
@@ -177,17 +201,32 @@ public class JerryDebug : MonoBehaviour
 
     #endregion 对外接口
 
+    private static string HandleInfo(object obj)
+    {
+        System.Type t = obj.GetType();
+        foreach (string s in m_OriginalTypes)
+        {
+            if (t.ToString().Equals(s))
+            {
+                return obj.ToString();
+            }
+        }
+        return JsonUtility.ToJson(obj, true);
+    }
+
     /// <summary>
     /// Log
     /// </summary>
-    /// <param name="strMessage"></param>
+    /// <param name="msg"></param>
     /// <param name="color"></param>
-    private static void AddLog(string strMessage, LogType logType)
+    private static void AddLog(object msg, LogType logType)
     {
         if (!Application.isPlaying || m_Active == false || m_ReceiveMsg == false)
         {
             return;
         }
+
+        string strMessage = HandleInfo(msg); 
 
         if (m_instance == null)
         {
@@ -308,7 +347,7 @@ public class JerryDebug : MonoBehaviour
 
         m_listMsgList.Add(new MsgInfo()
         {
-            m_strMessage = System.DateTime.Now.ToString("HH:mm:ss") + " : " + strMessage,
+            m_strMessage = System.DateTime.Now.ToString("HH:mm:ss") + "：\n" + strMessage,
             m_logType = logType,
         });
     }
