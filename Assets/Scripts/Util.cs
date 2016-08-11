@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 /// <summary>
 /// 工具
@@ -314,32 +315,41 @@ public class Util
         return pos;
     }
 
+    #region 数值转化
+
     /// <summary>
-    /// <para>StringToIntArray</para>
+    /// <para>StringToTArray</para>
     /// </summary>
     /// <param name="str"></param>
     /// <returns></returns>
-    public static int[] StringToIntArray(string str, char separator = ',')
+    public static T[] StringToTArray<T>(string str, char separator = ',')
     {
-        List<int> list = new List<int>();
+        List<T> list = new List<T>();
 
         if (string.IsNullOrEmpty(str))
         {
             return list.ToArray();
         }
 
-        int tmp;
+        T tmp;
 
         string[] str_array = str.Split(separator);
         foreach (string s in str_array)
         {
-            if (int.TryParse(s, out tmp) == false)
+            try
             {
-                return list.ToArray();
+                tmp = (T)Convert.ChangeType(s, typeof(T));
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(string.Format("StringToTArray error {0} : cant not change {1} to {2}", ex.Message, s, typeof(T)));
+                continue;
             }
             list.Add(tmp);
         }
 
         return list.ToArray();
     }
+
+    #endregion 数值转化
 }

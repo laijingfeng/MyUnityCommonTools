@@ -22,7 +22,7 @@ public class WayPointMgrTest : MonoBehaviour
     {
         m_WayMgr = new WayPointMgr();
 
-        int[] arr = Util.StringToIntArray(m_Points, ',');
+        int[] arr = Util.StringToTArray<int>(m_Points, ',');
         List<Vector3> list = new List<Vector3>();
 
         Transform tf;
