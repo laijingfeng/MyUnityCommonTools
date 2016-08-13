@@ -2,7 +2,7 @@
 
 ## 说明
 
-常用的一些Unity项目公用组件，部分资源来自网络（可能部分参考未详尽说明），再加工，工程基于Unity版本5.3.4f1。
+常用的一些Unity项目公用组件，部分参考或启发于网络资源（可能部分未详尽说明），工程基于Unity版本5.3.4f1。
 
 ## 简介
 
@@ -20,3 +20,5 @@
 - DrawGizmos 绘制一个结点的位置信息，可用来快速显示大量结点
 - GestureJudge 手势判断
 - FPS FPS和内存显示，完善中...
+- AssetsSettings 资源导入配置，完善中...
+	- 参考[Unity实用小工具：Asset Auditing](http://forum.china.unity3d.com/forum.php?mod=viewthread&tid=19957&extra=page%3D1%26filter%3Dtypeid%26typeid%3D18)
