@@ -86,7 +86,7 @@ public class AssetRuleInspector : Editor
         }
         foreach (ImportSetting_Base im in m_CurRule.sets)
         {
-            ss.Add(im.m_Name);
+            ss.Add(im.m_MyName);
         }
         return ss.ToArray();
     }
@@ -113,7 +113,7 @@ public class AssetRuleInspector : Editor
             for (int i = 0; i < 1000; i++)
             {
                 ret = string.Format("{0}_{1}", pre, i);
-                if (m_CurRule.sets.Exists((x) => x.m_Name.Equals(ret)) == false)
+                if (m_CurRule.sets.Exists((x) => x.m_MyName.Equals(ret)) == false)
                 {
                     break;
                 }
@@ -145,7 +145,7 @@ public class AssetRuleInspector : Editor
                     continue;
                 }
 
-                if (m_CurRule.sets[i].m_Name.Equals(name))
+                if (m_CurRule.sets[i].m_MyName.Equals(name))
                 {
                     finish = false;
                     name = name + "_1";
@@ -219,6 +219,6 @@ public class AssetRuleInspector : Editor
         m_CurRule.sets[m_SelectedID].Draw();
         EditorGUILayout.EndVertical();
 
-        m_CurRule.sets[m_SelectedID].m_Name = CheckName(m_CurRule.sets[m_SelectedID].m_Name, m_SelectedID);
+        m_CurRule.sets[m_SelectedID].m_MyName = CheckName(m_CurRule.sets[m_SelectedID].m_MyName, m_SelectedID);
     }
 }

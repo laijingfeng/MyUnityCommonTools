@@ -41,3 +41,9 @@
 把Animation的Mask.Transform都勾上
 
 来自[Fix mask button in the animation's inspector](http://forum.unity3d.com/threads/fix-mask-button-in-the-animations-inspector.224017/)
+
+### FindReferences
+
+查找资源的引用
+
+来自[Unity3D研究院之查找资源被哪里引用了](http://www.xuanyusong.com/archives/4207)
