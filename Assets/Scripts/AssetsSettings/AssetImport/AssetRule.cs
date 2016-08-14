@@ -21,8 +21,9 @@ public class AssetRule : ScriptableObject
         sets = new List<ImportSetting_Base>();
     }
 
-    public bool IsMatch(AssetImporter importer)
+    public bool IsMatch(AssetImporter importer,out string setName)
     {
+        setName = string.Empty;
         if (sets == null || sets.Count < 1)
         {
             return false;
@@ -31,6 +32,7 @@ public class AssetRule : ScriptableObject
         {
             if (s.Match(importer))
             {
+                setName = s.m_Name;
                 return true;
             }
         }

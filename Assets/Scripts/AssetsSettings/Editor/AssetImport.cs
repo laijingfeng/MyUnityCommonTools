@@ -21,14 +21,18 @@ public class AssetImport : AssetPostprocessor
     /// <returns></returns>
     private AssetRule SearchRecursive(string path)
     {
-        Debug.LogWarning("Path=" + path);
         foreach (var findAsset in AssetDatabase.FindAssets("t:AssetRule", new[] { Path.GetDirectoryName(path) }))
         {
             var p = Path.GetDirectoryName(AssetDatabase.GUIDToAssetPath(findAsset));
             if (p == Path.GetDirectoryName(path))
             {
-                Debug.Log("Found AssetRule : " + AssetDatabase.GUIDToAssetPath(findAsset));
-                return AssetDatabase.LoadAssetAtPath<AssetRule>(AssetDatabase.GUIDToAssetPath(findAsset));
+                string setName = string.Empty;
+                AssetRule rule = AssetDatabase.LoadAssetAtPath<AssetRule>(AssetDatabase.GUIDToAssetPath(findAsset));
+                if (rule != null && rule.IsMatch(assetImporter,out setName))
+                {
+                    //Debug.LogWarning("Find:" + rule + " " + setName);
+                    return rule;
+                } 
             }
         }
 
