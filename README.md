@@ -24,6 +24,7 @@
 ### AssetsSettings 
 
 资源导入配置，配置项细节继续完善中...
+
 启发于[Unity实用小工具：Asset Auditing](http://forum.china.unity3d.com/forum.php?mod=viewthread&tid=19957&extra=page%3D1%26filter%3Dtypeid%26typeid%3D18)
 
 配置好资源导入规则文件放到文件夹中，资源导入时，向上查找最近的一个符合条件的规则进行配置。
