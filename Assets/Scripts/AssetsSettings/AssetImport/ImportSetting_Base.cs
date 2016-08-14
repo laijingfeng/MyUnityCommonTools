@@ -43,6 +43,8 @@ public class ImportSetting_Base : ScriptableObject
         this.m_PathFilter = EditorGUILayout.TextArea(this.m_PathFilter);
         EditorGUILayout.EndHorizontal();
 
+        EditorGUILayout.HelpBox("路径过滤:\n_name0=t&(hi=f|cc=t)\n(路径包含_name0)并且((路径不包含hi)或者(路径包含cc))",MessageType.Info);
+
         EditorGUILayout.EndVertical();
     }
 
