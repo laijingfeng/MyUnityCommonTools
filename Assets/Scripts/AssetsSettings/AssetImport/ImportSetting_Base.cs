@@ -22,7 +22,7 @@ public class ImportSetting_Base : ScriptableObject
     public FilterType m_TypeFilter;
     public PathFilterType m_PathFilterType;
     public string m_PathFilter;
-    public string m_Name;
+    public string m_MyName;
 
     private string m_path;
 
@@ -34,7 +34,7 @@ public class ImportSetting_Base : ScriptableObject
 
         EditorGUILayout.LabelField("FilterType", this.m_TypeFilter.ToString());
 
-        this.m_Name = EditorGUILayout.TextField("Name", this.m_Name);
+        this.m_MyName = EditorGUILayout.TextField("Name", this.m_MyName);
 
         this.m_PathFilterType = (PathFilterType)EditorGUILayout.EnumPopup("PathFilterType", this.m_PathFilterType);
 
@@ -272,7 +272,7 @@ public class ImportSetting_Base : ScriptableObject
     {
         m_InUse = true;
         m_PathFilter = string.Empty;
-        m_Name = name;
+        m_MyName = name;
         m_PathFilterType = PathFilterType.Name;
     }
 

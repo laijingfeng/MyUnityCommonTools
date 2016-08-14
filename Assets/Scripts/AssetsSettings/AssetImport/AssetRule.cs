@@ -33,7 +33,7 @@ public class AssetRule : ScriptableObject
         {
             if (s.Match(importer))
             {
-                setName = s.m_Name;
+                setName = s.m_MyName;
                 return true;
             }
         }
