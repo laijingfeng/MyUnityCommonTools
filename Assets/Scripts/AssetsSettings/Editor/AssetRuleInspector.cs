@@ -9,8 +9,7 @@ public class AssetRuleInspector : Editor
     [MenuItem("Assets/Create_AssetRule")]
     public static void CreateAssetRule()
     {
-        var newRule = CreateInstance<AssetRule>();
-        newRule.ApplyDefaults();
+        AssetRule newRule = AssetRule.CreateAssetRule();
 
         string selectionPath = "Assets";
         foreach (Object obj in Selection.GetFiltered(typeof(Object), SelectionMode.Assets))
@@ -30,13 +29,7 @@ public class AssetRuleInspector : Editor
         AssetDatabase.Refresh();
         EditorUtility.FocusProjectWindow();
         Selection.activeObject = newRule;
-        changed = true;
     }
-
-    /// <summary>
-    /// 删除的索引
-    /// </summary>
-    private int m_RemoveIndex = -1;
 
     /// <summary>
     /// 添加按钮文本
@@ -50,196 +43,189 @@ public class AssetRuleInspector : Editor
 
     private AssetRule m_CurRule;
 
+    private int m_SelectedID = 0;
+
     public override void OnInspectorGUI()
     {
-        var t = (AssetRule)target;
-
-        m_CurRule = t;
-
-        EditorGUI.BeginChangeCheck();
-
-        
-
-        EditorGUILayout.BeginHorizontal();
-        
-        
-        EditorGUILayout.LabelField("Asset Rule Type");
-
-        t.filter.type = (AssetFilterType)EditorGUILayout.EnumPopup(t.filter.type);
-
-        EditorGUILayout.EndHorizontal();
-
-        if (EditorGUI.EndChangeCheck())
-        {
-            changed = true;
-        }
+        m_CurRule = (AssetRule)target;
 
         DrawAddBtn();
 
-        DrawList();
-
-        switch (t.filter.type)
+        string[] names = GetNames();
+        if (names != null && names.Length > 0)
         {
-            case AssetFilterType.kAny:
-                {
-                    DrawTextureSettings(t);
-                    DrawMeshSettings(t);
-                }
-                break;
-
-            case AssetFilterType.kMesh:
-                {
-                    DrawMeshSettings(t);
-                }
-                break;
-
-            case AssetFilterType.kTexture:
-                {
-                    DrawTextureSettings(t);
-                }
-                break;
+            GUILayout.Space(20);
+            m_SelectedID = EditorGUILayout.Popup("Sets", m_SelectedID, names);
         }
 
-        if (changed)
-        {
-            if (GUILayout.Button("Apply"))
-            {
-                Apply(t);
-            }
-        }
+        DrawSelect();
+
+        serializedObject.ApplyModifiedProperties();
     }
+
+    private ImportSetting_Base.FilterType m_AddFilterType;
 
     /// <summary>
     /// 绘制增加按钮
     /// </summary>
     private void DrawAddBtn()
     {
-        //计算添加按钮(x,y,width,height)
-        Rect btPosition = GUILayoutUtility.GetRect(m_IconToolbarPlus, GUI.skin.button);//得到宽度是整个区域的宽度
-        const float addButonWidth = 150f;
-        btPosition.x = btPosition.x + (btPosition.width - addButonWidth) / 2;
-        btPosition.width = addButonWidth;
+        EditorGUILayout.BeginHorizontal("box");
 
-        if (GUI.Button(btPosition, m_IconToolbarPlus))
+        m_AddFilterType = (ImportSetting_Base.FilterType)EditorGUILayout.EnumPopup(m_AddFilterType);
+
+        GUI.color = Color.green;
+
+        if (GUILayout.Button("+"))
         {
             AddItem();
         }
 
-        //if (npcList.arraySize <= 0)
-        //{
-        //    EditorGUILayout.HelpBox("this list has no item", MessageType.Warning);
-        //}
+        GUI.color = Color.white;
+
+        EditorGUILayout.EndHorizontal();
     }
 
-    /// <summary>
-    /// 向npcList添加一项
-    /// </summary>
-    private void AddItem()
+    private string[] GetNames()
     {
-        //增加
-        m_CurRule.sets.Add(new ImportSetting_Mesh());
-
-        //serializedObject.ApplyModifiedProperties();
-    }
-
-    private void DrawList()
-    {
-        if(m_RemoveIndex > -1)
+        List<string> ss = new List<string>();
+        if (m_CurRule.sets == null || m_CurRule.sets.Count < 1)
         {
-
+            return ss.ToArray();
         }
-
-        for (int i = 0; i < m_CurRule.sets.Count; i++)
+        foreach (ImportSetting_Base im in m_CurRule.sets)
         {
-            //Debug.LogWarning("1");
-            m_CurRule.sets[i].Draw();
+            ss.Add(im.m_Name);
         }
+        return ss.ToArray();
     }
 
-    private void Apply(AssetRule assetRule)
+    private string NewName(ImportSetting_Base.FilterType type)
     {
-        // get the directories that we do not want to apply changes to 
-        List<string> dontapply = new List<string>();
-        var assetrulepath = AssetDatabase.GetAssetPath(assetRule).Replace(assetRule.name + ".asset", "").TrimEnd('/');
-        string projPath = Application.dataPath;
-        projPath = projPath.Remove(projPath.Length - 6);
-
-        string[] directories = Directory.GetDirectories(Path.GetDirectoryName(projPath + AssetDatabase.GetAssetPath(assetRule)), "*", SearchOption.AllDirectories);
-        foreach (var directory in directories)
+        string pre = string.Empty;
+        switch (type)
         {
-            var d = directory.Replace(Application.dataPath, "Assets");
-            var appDirs = AssetDatabase.FindAssets("t:AssetRule", new[] { d });
-            if (appDirs.Length != 0)
+            case ImportSetting_Base.FilterType.MODEL:
+                {
+                    pre = "model";
+                }
+                break;
+            case ImportSetting_Base.FilterType.TEXTURE:
+                {
+                    pre = "texture";
+                }
+                break;
+        }
+        string ret = string.Format("{0}_{1}", pre, 0);
+        if (m_CurRule.sets != null && m_CurRule.sets.Count > 0)
+        {
+            for (int i = 0; i < 1000; i++)
             {
-                d = d.TrimEnd('/');
-                d = d.Replace('\\', '/');
-                dontapply.Add(d);
+                ret = string.Format("{0}_{1}", pre, i);
+                if (m_CurRule.sets.Exists((x) => x.m_Name.Equals(ret)) == false)
+                {
+                    break;
+                }
             }
         }
+        return ret;
+    }
 
-        List<string> finalAssetList = new List<string>();
-        foreach (var findAsset in AssetDatabase.FindAssets("", new[] { assetrulepath }))
+    private string CheckName(string name, int idx)
+    {
+        if (idx < 0 || idx >= m_CurRule.sets.Count)
         {
-            var asset = AssetDatabase.GUIDToAssetPath(findAsset);
-            if (!File.Exists(asset)) continue;
-            if (dontapply.Contains(Path.GetDirectoryName(asset))) continue;
-            if (!assetRule.IsMatch(AssetImporter.GetAtPath(asset))) continue;
-            if (finalAssetList.Contains(asset)) continue;
-            if (asset == AssetDatabase.GetAssetPath(assetRule)) continue;
-            finalAssetList.Add(asset);
+            return name;
+        }
+        
+        if(string.IsNullOrEmpty(name))
+        {
+            return NewName(m_CurRule.sets[idx].m_TypeFilter);
         }
 
-        int i = 1;
-        foreach (var asset in finalAssetList)
+        bool finish = false;
+        while(finish == false)
         {
-            AssetImporter.GetAtPath(asset).SaveAndReimport();
-            i++;
+            finish = true;
+            for (int i = 0; i < m_CurRule.sets.Count; i++)
+            {
+                if (i == idx)
+                {
+                    continue;
+                }
+
+                if (m_CurRule.sets[i].m_Name.Equals(name))
+                {
+                    finish = false;
+                    name = name + "_1";
+                    break;
+                }
+            }
+        }
+        
+        return name;
+    }
+
+    private void AddItem()
+    {
+        switch (m_AddFilterType)
+        {
+            case ImportSetting_Base.FilterType.MODEL:
+                {
+                    m_CurRule.sets.Add(ImportSetting_Model.CreateImportSetting_Model(NewName(m_AddFilterType)));
+                }
+                break;
+            case ImportSetting_Base.FilterType.TEXTURE:
+                {
+                    m_CurRule.sets.Add(ImportSetting_Texture.CreateImportSetting_Texture(NewName(m_AddFilterType)));
+                }
+                break;
+        }
+        m_SelectedID = m_CurRule.sets.Count - 1;
+        serializedObject.ApplyModifiedProperties();
+    }
+
+    private void DrawSelect()
+    {
+        if (m_CurRule == null
+            || m_CurRule.sets == null
+            || m_SelectedID < 0
+            || m_SelectedID >= m_CurRule.sets.Count)
+        {
+            return;
         }
 
-        changed = false;
-    }
-
-    private void DrawMeshSettings(AssetRule assetRule)
-    {
-        m_CurRule.settings.meshSettings.Draw();
-        //assetRule.settings.meshSettings.Draw();
-    }
-
-    private int[] sizes = new[] { 32, 64, 128, 256, 512, 1024, 2048, 4096 };
-    private string[] sizeStrings = new[] { "32", "64", "128", "256", "512", "1024", "2048", "4096" };
-    private static bool changed = false;
-
-    private void DrawTextureSettings(AssetRule assetRule)
-    {
-        GUILayout.Space(20);
-        GUILayout.Label(" TEXTURE SETTINGS ");
         GUILayout.Space(20);
 
-        GetValidPlatforms();
+        EditorGUILayout.BeginVertical("box");
 
-        // mip maps
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("Generate Mip Maps");
-        assetRule.settings.textureSettings.mipmapEnabled = EditorGUILayout.Toggle(assetRule.settings.textureSettings.mipmapEnabled);
-        EditorGUILayout.EndHorizontal();
+        GUI.color = Color.red;
 
-        //read write enabled
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("Read/Write Enabled");
-        assetRule.settings.textureSettings.readable = EditorGUILayout.Toggle(assetRule.settings.textureSettings.readable);
-        EditorGUILayout.EndHorizontal();
+        bool del = false;
 
-        // per platform settings
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("Max Texture Size");
-        assetRule.settings.textureSettings.maxTextureSize =
-        EditorGUILayout.IntPopup(assetRule.settings.textureSettings.maxTextureSize, sizeStrings, sizes);
-        EditorGUILayout.EndHorizontal();
-    }
+        if (GUILayout.Button("-"))
+        {
+            m_CurRule.sets.RemoveAt(m_SelectedID);
+            serializedObject.ApplyModifiedProperties();
+            if (m_SelectedID > 0)
+            {
+                m_SelectedID--;
+            }
+            del = true;
+        }
 
-    private void GetValidPlatforms()
-    {
+        GUI.color = Color.white;
 
+        EditorGUILayout.EndVertical();
+
+        if (del)
+        {
+            return;
+        }
+
+        m_CurRule.sets[m_SelectedID].Draw();
+
+        m_CurRule.sets[m_SelectedID].m_Name = CheckName(m_CurRule.sets[m_SelectedID].m_Name, m_SelectedID);
     }
 
     void OnEnable()
@@ -249,29 +235,9 @@ public class AssetRuleInspector : Editor
 
         m_IconToolbarMinus = new GUIContent(EditorGUIUtility.IconContent("Toolbar Minus"));
         m_IconToolbarMinus.tooltip = "Remove a Item in this list.";
-
-        changed = false;
-        Undo.RecordObject(target, "assetruleundo");
     }
 
     void OnDisable()
     {
-        if (changed)
-        {
-            EditorUtility.SetDirty(target);
-
-            if (EditorUtility.DisplayDialog("Unsaved Settings", "Unsaved AssetRule Changes", "Apply", "Revert"))
-            {
-                Apply((AssetRule)target);
-            }
-            else
-            {
-                Undo.PerformUndo();
-                //SerializedObject so = new SerializedObject(target);
-                //so.SetIsDifferentCacheDirty();
-                //so.Update();
-            }
-        }
-        changed = false;
     }
 }
