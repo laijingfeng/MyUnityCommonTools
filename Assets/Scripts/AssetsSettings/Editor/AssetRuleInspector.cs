@@ -31,18 +31,7 @@ public class AssetRuleInspector : Editor
         Selection.activeObject = newRule;
     }
 
-    /// <summary>
-    /// 添加按钮文本
-    /// </summary>
-    private GUIContent m_IconToolbarPlus;
-
-    /// <summary>
-    /// 移除按钮文本
-    /// </summary>
-    private GUIContent m_IconToolbarMinus;
-
     private AssetRule m_CurRule;
-
     private int m_SelectedID = 0;
 
     public override void OnInspectorGUI()
@@ -58,6 +47,8 @@ public class AssetRuleInspector : Editor
             m_SelectedID = EditorGUILayout.Popup("Sets", m_SelectedID, names);
         }
 
+        DrawDelete();
+
         DrawSelect();
 
         serializedObject.ApplyModifiedProperties();
@@ -70,7 +61,7 @@ public class AssetRuleInspector : Editor
     /// </summary>
     private void DrawAddBtn()
     {
-        EditorGUILayout.BeginHorizontal("box");
+        EditorGUILayout.BeginHorizontal();
 
         m_AddFilterType = (ImportSetting_Base.FilterType)EditorGUILayout.EnumPopup(m_AddFilterType);
 
@@ -185,6 +176,35 @@ public class AssetRuleInspector : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
+    private void DrawDelete()
+    {
+        if (m_CurRule == null
+            || m_CurRule.sets == null
+            || m_SelectedID < 0
+            || m_SelectedID >= m_CurRule.sets.Count)
+        {
+            return;
+        }
+
+        GUILayout.Space(10);
+
+        GUI.color = Color.red;
+
+        if (GUILayout.Button("-"))
+        {
+            m_CurRule.sets.RemoveAt(m_SelectedID);
+            serializedObject.ApplyModifiedProperties();
+            if (m_SelectedID > 0)
+            {
+                m_SelectedID--;
+            }
+        }
+
+        GUI.color = Color.white;
+
+        GUILayout.Space(10);
+    }
+
     private void DrawSelect()
     {
         if (m_CurRule == null
@@ -195,49 +215,10 @@ public class AssetRuleInspector : Editor
             return;
         }
 
-        GUILayout.Space(20);
-
         EditorGUILayout.BeginVertical("box");
-
-        GUI.color = Color.red;
-
-        bool del = false;
-
-        if (GUILayout.Button("-"))
-        {
-            m_CurRule.sets.RemoveAt(m_SelectedID);
-            serializedObject.ApplyModifiedProperties();
-            if (m_SelectedID > 0)
-            {
-                m_SelectedID--;
-            }
-            del = true;
-        }
-
-        GUI.color = Color.white;
-
+        m_CurRule.sets[m_SelectedID].Draw();
         EditorGUILayout.EndVertical();
 
-        if (del)
-        {
-            return;
-        }
-
-        m_CurRule.sets[m_SelectedID].Draw();
-
         m_CurRule.sets[m_SelectedID].m_Name = CheckName(m_CurRule.sets[m_SelectedID].m_Name, m_SelectedID);
-    }
-
-    void OnEnable()
-    {
-        m_IconToolbarPlus = new GUIContent(EditorGUIUtility.IconContent("Toolbar Plus"));
-        m_IconToolbarPlus.tooltip = "Add a item with this list.";
-
-        m_IconToolbarMinus = new GUIContent(EditorGUIUtility.IconContent("Toolbar Minus"));
-        m_IconToolbarMinus.tooltip = "Remove a Item in this list.";
-    }
-
-    void OnDisable()
-    {
     }
 }
