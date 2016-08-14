@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 using System.Collections.Generic;
 using UnityEditor;
 using System.IO;
@@ -283,3 +283,4 @@ public class ImportSetting_Base : ScriptableObject
         return true;
     }
 }
+#endif

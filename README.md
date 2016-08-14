@@ -35,3 +35,9 @@
 - 自定义的路径过滤
 
 ![图1](http://laijingfeng.github.io/MyUnityCommonTools/images/image00.png)
+
+### FixMask
+
+把Animation的Mask.Transform都勾上
+
+来自[Fix mask button in the animation's inspector](http://forum.unity3d.com/threads/fix-mask-button-in-the-animations-inspector.224017/)
