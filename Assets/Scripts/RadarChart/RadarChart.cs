@@ -46,11 +46,12 @@ public class RadarChart : Graphic
         float angle = 360f / m_Cnt * idx + m_AngleOffset;
         ret.x = 0.5f * m_Rect.width * Mathf.Cos(angle * Mathf.Deg2Rad);
         ret.y = 0.5f * m_Rect.height * Mathf.Sin(angle * Mathf.Deg2Rad);
-        ret += m_Rect.center;
         if (!full)
         {
             ret *= m_Percents[idx];
         }
+        ret += m_Rect.center;//最后加偏移量
+
         return ret;
     }
 
@@ -70,7 +71,7 @@ public class RadarChart : Graphic
         {
             vh.AddVert(GetPoint(i, false), color, Vector2.zero);
         }
-        vh.AddVert(Vector2.zero, color, Vector2.zero);
+        vh.AddVert(m_Rect.center, color, Vector2.zero);
 
         for (int i = 0; i < m_Cnt; i++)
         {
@@ -81,7 +82,7 @@ public class RadarChart : Graphic
         {
             for (int i = 0; i < m_Cnt; i++)
             {
-                vh.AddUIVertexQuad(GetLine(Vector2.zero, GetPoint(i, true), m_LineWidth, m_LineColor));
+                vh.AddUIVertexQuad(GetLine(m_Rect.center, GetPoint(i, true), m_LineWidth, m_LineColor));
             }
         }
 
