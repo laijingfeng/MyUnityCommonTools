@@ -21,6 +21,10 @@
 - GestureJudge 手势判断
 - FPS FPS和内存显示，完善中...
 
+### Collect
+
+收集整理中的
+
 ### AssetsSettings 
 
 资源导入配置，配置项细节继续完善中...
