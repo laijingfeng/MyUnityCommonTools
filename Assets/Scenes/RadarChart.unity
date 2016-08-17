@@ -335,6 +335,9 @@ MonoBehaviour:
   m_LineWidth: 0
   m_LineColor: {r: 0, g: 0, b: 0, a: 0}
   m_DrawLine: 0
+  m_BoundLineWidth: 1
+  m_BoundLineColor: {r: 0, g: 0, b: 0, a: 1}
+  m_DrawBoundLine: 1
   m_Percents:
   - 1
   - 0.541
@@ -400,6 +403,9 @@ MonoBehaviour:
   m_LineWidth: 1
   m_LineColor: {r: 1, g: 0, b: 0, a: 0.5019608}
   m_DrawLine: 1
+  m_BoundLineWidth: 1
+  m_BoundLineColor: {r: 0, g: 0, b: 0, a: 1}
+  m_DrawBoundLine: 0
   m_Percents:
   - 1
   - 1
