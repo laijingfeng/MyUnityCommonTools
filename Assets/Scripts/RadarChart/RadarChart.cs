@@ -19,7 +19,6 @@ public class RadarChart : Graphic
 
     private Rect m_Rect;
     private int m_Cnt;
-    private Vector2[] m_Points;
 
     public void Reset(float[] p)
     {
