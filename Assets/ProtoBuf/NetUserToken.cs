@@ -10,21 +10,23 @@ public class NetUserToken
 {
     //连接客户端的Socket
     public Socket socket;
+    
     //用于存放接收数据
     public byte[] buffer;
+
     //每次接受和发送数据的大小
     private const int size = 1024;
 
     //接收数据池
     private List<byte> receiveCache;
     private bool isReceiving;
+    
     //发送数据池
     private Queue<byte[]> sendCache;
     private bool isSending;
 
     //接收到消息之后的回调
     public Action<NetModel> receiveCallBack;
-
 
     public NetUserToken()
     {
