@@ -6,15 +6,28 @@ using System.Net.Sockets;
 
 public class NetServer
 {
-    //单例脚本
+    /// <summary>
+    /// 单例脚本
+    /// </summary>
     public static readonly NetServer Instance = new NetServer();
-    //定义tcp服务器
+    
+    /// <summary>
+    /// 定义tcp服务器
+    /// </summary>
     private Socket server;
+    
     private int maxClient = 10;
-    //定义端口
+    
+    /// <summary>
+    /// 定义端口
+    /// </summary>
     private int port = 35353;
-    //用户池
+    
+    /// <summary>
+    /// 用户池
+    /// </summary>
     private Stack<NetUserToken> pools;
+    
     private NetServer()
     {
         //初始化socket
@@ -38,7 +51,10 @@ public class NetServer
         server.BeginAccept(AsyncAccept, null);
     }
 
-    //回调函数， 有客户端连接的时候会自动调用此方法
+    /// <summary>
+    /// 回调函数， 有客户端连接的时候会自动调用此方法
+    /// </summary>
+    /// <param name="result"></param>
     private void AsyncAccept(IAsyncResult result)
     {
         try
