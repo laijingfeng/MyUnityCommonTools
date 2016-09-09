@@ -24,7 +24,10 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     public int m_Width = 100, m_Height = 100;
     public Vector2 m_Spacing = new Vector2(2, 2);
 
-    public float m_ViewFCnt = 3f;
+    /// <summary>
+    /// 一屏能看见的数量，若不是整数向上取整
+    /// </summary>
+    public int m_ViewCnt = 3;
 
     /// <summary>
     /// 第一个显示的idx，[0,m_TotalCnt)
@@ -43,25 +46,23 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 
     public bool m_Debug = false;
 
+    public int m_AddCnt = 1;
+
     #endregion 对外变量
 
-    /// <summary>
-    /// 暂时写死
-    /// </summary>
-    private int m_AddCnt = 2;
+    private int m_JudgeF;
+    private int m_JudgeL;
+    private int m_ListTotal;
 
-    /// <summary>
-    /// 一屏能看见的数量，若不是整数向上取整
-    /// </summary>
-    private int m_ViewCnt = 4;
+    private float m_RefreshJudgePos;
+
+    private int m_FIdx = 0, m_LIdx = 0;
+    private Vector3 m_PosJudgeF, m_PosJudgeL;
 
     private ScrollRect m_ScrollRect;
     private RectTransform m_ScrollRectSize;
 
     private RectTransform m_ContentRect;
-
-    private int m_FIdx = 0, m_LIdx = 0;
-    private Vector3 m_PosF, m_PosL;
 
     private Transform m_HandleTf;
 
@@ -121,6 +122,12 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     /// </summary>
     public void Init()
     {
+        if (m_AddCnt <= 0)
+        {
+            Debug.LogError("AddCnt at least one");
+            return;
+        }
+
         RectTransform PrefabRect = m_Prefab.GetComponent<RectTransform>();
         PrefabRect.pivot = Vector2.one * 0.5f;
         PrefabRect.anchorMin = Vector2.one * 0.5f;
@@ -128,7 +135,20 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 
         m_LastPos = 0f;
         m_Frame = 0;
-        m_ViewCnt = Mathf.CeilToInt(m_ViewFCnt);
+        
+        //TODO:列表数量大于总量
+        m_ListTotal = m_ViewCnt + 2 * m_AddCnt;
+        m_JudgeF = m_AddCnt - 1;
+        m_JudgeL = m_ListTotal - m_AddCnt;
+
+        if (m_Dir == Dir.Horizontal)
+        {
+            m_RefreshJudgePos = 0.5f * (m_ViewCnt * (m_Width + m_Spacing.x));
+        }
+        else
+        {
+            m_RefreshJudgePos = 0.5f * (m_ViewCnt * (m_Height + m_Spacing.y));
+        }
 
         m_Inited = true;
 
@@ -206,70 +226,57 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         Vector3 firstPos = Vector3.zero;
         if (m_Dir == Dir.Horizontal)
         {
-            firstPos.x = -Mathf.Floor(0.5f * (m_ViewCnt + m_AddCnt)) * (m_Width + m_Spacing.x);
+            firstPos.x = -Mathf.Floor(0.5f * m_ListTotal) * (m_Width + m_Spacing.x);
         }
         else
         {
-            firstPos.y = Mathf.Floor(0.5f * (m_ViewCnt + m_AddCnt)) * (m_Height + m_Spacing.y);
+            firstPos.y = Mathf.Floor(0.5f * m_ListTotal) * (m_Height + m_Spacing.y);
         }
 
         if (m_Center)
         {
             m_ContentRect.localPosition = Vector3.zero;
-            m_FIdx = GetIdx(m_StartIdx + 1 - (m_ViewCnt + m_AddCnt) / 2, false);
+            m_FIdx = GetIdx(m_StartIdx + 1 - m_ListTotal / 2, false);
         }
         else
         {
-            if (m_Loop || m_StartIdx * 2 >= m_AddCnt)
+            //起点在列表的idx
+            int startPos = 0;
+            if (m_Loop || m_StartIdx >= m_AddCnt)
             {
-                m_FIdx = GetIdx(m_StartIdx, false);
+                startPos = m_AddCnt;
             }
             else
             {
-                m_FIdx = GetIdx(m_StartIdx + 1, false);
+                startPos = m_StartIdx;
             }
+            m_FIdx = GetIdx(m_StartIdx + 1 - startPos, false);
 
             if (m_Dir == Dir.Horizontal)
             {
-                int half = (m_ViewCnt + m_AddCnt) / 2;
-                if (m_FIdx != m_StartIdx)
+                float halfLen = 0.5f * (m_ViewCnt * (m_Width + m_Spacing.x) - m_Spacing.x);
+                float halfOffset = (m_ListTotal / 2 - startPos) * (m_Width + m_Spacing.x) - m_Spacing.x;
+                if (m_ListTotal % 2 == 0)
                 {
-                    half--;
+                    halfOffset -= 0.5f * m_Width;
                 }
 
-                float x = half * (m_Width + m_Spacing.x);
-                if (m_ViewCnt % 2 != 0)
-                {
-                    x += 0.5f * m_Width;
-                }
-
-                m_ContentRect.localPosition = new Vector3(x - 0.5f * m_ScrollRectSize.sizeDelta.x, 0, 0);
+                m_ContentRect.localPosition = new Vector3(-(halfLen - halfOffset + 0.5f * m_Width), 0, 0);
             }
             else
             {
-                int half = (m_ViewCnt + m_AddCnt) / 2;
-                if (m_FIdx != m_StartIdx)
+                float halfLen = 0.5f * (m_ViewCnt * (m_Height + m_Spacing.y) - m_Spacing.y);
+                float halfOffset = (m_ListTotal / 2 - startPos) * (m_Height + m_Spacing.y) - m_Spacing.y;
+                if (m_ListTotal % 2 == 0)
                 {
-                    half--;
+                    halfOffset -= 0.5f * m_Height;
                 }
 
-                float x = half * (m_Width + m_Spacing.x);
-                if (m_ViewCnt % 2 != 0)
-                {
-                    x += 0.5f * m_Width;
-                }
-
-                float y = half * (m_Height + m_Spacing.y);
-                if (m_ViewCnt % 2 != 0)
-                {
-                    y += 0.5f * m_Height;
-                }
-
-                m_ContentRect.localPosition = new Vector3(0, 0.5f * m_ScrollRectSize.sizeDelta.y - y, 0);
+                m_ContentRect.localPosition = new Vector3(0, halfLen - halfOffset - 0.5f * m_Height, 0);
             }
         }
 
-        for (int i = 0; i < m_ViewCnt + m_AddCnt; i++)
+        for (int i = 0; i < m_ListTotal; i++)
         {
             GameObject go = CloneGo();
 
@@ -287,7 +294,7 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
             }
         }
 
-        m_LIdx = GetIdx(m_FIdx + m_ViewCnt + m_AddCnt, false);
+        m_LIdx = GetIdx(m_FIdx + m_ListTotal, false);
 
         ResetSize();
 
@@ -329,21 +336,23 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     {
         if (m_Dir == Dir.Horizontal)
         {
+            
             if (left)
             {
                 if (m_Loop == false && m_FIdx == 0)
                 {
                     return false;
                 }
-                return (m_PosF.x > -m_ScrollRectSize.sizeDelta.x * 0.5f);
+                return (m_PosJudgeF.x > -m_RefreshJudgePos);
             }
             else
             {
+                
                 if (m_Loop == false && m_LIdx == m_TotalCnt - 1)
                 {
                     return false;
                 }
-                return (m_PosL.x < m_ScrollRectSize.sizeDelta.x * 0.5f);
+                return (m_PosJudgeL.x < m_RefreshJudgePos);
             }
         }
         else
@@ -354,7 +363,7 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
                 {
                     return false;
                 }
-                return (m_PosF.y < m_ScrollRectSize.sizeDelta.y * 0.5f);
+                return (m_PosJudgeF.y < m_RefreshJudgePos);
             }
             else
             {
@@ -362,7 +371,7 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
                 {
                     return false;
                 }
-                return (m_PosL.y > -m_ScrollRectSize.sizeDelta.y * 0.5f);
+                return (m_PosJudgeL.y > -m_RefreshJudgePos);
             }
         }
     }
@@ -385,12 +394,12 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
             return;
         }
 
-        m_PosF = GetPos(m_Child[0]);
-        m_PosL = GetPos(m_Child[m_ViewCnt + m_AddCnt - 1]);
+        m_PosJudgeF = GetPos(m_Child[m_JudgeF]);
+        m_PosJudgeL = GetPos(m_Child[m_JudgeL]);
 
         if (NeedRefresh(true))
         {
-            m_HandleTf = m_Child[m_ViewCnt + m_AddCnt - 1];
+            m_HandleTf = m_Child[m_ListTotal - 1];
 
             if (m_Dir == Dir.Horizontal)
             {
@@ -400,7 +409,7 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
             {
                 m_HandleTf.localPosition = m_Child[0].localPosition + (new Vector3(0, m_Height + m_Spacing.y, 0));
             }
-            m_Child.RemoveAt(m_ViewCnt + m_AddCnt - 1);
+            m_Child.RemoveAt(m_ListTotal - 1);
             m_Child.Insert(0, m_HandleTf);
 
             m_FIdx = GetIdx(m_FIdx, false);
@@ -414,11 +423,11 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
             m_HandleTf = m_Child[0];
             if (m_Dir == Dir.Horizontal)
             {
-                m_HandleTf.localPosition = m_Child[m_ViewCnt + m_AddCnt - 1].localPosition + (new Vector3(m_Width + m_Spacing.x, 0, 0));
+                m_HandleTf.localPosition = m_Child[m_ListTotal - 1].localPosition + (new Vector3(m_Width + m_Spacing.x, 0, 0));
             }
             else
             {
-                m_HandleTf.localPosition = m_Child[m_ViewCnt + m_AddCnt - 1].localPosition - (new Vector3(0, m_Height + m_Spacing.y, 0));
+                m_HandleTf.localPosition = m_Child[m_ListTotal - 1].localPosition - (new Vector3(0, m_Height + m_Spacing.y, 0));
             }
             m_Child.RemoveAt(0);
             m_Child.Add(m_HandleTf);
@@ -458,14 +467,14 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         m_OldDelta = m_ContentRect.sizeDelta;
         if (m_Dir == Dir.Horizontal)
         {
-            m_BoundPos = Mathf.Max(Mathf.Abs(m_Child[0].localPosition.x), Mathf.Abs(m_Child[m_ViewCnt + m_AddCnt - 1].localPosition.x));
+            m_BoundPos = Mathf.Max(Mathf.Abs(m_Child[0].localPosition.x), Mathf.Abs(m_Child[m_ListTotal - 1].localPosition.x));
             m_BoundPos = (m_BoundPos + m_Width * 0.5f) * 2;
             m_OldDelta.x = m_BoundPos;
             m_OldDelta.y = m_Height;
         }
         else
         {
-            m_BoundPos = Mathf.Max(Mathf.Abs(m_Child[0].localPosition.y), Mathf.Abs(m_Child[m_ViewCnt + m_AddCnt - 1].localPosition.y));
+            m_BoundPos = Mathf.Max(Mathf.Abs(m_Child[0].localPosition.y), Mathf.Abs(m_Child[m_ListTotal - 1].localPosition.y));
             m_BoundPos = (m_BoundPos + m_Height * 0.5f) * 2;
             m_OldDelta.y = m_BoundPos;
             m_OldDelta.x = m_Width;
@@ -486,15 +495,31 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
             yield break;
         }
 
-        m_LastPos = m_ContentRect.localPosition.y;
-        yield return new WaitForEndOfFrame();
-        m_NowPos = m_ContentRect.localPosition.y;
-
-        while (Mathf.Abs(m_NowPos - m_LastPos) > 0.1f)
+        if (m_Dir == Dir.Horizontal)
         {
-            m_LastPos = m_NowPos;
+            m_LastPos = m_ContentRect.localPosition.x;
+            yield return new WaitForEndOfFrame();
+            m_NowPos = m_ContentRect.localPosition.x;
+
+            while (Mathf.Abs(m_NowPos - m_LastPos) > 0.1f)
+            {
+                m_LastPos = m_NowPos;
+                yield return new WaitForEndOfFrame();
+                m_NowPos = m_ContentRect.localPosition.x;
+            }
+        }
+        else
+        {
+            m_LastPos = m_ContentRect.localPosition.y;
             yield return new WaitForEndOfFrame();
             m_NowPos = m_ContentRect.localPosition.y;
+
+            while (Mathf.Abs(m_NowPos - m_LastPos) > 0.1f)
+            {
+                m_LastPos = m_NowPos;
+                yield return new WaitForEndOfFrame();
+                m_NowPos = m_ContentRect.localPosition.y;
+            }
         }
 
         m_DoCenterDelta = 0f;
@@ -511,7 +536,7 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         Transform centerTf = null;
         int centerIdx = 0;
 
-        for (int i = 0; i < m_AddCnt + m_ViewCnt; i++)
+        for (int i = 0; i < m_ListTotal; i++)
         {
             ve = GetPos(m_Child[i]);
             if (m_Dir == Dir.Horizontal)

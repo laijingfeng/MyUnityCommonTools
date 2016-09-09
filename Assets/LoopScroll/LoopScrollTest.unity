@@ -377,19 +377,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40fdbdaf1bcb3ef488dcd66f30c137df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Content: {fileID: 682872797}
   m_Prefab: {fileID: 1267157967}
   m_Width: 200
   m_Height: 50
   m_Spacing: {x: 2, y: 2}
-  m_ViewFCnt: 3
+  m_ViewCnt: 3
   m_StartIdx: 0
   m_Dir: 1
   m_Center: 1
   m_Loop: 1
   m_TotalCnt: 100
-  m_RefreshRate: 2
+  m_RefreshRate: 1
   m_Debug: 1
+  m_AddCnt: 1
 --- !u!1 &1071400167
 GameObject:
   m_ObjectHideFlags: 0
