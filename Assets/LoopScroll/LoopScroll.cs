@@ -19,7 +19,6 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     public OnFillItem m_OnFillItem;
     public OnFillItem m_OnCenterItem;
 
-    public Transform m_Content;
     public GameObject m_Prefab;
 
     public int m_Width = 100, m_Height = 100;
@@ -73,12 +72,23 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 
     void Awake()
     {
-        m_ContentRect = m_Content.GetComponent<RectTransform>();
+        m_ScrollRect = this.transform.GetComponent<ScrollRect>();
+        if (m_ScrollRect == null)
+        {
+            Debug.LogError("need ScrollRect");
+            return;
+        }
+
+        m_ContentRect = m_ScrollRect.content;
+        if (m_ContentRect == null)
+        {
+            Debug.LogError("ScrollRect.Content is null");
+            return;
+        }
+        
         m_ContentRect.pivot = Vector2.one * 0.5f;
         m_ContentRect.anchorMin = Vector2.one * 0.5f;
         m_ContentRect.anchorMax = Vector2.one * 0.5f;
-
-        m_ScrollRect = this.transform.GetComponent<ScrollRect>();
 
         m_ScrollRectSize = m_ScrollRect.GetComponent<RectTransform>();
         m_ScrollRectSize.pivot = Vector2.one * 0.5f;
@@ -132,12 +142,12 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     {
         if (m_Center)
         {
-            iTween.Stop(m_Content.gameObject);
+            iTween.Stop(m_ContentRect.gameObject);
             this.StopCoroutine("DoCenter");
         }
 
         m_ScrollRect.onValueChanged.RemoveListener(OnScrollChange);
-        Util.DestroyAllChildren(m_Content);
+        Util.DestroyAllChildren(m_ContentRect);
         m_Child.Clear();
     }
 
@@ -147,7 +157,7 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     {
         if (m_Center)
         {
-            iTween.Stop(m_Content.gameObject);
+            iTween.Stop(m_ContentRect.gameObject);
             this.StopCoroutine("DoCenter");
         }
     }
@@ -156,7 +166,7 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     {
         if (m_Center)
         {
-            iTween.Stop(m_Content.gameObject);
+            iTween.Stop(m_ContentRect.gameObject);
             this.StopCoroutine("DoCenter");
             this.StartCoroutine("DoCenter");
         }
@@ -187,7 +197,6 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
             m_ScrollRect.horizontal = false;
             m_ScrollRect.vertical = true;
         }
-        m_ScrollRect.content = m_ContentRect;
 
         if (m_Center)
         {
@@ -288,7 +297,7 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     private GameObject CloneGo()
     {
         GameObject go = GameObject.Instantiate(m_Prefab);
-        go.transform.SetParent(m_Content);
+        go.transform.SetParent(m_ContentRect);
         go.SetActive(true);
         go.transform.localScale = Vector3.one;
         go.transform.localRotation = Quaternion.Euler(Vector3.zero);
@@ -477,15 +486,15 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
             yield break;
         }
 
-        m_LastPos = m_Content.localPosition.y;
+        m_LastPos = m_ContentRect.localPosition.y;
         yield return new WaitForEndOfFrame();
-        m_NowPos = m_Content.localPosition.y;
+        m_NowPos = m_ContentRect.localPosition.y;
 
         while (Mathf.Abs(m_NowPos - m_LastPos) > 0.1f)
         {
             m_LastPos = m_NowPos;
             yield return new WaitForEndOfFrame();
-            m_NowPos = m_Content.localPosition.y;
+            m_NowPos = m_ContentRect.localPosition.y;
         }
 
         m_DoCenterDelta = 0f;
@@ -543,7 +552,7 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         }
 
         m_DoCenterSpeed = 5f + 5 * (Mathf.Abs(m_DoCenterDelta) / (0.4f * m_Height));
-        iTween.MoveTo(m_Content.gameObject, iTween.Hash("position", ve,
+        iTween.MoveTo(m_ContentRect.gameObject, iTween.Hash("position", ve,
             "isLocal", true, "speed", m_DoCenterSpeed, "easetype", iTween.EaseType.easeOutQuad));
     }
 }
