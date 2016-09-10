@@ -19,7 +19,6 @@
 - Drawer 绘制辅助图工具，结构参考iTween
 - DrawGizmos 绘制一个结点的位置信息，可用来快速显示大量结点
 - GestureJudge 手势判断
-- FPS FPS和内存显示，完善中...
 
 ### Collect
 
@@ -55,3 +54,9 @@
 ### MiniMap
 
 来自Unity中国官方论坛
+
+### EasyFramerateCount
+
+帧率信息
+
+EasyFramerateCounter参考EasyFramerateCount(Alterego Games)
