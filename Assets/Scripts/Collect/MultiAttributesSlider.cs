@@ -7,12 +7,12 @@ using UnityEngine.UI;
 [Serializable]
 class Attribute
 {
-    public string name;
-    public Sprite image;
-    public Color color;
-    public int min;
-    public int max;
-    public int value;
+    public string name = "";
+    public Sprite image = null;
+    public Color color = Color.white;
+    public int min = 0;
+    public int max = 0;
+    public int value = 0;
 
     [NonSerialized]
     public ValueSlider valueSlider;
