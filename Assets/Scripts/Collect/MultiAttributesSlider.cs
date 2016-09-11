@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 // 属性
 [Serializable]
-class Attribute
+class AAttribute
 {
     public string name = "";
     public Sprite image = null;
@@ -22,9 +22,9 @@ class Attribute
 class ValueSlider : Selectable
 {
     MultiAttributesSlider _multiAttributesSlider;
-    Attribute _attribute;
+    AAttribute _attribute;
 
-    public void Init(MultiAttributesSlider multiAttributesSlider, Attribute attribute)
+    public void Init(MultiAttributesSlider multiAttributesSlider, AAttribute attribute)
     {
         _multiAttributesSlider = multiAttributesSlider;
         _attribute = attribute;
@@ -51,7 +51,7 @@ class MultiAttributesSlider : MonoBehaviour
 
     // 属性数组
     [SerializeField]
-    Attribute[] _attributes;
+    AAttribute[] _attributes;
 
     //剩余点数
     int _restValue;
@@ -60,14 +60,14 @@ class MultiAttributesSlider : MonoBehaviour
     float pixelsPerPoint;
 
     // 保存滑块按下时的信息
-    Attribute _currentAttribute = null;
+    AAttribute _currentAttribute = null;
     PointerEventData _eventData;
     int _beginValue;
     int _beginRestValue;
 
 
     // 当鼠标按下任何一个滑块时调用
-    public void BeginSlide(Attribute currentAttribute, PointerEventData eventData)
+    public void BeginSlide(AAttribute currentAttribute, PointerEventData eventData)
     {
         _currentAttribute = currentAttribute;
         _eventData = eventData;
