@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 public class AnimationCurveHelper : MonoBehaviour
 {
     public AnimationClip m_AnimClip;
@@ -19,19 +19,13 @@ public class AnimationCurveHelper : MonoBehaviour
     {
     }
 
-    void Update()
-    {
-        UpdateExtra();
-    }
-
     #region DoExtra
 
-    private string[] _CurveNames;
-    private int _SelectedCurveIndex = 1;
+    public string[] _CurveNames;
+    public int _SelectedCurveIndex = 0;
+    public EditorCurveBinding[] _Curves;
 
-    private EditorCurveBinding[] _Curves;
-
-    private void UpdateExtra()
+    public void UpdateExtra()
     {
         if (m_ExtraAnimClip == null)
         {
@@ -39,7 +33,6 @@ public class AnimationCurveHelper : MonoBehaviour
         }
 
         _Curves = AnimationUtility.GetCurveBindings(m_ExtraAnimClip);
-        _SelectedCurveIndex = 0;
         int curveCount = _Curves.Length;
         _CurveNames = new string[curveCount];
         for (int i = 0; i < curveCount; ++i)
@@ -53,37 +46,49 @@ public class AnimationCurveHelper : MonoBehaviour
                 _CurveNames[i] = _Curves[i].path + "/" + _Curves[i].propertyName;
             }
         }
-
-        AnimationUtility.GetEditorCurve(m_ExtraAnimClip, _Curves[_SelectedCurveIndex]);
-
-        //AnimationCurveExtractor aceWindow = AnimationCurveExtractor.GetWindow(typeof(AnimationCurveExtractor)) as AnimationCurveExtractor;
-        //aceWindow.Init(_PopupTargetAnimationCurveProperty);
     }
 
     #endregion DoExtra
 
     #region GetCurve
 
-    private AnimationCurve GetCurve()
+    private AnimationCurve GetCurve(bool handle = false)
     {
+        if (handle)
+        {
+            float minVal = 100f;
+            for (int i = 0, imax = m_AnimCurve.length; i < imax; i++)
+            {
+                if (m_AnimCurve.keys[i].value < minVal)
+                {
+                    minVal = m_AnimCurve.keys[i].value;
+                }
+            }
+
+            string str = string.Empty;
+
+            for (int i = 0, imax = m_AnimCurve.length; i < imax; i++)
+            {
+                str += string.Format("{0},{1}", m_AnimCurve.keys[i].time, m_AnimCurve.keys[i].value - minVal);
+                if (imax - 1 != i)
+                {
+                    str += ";";
+                }
+            }
+
+            return CreateCurveByData(str);
+        }
         return m_AnimCurve;
     }
 
-    private AnimationCurve CreateCurve()
+    public AnimationCurve CreateCurveByData(string data)
     {
-        if (m_LoadDataFromCurve)
-        {
-            return GetCurve();
-        }
-
-        string[] datas = Util.StringToTArray<string>(m_CurveData, ';');
+        string[] datas = Util.StringToTArray<string>(data, ';');
         if (datas == null)
         {
             Debug.LogError("error");
             return null;
         }
-
-        Debug.Log("cnt=" + datas.Length);
 
         Keyframe[] ks = new Keyframe[datas.Length];
 
@@ -98,32 +103,23 @@ public class AnimationCurveHelper : MonoBehaviour
             ks[i] = new Keyframe(dd[0], dd[1]);
         }
 
-        //for (int i = 0, imax = datas.Length; i < imax; i++)
-        //{
-        //    if (i == 0)
-        //    {
-        //        ks[i].inTangent = 0f;
-        //    }
-        //    else
-        //    {
-        //        ks[i].inTangent = 45f;
-        //    }
-
-        //    if (i == imax - 1)
-        //    {
-        //        ks[i].outTangent = 0f;
-        //    }
-        //    else
-        //    {
-        //        ks[i].inTangent = 45f;
-        //    }
-        //}
-
         AnimationCurve curve = new AnimationCurve(ks);
         curve.preWrapMode = WrapMode.Loop;
         curve.postWrapMode = WrapMode.Loop;
 
         return curve;
+    }
+
+    public AnimationCurve CreateCurve(bool handle = false)
+    {
+        if (m_LoadDataFromCurve)
+        {
+            return GetCurve(handle);
+        }
+        else
+        {
+            return CreateCurveByData(m_CurveData);
+        }
     }
 
     #endregion GetCurve
@@ -171,7 +167,7 @@ public class AnimationCurveHelper : MonoBehaviour
                     if (curinfo != null)
                     {
                         curinfo.FindPropertyRelative("name").stringValue = m_CurveName;
-                        curinfo.FindPropertyRelative("curve").animationCurveValue = CreateCurve();
+                        curinfo.FindPropertyRelative("curve").animationCurveValue = CreateCurve(true);
                     }
                 }
                 break;

@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 23fe8a4105713074a9f570e5f2eb5e9d
-timeCreated: 1473699218
+timeCreated: 1473705555
 licenseType: Pro
 ModelImporter:
   serializedVersion: 19
@@ -163,52 +163,62 @@ ModelImporter:
           serializedVersion: 2
           curve:
           - time: 0
-            value: 0.018572826
-            inSlope: -4.639692
-            outSlope: -4.639692
+            value: 0.2450673
+            inSlope: 0
+            outSlope: 0
             tangentMode: 0
-          - time: 0.03
-            value: -0.13391985
-            inSlope: -4.02041
-            outSlope: -4.02041
+          - time: 0.03333334
+            value: 0.08067745
+            inSlope: 0
+            outSlope: 0
             tangentMode: 0
-          - time: 0.06
-            value: -0.24340177
-            inSlope: -1.5432819
-            outSlope: -1.5432819
+          - time: 0.06666667
+            value: 0.001089275
+            inSlope: 0
+            outSlope: 0
             tangentMode: 0
           - time: 0.1
-            value: -0.23362659
-            inSlope: 0.9338461
-            outSlope: 0.9338461
+            value: 0.07403857
+            inSlope: 0
+            outSlope: 0
             tangentMode: 0
-          - time: 0.13
-            value: -0.18475074
-            inSlope: -2.7818458
-            outSlope: -2.7818458
+          - time: 0.1333333
+            value: 0.1630289
+            inSlope: 0
+            outSlope: 0
             tangentMode: 0
-          - time: 0.16
-            value: -0.42074364
-            inSlope: -3.6075552
-            outSlope: -3.6075552
+          - time: 0.1666667
+            value: 0.03637132
+            inSlope: 0
+            outSlope: 0
             tangentMode: 0
           - time: 0.2
-            value: -0.42465752
-            inSlope: -0.09829055
-            outSlope: -0.09829055
+            value: 0
+            inSlope: 0
+            outSlope: 0
             tangentMode: 0
-          - time: 0.26
-            value: -0.4324853
-            inSlope: -0.09829055
-            outSlope: -0.09829055
+          - time: 0.2333333
+            value: 0.001953661
+            inSlope: 0
+            outSlope: 0
             tangentMode: 0
-          - time: 0.33
-            value: -0.43639922
-            inSlope: -0.09829055
-            outSlope: -0.09829055
+          - time: 0.2666667
+            value: 0.004062146
+            inSlope: 0
+            outSlope: 0
             tangentMode: 0
-          preInfinity: 2
-          postInfinity: 2
+          - time: 0.3
+            value: 0.00627245
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+          - time: 0.3333333
+            value: 0.008532166
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+          preInfinity: 1
+          postInfinity: 1
           rotationOrder: 0
       events: []
       transformMask:

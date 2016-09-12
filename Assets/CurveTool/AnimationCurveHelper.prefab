@@ -39,16 +39,72 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc25df29e7dd498458444887c555a977, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AnimClip: {fileID: 0}
-  m_CurveName: 
+  m_AnimClip: {fileID: 7400000, guid: 23fe8a4105713074a9f570e5f2eb5e9d, type: 3}
+  m_CurveName: test
   m_CurveData: 
+  m_ExtraAnimClip: {fileID: 7400000, guid: 23fe8a4105713074a9f570e5f2eb5e9d, type: 3}
   m_AnimCurve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - time: 0
+      value: 0.0640579
+      inSlope: -1.437979
+      outSlope: -1.437979
+      tangentMode: 0
+    - time: 0.033333335
+      value: 0.016125266
+      inSlope: -1.4297407
+      outSlope: -1.4297407
+      tangentMode: 0
+    - time: 0.06666667
+      value: -0.031258147
+      inSlope: -0.77626747
+      outSlope: -0.77626747
+      tangentMode: 0
+    - time: 0.10000001
+      value: -0.0356259
+      inSlope: -0.03289421
+      outSlope: -0.03289421
+      tangentMode: 0
+    - time: 0.13333334
+      value: -0.033451095
+      inSlope: -0.027433913
+      outSlope: -0.027433913
+      tangentMode: 0
+    - time: 0.16666667
+      value: -0.03745483
+      inSlope: -1.0624175
+      outSlope: -1.0624175
+      tangentMode: 0
+    - time: 0.20000002
+      value: -0.10427896
+      inSlope: -1.0830009
+      outSlope: -1.0830009
+      tangentMode: 0
+    - time: 0.23333335
+      value: -0.10965492
+      inSlope: -0.16049156
+      outSlope: -0.16049156
+      tangentMode: 0
+    - time: 0.26666668
+      value: -0.114978395
+      inSlope: -0.15912598
+      outSlope: -0.15912598
+      tangentMode: 0
+    - time: 0.3
+      value: -0.120263316
+      inSlope: -0.15831104
+      outSlope: -0.15831104
+      tangentMode: 0
+    - time: 0.33333334
+      value: -0.12553246
+      inSlope: -0.15807444
+      outSlope: -0.15807444
+      tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_LoadDataFromCurve: 0
+  m_LoadDataFromCurve: 1
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
