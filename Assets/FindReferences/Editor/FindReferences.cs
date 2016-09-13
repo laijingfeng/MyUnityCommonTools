@@ -9,7 +9,7 @@ using System;
 
 public class FindReferences : EditorWindow
 {
-    [MenuItem("Windows/Find Setting", false)]
+    [MenuItem("Window/Find Setting", false)]
     private static void ShowWindow()
     {
         EditorWindow.GetWindow(typeof(FindReferences));
