@@ -17,7 +17,7 @@ public class AnimationCurveHelperEditor : Editor
         info.m_LoadDataFromCurve = EditorGUILayout.Toggle(new GUIContent("LoadDataFromCurve"), info.m_LoadDataFromCurve);
         if (info.m_LoadDataFromCurve)
         {
-            info.m_ExtraAnimClip = (AnimationClip)EditorGUILayout.ObjectField(new GUIContent("DataAnimationClip"), info.m_ExtraAnimClip, typeof(AnimationClip));
+            info.m_ExtraAnimClip = (AnimationClip)EditorGUILayout.ObjectField(new GUIContent("DataAnimationClip"), info.m_ExtraAnimClip, typeof(AnimationClip), true);
             if (info.m_ExtraAnimClip != null)
             {
                 info.UpdateExtra();
