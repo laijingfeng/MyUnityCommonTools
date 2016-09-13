@@ -11,7 +11,7 @@ public class AnimationCurveHelperEditor : Editor
     {
         info = target as AnimationCurveHelper;
 
-        info.m_AnimClip = (AnimationClip)EditorGUILayout.ObjectField("TarAnimationClip", info.m_AnimClip, typeof(AnimationClip));
+        info.m_AnimClip = (AnimationClip)EditorGUILayout.ObjectField(new GUIContent("TarAnimationClip"), info.m_AnimClip, typeof(AnimationClip), true);
         info.m_CurveName = EditorGUILayout.TextField(new GUIContent("CurveName"), info.m_CurveName);
 
         info.m_LoadDataFromCurve = EditorGUILayout.Toggle(new GUIContent("LoadDataFromCurve"), info.m_LoadDataFromCurve);
