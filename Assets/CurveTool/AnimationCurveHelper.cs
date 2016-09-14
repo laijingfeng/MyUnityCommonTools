@@ -1,11 +1,8 @@
 ﻿#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
-using System.Collections;
 using System.Collections.Generic;
-using System;
 
-//[ExecuteInEditMode]
 public class AnimationCurveHelper : MonoBehaviour
 {
     public AnimationClip m_AnimClip;
@@ -24,6 +21,8 @@ public class AnimationCurveHelper : MonoBehaviour
     public string[] _CurveNames;
     public int _SelectedCurveIndex = 0;
     public EditorCurveBinding[] _Curves;
+    private string m_LastPath = "";
+    private string m_CurPath = "";
 
     public void UpdateExtra()
     {
@@ -31,6 +30,13 @@ public class AnimationCurveHelper : MonoBehaviour
         {
             return;
         }
+
+        m_CurPath = AssetDatabase.GetAssetPath(m_ExtraAnimClip);
+        if (m_CurPath.Equals(m_LastPath))
+        {
+            return;
+        }
+        m_LastPath = m_CurPath;
 
         _Curves = AnimationUtility.GetCurveBindings(m_ExtraAnimClip);
         int curveCount = _Curves.Length;
@@ -46,61 +52,105 @@ public class AnimationCurveHelper : MonoBehaviour
                 _CurveNames[i] = _Curves[i].path + "/" + _Curves[i].propertyName;
             }
         }
+
+        for (int i = 0; i < _CurveNames.Length; i++)
+        {
+            if (_CurveNames[i].Equals(m_CurveName))
+            {
+                _SelectedCurveIndex = i;
+                break;
+            }
+        }
     }
 
     #endregion DoExtra
 
     #region GetCurve
 
+    public class KeyData
+    {
+        public float time;
+        public float val;
+        public float inTangent;
+        public float outTangent;
+        public int tangentMode;
+    }
+
     private AnimationCurve GetCurve(bool handle = false)
     {
         if (handle)
         {
-            float minVal = 100f;
-            for (int i = 0, imax = m_AnimCurve.length; i < imax; i++)
+            float s = 1.0f;
+
+            if (m_AnimClip != null)
             {
-                if (m_AnimCurve.keys[i].value < minVal)
+                s = 1.0f / m_AnimClip.length;
+            }
+
+            float left = m_AnimCurve.keys[0].time;
+            float right = m_AnimCurve.keys[m_AnimCurve.length - 1].time;
+            float minVal = 100f, min_tmp;
+            for (float ii = left; ii <= right; ii += 0.001f)
+            {
+                min_tmp = m_AnimCurve.Evaluate(ii);
+                if (min_tmp < minVal)
                 {
-                    minVal = m_AnimCurve.keys[i].value;
+                    minVal = min_tmp;
                 }
             }
 
-            string str = string.Empty;
-
+            List<KeyData> data = new List<KeyData>();
             for (int i = 0, imax = m_AnimCurve.length; i < imax; i++)
             {
-                str += string.Format("{0},{1}", m_AnimCurve.keys[i].time, m_AnimCurve.keys[i].value - minVal);
-                if (imax - 1 != i)
+                data.Add(new KeyData()
                 {
-                    str += ";";
-                }
+                    time = m_AnimCurve.keys[i].time * s,
+                    val = m_AnimCurve.keys[i].value - minVal,
+                    inTangent = m_AnimCurve.keys[i].inTangent / s,
+                    outTangent = m_AnimCurve.keys[i].outTangent / s,
+                    tangentMode = m_AnimCurve.keys[i].tangentMode,
+                });
             }
 
-            return CreateCurveByData(str);
+            if (Mathf.Approximately(data[0].time, 0f) == false)
+            {
+                data.Insert(0, new KeyData()
+                {
+                    time = 0f,
+                    val = 0.5f * (data[0].val + data[data.Count - 1].val),
+                });
+            }
+
+            if (Mathf.Approximately(data[data.Count - 1].time, 1f) == false)
+            {
+                data.Add(new KeyData()
+                {
+                    time = 1f,
+                    val = 0.5f * (data[0].val + data[data.Count - 1].val),
+                });
+            }
+
+            return CreateCurveByData(data);
         }
         return m_AnimCurve;
     }
 
-    public AnimationCurve CreateCurveByData(string data)
+    public AnimationCurve CreateCurveByData(List<KeyData> data)
     {
-        string[] datas = Util.StringToTArray<string>(data, ';');
-        if (datas == null)
+        if (data == null)
         {
             Debug.LogError("error");
             return null;
         }
 
-        Keyframe[] ks = new Keyframe[datas.Length];
+        Keyframe[] ks = new Keyframe[data.Count];
 
-        for (int i = 0, imax = datas.Length; i < imax; i++)
+        for (int i = 0, imax = data.Count; i < imax; i++)
         {
-            float[] dd = Util.StringToTArray<float>(datas[i], ',');
-            if (dd == null || dd.Length != 2)
-            {
-                Debug.LogError("error");
-                return null;
-            }
-            ks[i] = new Keyframe(dd[0], dd[1]);
+            ks[i] = new Keyframe(data[i].time, data[i].val);
+            ks[i].tangentMode = data[i].tangentMode;
+            ks[i].inTangent = data[i].inTangent;
+            ks[i].outTangent = data[i].outTangent;
         }
 
         AnimationCurve curve = new AnimationCurve(ks);
@@ -118,11 +168,17 @@ public class AnimationCurveHelper : MonoBehaviour
         }
         else
         {
-            return CreateCurveByData(m_CurveData);
+            return CreateCurveByData(JsonUtility.FromJson<List<KeyData>>(m_CurveData));
         }
     }
 
     #endregion GetCurve
+
+    [ContextMenu("==Refresh==")]
+    private void DoRefresh()
+    {
+        m_LastPath = string.Empty;
+    }
 
     [ContextMenu("==Work==")]
     private void Work()
@@ -155,6 +211,8 @@ public class AnimationCurveHelper : MonoBehaviour
 
         SerializedObject so = new SerializedObject(mi);
         SerializedProperty clips = so.FindProperty("m_ClipAnimations");
+
+        SerializedProperty curinfo;
         for (int i = 0; i < clips.arraySize; i++)
         {
             if (clips.GetArrayElementAtIndex(i).FindPropertyRelative("name").stringValue.Equals(m_AnimClip.name))
@@ -162,12 +220,24 @@ public class AnimationCurveHelper : MonoBehaviour
                 SerializedProperty curves = clips.GetArrayElementAtIndex(i).FindPropertyRelative("curves");
                 if (curves != null)
                 {
+                    //delete old
+                    for (int j = 0; j < curves.arraySize; j++)
+                    {
+                        curinfo = curves.GetArrayElementAtIndex(j);
+                        if (curinfo != null && curinfo.FindPropertyRelative("name").stringValue.Equals(m_CurveName.ToString()))
+                        {
+                            curves.DeleteArrayElementAtIndex(j);
+                            so.ApplyModifiedProperties();
+                            break;
+                        }
+                    }
+
                     curves.arraySize += 1;
-                    SerializedProperty curinfo = curves.GetArrayElementAtIndex(curves.arraySize - 1);
+                    curinfo = curves.GetArrayElementAtIndex(curves.arraySize - 1);
                     if (curinfo != null)
                     {
                         curinfo.FindPropertyRelative("name").stringValue = m_CurveName;
-                        curinfo.FindPropertyRelative("curve").animationCurveValue = CreateCurve(true);
+                        curinfo.FindPropertyRelative("curve").animationCurveValue = GetCurve(true);
                     }
                 }
                 break;
@@ -176,7 +246,7 @@ public class AnimationCurveHelper : MonoBehaviour
         so.ApplyModifiedProperties();
         AssetDatabase.ImportAsset(path);
 
-        Debug.Log(m_AnimClip.name + " is ok, 如有旧的curve，请手动删除");
+        Debug.Log(m_AnimClip.name + " is ok");
     }
 }
 #endif

@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 23fe8a4105713074a9f570e5f2eb5e9d
-timeCreated: 1473705555
+timeCreated: 1473844029
 licenseType: Pro
 ModelImporter:
   serializedVersion: 19
@@ -163,59 +163,59 @@ ModelImporter:
           serializedVersion: 2
           curve:
           - time: 0
-            value: 0.2450673
-            inSlope: 0
-            outSlope: 0
+            value: 0.6081338
+            inSlope: -0.24221776
+            outSlope: -0.24221776
             tangentMode: 0
-          - time: 0.03333334
-            value: 0.08067745
-            inSlope: 0
-            outSlope: 0
+          - time: 0.10000001
+            value: 0.583912
+            inSlope: -0.10162949
+            outSlope: -0.10162949
             tangentMode: 0
-          - time: 0.06666667
-            value: 0.001089275
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-          - time: 0.1
-            value: 0.07403857
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-          - time: 0.1333333
-            value: 0.1630289
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-          - time: 0.1666667
-            value: 0.03637132
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-          - time: 0.2
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-          - time: 0.2333333
-            value: 0.001953661
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-          - time: 0.2666667
-            value: 0.004062146
-            inSlope: 0
-            outSlope: 0
+          - time: 0.20000002
+            value: 0.5878079
+            inSlope: 0.14707355
+            outSlope: 0.14707355
             tangentMode: 0
           - time: 0.3
-            value: 0.00627245
-            inSlope: 0
-            outSlope: 0
+            value: 0.6133267
+            inSlope: 0.25292575
+            outSlope: 0.25292575
             tangentMode: 0
-          - time: 0.3333333
-            value: 0.008532166
-            inSlope: 0
-            outSlope: 0
+          - time: 0.40000004
+            value: 0.63839304
+            inSlope: -2.8929043
+            outSlope: -2.8929043
+            tangentMode: 0
+          - time: 0.5
+            value: 0.03474595
+            inSlope: -2.8320465
+            outSlope: -2.8320465
+            tangentMode: 0
+          - time: 0.6
+            value: 0.0719838
+            inSlope: 0.13493942
+            outSlope: 0.13493942
+            tangentMode: 0
+          - time: 0.70000005
+            value: 0.061733846
+            inSlope: -0.09262993
+            outSlope: -0.09262993
+            tangentMode: 0
+          - time: 0.8000001
+            value: 0.05345782
+            inSlope: -0.07362325
+            outSlope: -0.07362325
+            tangentMode: 0
+          - time: 0.90000004
+            value: 0.047009196
+            inSlope: -0.056472883
+            outSlope: -0.056472883
+            tangentMode: 0
+          - time: 1
+            value: 0.04216324
+            inSlope: -0.04845955
+            outSlope: -0.04845955
             tangentMode: 0
           preInfinity: 1
           postInfinity: 1

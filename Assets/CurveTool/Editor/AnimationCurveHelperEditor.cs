@@ -6,6 +6,7 @@ using System.Collections;
 public class AnimationCurveHelperEditor : Editor
 {
     protected AnimationCurveHelper info;
+    private string m_LastName = "";
 
     public override void OnInspectorGUI()
     {
@@ -13,6 +14,19 @@ public class AnimationCurveHelperEditor : Editor
 
         info.m_AnimClip = (AnimationClip)EditorGUILayout.ObjectField(new GUIContent("TarAnimationClip"), info.m_AnimClip, typeof(AnimationClip), true);
         info.m_CurveName = EditorGUILayout.TextField(new GUIContent("CurveName"), info.m_CurveName);
+
+        if (info.m_CurveName.Equals(m_LastName) == false)
+        {
+            for (int i = 0; i < info._CurveNames.Length; i++)
+            {
+                if (info._CurveNames[i].Equals(info.m_CurveName))
+                {
+                    info._SelectedCurveIndex = i;
+                    break;
+                }
+            }
+            m_LastName = info.m_CurveName;
+        }
 
         info.m_LoadDataFromCurve = EditorGUILayout.Toggle(new GUIContent("LoadDataFromCurve"), info.m_LoadDataFromCurve);
         if (info.m_LoadDataFromCurve)
