@@ -39,7 +39,7 @@ public class ImportSetting_Base : ScriptableObject
 
         EditorGUILayout.LabelField("PathFilter");
         this.m_PathFilter = EditorGUILayout.TextArea(this.m_PathFilter, GUILayout.MinWidth(180));
-        EditorGUILayout.HelpBox("_name0=t&(hi=f|cc=t)\n(路径包含_name0)并且((路径不包含hi)或者(路径包含cc))",MessageType.Info);
+        EditorGUILayout.HelpBox("&:与\n|:或\n!:非\n_name0&(!hi|cc)\n(路径含_name0)且((路径不含hi)或(路径含cc))", MessageType.Info, true);
 
         EditorGUILayout.EndVertical();
     }
@@ -73,12 +73,17 @@ public class ImportSetting_Base : ScriptableObject
                 }
                 break;
         }
-
         return CheckPath((m_PathFilterType == PathFilterType.Path) ? importer.assetPath : Path.GetFileName(importer.assetPath), m_PathFilter);
     }
 
     #region CheckPath
 
+    /// <summary>
+    /// 路径匹配
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="filter"></param>
+    /// <returns></returns>
     private bool CheckPath(string path, string filter)
     {
         m_path = path;
@@ -88,6 +93,8 @@ public class ImportSetting_Base : ScriptableObject
             return true;
         }
 
+        //换行符号去掉
+        //空格不能去掉，空格可能是资源命名的空格
         filter = filter.Replace("\n", "");
 
         if (GrammarPass(filter) == false)
@@ -100,9 +107,14 @@ public class ImportSetting_Base : ScriptableObject
 
     private static List<char> m_oks = new List<char>() 
     {
-        '=','&','|','_','(',')',' '
+        '&','|','_','(',')',' ','!'
     };
 
+    /// <summary>
+    /// 语法检测
+    /// </summary>
+    /// <param name="filter"></param>
+    /// <returns></returns>
     private bool GrammarPass(string filter)
     {
         if (string.IsNullOrEmpty(filter))
@@ -134,16 +146,15 @@ public class ImportSetting_Base : ScriptableObject
 
     private bool DoSearch(string filter)
     {
-        List<string> ret = GetPieces(filter);
+        List<string> ret = GetOneLogicPiece(filter);
+
+        //一个逻辑语句，下面两种情况
+        //1.带符号:a&b
+        //2.不带符号:a
         if (ret == null || (ret.Count != 1 && ret.Count != 3))
         {
             UnityEngine.Debug.LogError("filter error:" + filter);
             return false;
-        }
-
-        if (ret.Count == 1)
-        {
-            return JudgeOne(ret[0]);
         }
 
         //debug
@@ -151,6 +162,11 @@ public class ImportSetting_Base : ScriptableObject
         //{
         //    Debug.LogWarning(filter + ":" + s);
         //}
+
+        if (ret.Count == 1)
+        {
+            return JudgeOne(ret[0]);
+        }
 
         if (ret[1] == "&")
         {
@@ -169,29 +185,29 @@ public class ImportSetting_Base : ScriptableObject
             UnityEngine.Debug.LogError("filter error:" + s);
             return false;
         }
+
         s = s.Replace("(", "").Replace(")", "");
-        string[] ss = s.Split('=');
-        if (ss == null || ss.Length != 2)
+        if (s.Length <= 1)
         {
-            UnityEngine.Debug.LogError("filter error:" + s);
             return false;
         }
-        if (ss[1] == "t")
+
+        if (s[0] == '!')
         {
-            return (m_path.Contains(ss[0]) == true);
-        }
-        else if (ss[1] == "f")
-        {
-            return (m_path.Contains(ss[0]) == false);
+            return !m_path.Contains(s.Substring(1));
         }
         else
         {
-            UnityEngine.Debug.LogError("filter error:" + s);
-            return false;
+            return m_path.Contains(s);
         }
     }
 
-    private List<string> GetPieces(string filter)
+    /// <summary>
+    /// 获取一个逻辑语句
+    /// </summary>
+    /// <param name="filter"></param>
+    /// <returns></returns>
+    private List<string> GetOneLogicPiece(string filter)
     {
         List<string> ret = new List<string>();
         if (string.IsNullOrEmpty(filter))
@@ -200,9 +216,10 @@ public class ImportSetting_Base : ScriptableObject
         }
         char[] chs = filter.ToCharArray();
         int cnt = 0;
-        int s = 0;
-        int e = chs.Length - 1;
+        int s = 0;//开始下标
+        int e = chs.Length - 1;//结束下标
 
+        //去除最外层的括号
         while (true)
         {
             if (s >= e)
