@@ -40,10 +40,11 @@ public class AssetRuleInspector : Editor
 
         DrawAddBtn();
 
+        GUILayout.Space(20);
+        m_CurRule.showLog = EditorGUILayout.Toggle(new GUIContent("ShowLog"), m_CurRule.showLog);
         string[] names = GetNames();
         if (names != null && names.Length > 0)
         {
-            GUILayout.Space(20);
             m_SelectedID = EditorGUILayout.Popup("Sets", m_SelectedID, names);
         }
 
