@@ -6,24 +6,6 @@
 
 ## 简介
 
-- Fsm 一个简单的状态机
-- RadarChart 雷达图、多维属性图
-- WayPointMgr 路点编辑和按路点运动 
-	- 参考UnityExampleProject和iTween
-- JerryDebug 在移动端打印LOG，支持文件和结构，配置一些指令入口
-- EnumSort 枚举值显示自定义排序
-- JerryMath 常用数学库
-- Util 常用小功能
-- ConditionalHideAttribute 编辑器工具，按条件隐藏属性
-	- 示例见WayPointMgr
-- Drawer 绘制辅助图工具，结构参考iTween
-- DrawGizmos 绘制一个结点的位置信息，可用来快速显示大量结点
-- GestureJudge 手势判断
-
-### Collect
-
-收集整理中的
-
 ### AssetsSettings 
 
 资源导入配置，配置项细节继续完善中...
@@ -37,23 +19,34 @@
 - 常规的模型和贴图的设置项
 - 自定义的路径过滤
 
-![图1](http://laijingfeng.github.io/MyUnityCommonTools/images/image00.png)
+![图](http://laijingfeng.github.io/MyUnityCommonTools/images/image00.png)
 
-### FixMask
+### BakePrefab
 
-把Animation的Mask.Transform都勾上
+Prefab烘焙
 
-来自[Fix mask button in the animation's inspector](http://forum.unity3d.com/threads/fix-mask-button-in-the-animations-inspector.224017/)
+### Collect
 
-### FindReferences
+收集整理中的
 
-查找资源的引用
+### Common
 
-参考[Unity3D研究院之查找资源被哪里引用了](http://www.xuanyusong.com/archives/4207)
+通用工具
 
-### MiniMap
+- JerryMath 常用数学库
+- Util 常用小功能
+- Drawer 绘制辅助图工具，结构参考iTween
+- DrawGizmos 绘制一个结点的位置信息，可用来快速显示大量结点
 
-来自Unity中国官方论坛
+### ConditionalHideAttribute 
+
+编辑器工具，按条件隐藏属性
+
+示例见WayPointMgr
+
+### CurveTool
+
+动画曲线工具
 
 ### EasyFramerateCount
 
@@ -61,4 +54,56 @@
 
 EasyFramerateCounter参考EasyFramerateCount(Alterego Games)
 
-### CurveTool
+### EnumSort
+
+枚举值显示自定义排序
+
+### FindReferences
+
+查找资源的引用
+
+参考[Unity3D研究院之查找资源被哪里引用了](http://www.xuanyusong.com/archives/4207)
+
+### FixMask
+
+把Animation的Mask.Transform都勾上
+
+来自[Fix mask button in the animation's inspector](http://forum.unity3d.com/threads/fix-mask-button-in-the-animations-inspector.224017/)
+
+### Fsm
+
+一个简单的状态机
+
+### GestureJudge
+
+手势判断
+
+### iTween
+
+iTween，官方的，借用
+
+### JerryDebug
+
+在移动端打印LOG，支持文件和结构，配置一些指令入口
+
+![图](http://laijingfeng.github.io/MyUnityCommonTools/images/image01.png)
+
+### LoopScroll
+
+循环无限ScrollView
+
+### MiniMap
+
+来自Unity中国官方论坛
+
+### RadarChart
+
+雷达图、多维属性图
+
+![图](http://laijingfeng.github.io/MyUnityCommonTools/images/image02.png)
+
+### WayPointMgr
+
+路点编辑和按路点运动
+
+参考UnityExampleProject和iTween
