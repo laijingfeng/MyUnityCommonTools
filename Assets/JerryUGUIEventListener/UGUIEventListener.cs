@@ -48,7 +48,6 @@ namespace Jerry
                 listener = go.AddComponent<UGUIEventListener>();
             }
             listener.m_UserData = userData;
-            Debug.LogWarning("hi=" + canSelected);
             listener.m_CanSelected = canSelected;
             return listener;
         }
@@ -96,17 +95,6 @@ namespace Jerry
 
         public override void OnPointerClick(PointerEventData eventData)
         {
-            if (this.m_CanSelected)
-            {
-                Debug.LogWarning("aaa");
-                EventSystem.current.SetSelectedGameObject(this.gameObject);
-            }
-            else
-            {
-                //Button组件会自动设置为true，不要的话，主动设置为null
-                EventSystem.current.SetSelectedGameObject(null);
-            }
-
             if (this.onClick != null)
             {
                 this.onClick(this.gameObject);
@@ -119,16 +107,6 @@ namespace Jerry
 
         public override void OnPointerUp(PointerEventData eventData)
         {
-            if (this.m_CanSelected)
-            {
-                Debug.LogWarning("bbb");
-                EventSystem.current.SetSelectedGameObject(this.gameObject);
-            }
-            else
-            {
-                EventSystem.current.SetSelectedGameObject(null);
-            }
-
             if (onUp != null)
             {
                 onUp(this.gameObject);
@@ -143,11 +121,11 @@ namespace Jerry
         {
             if (this.m_CanSelected)
             {
-                Debug.LogWarning("ccc");
                 EventSystem.current.SetSelectedGameObject(this.gameObject);
             }
             else
             {
+                //Button组件会自动设置为true，不要的话，主动设置为null
                 EventSystem.current.SetSelectedGameObject(null);
             }
 

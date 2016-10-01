@@ -24,7 +24,7 @@ public class UGUIEventListenerTest : MonoBehaviour
 
         if (m_Button != null)
         {
-            UGUIEventListener.Get(m_Button.gameObject, null, false).onClick += OnClickGo;
+            UGUIEventListener.Get(m_Button.gameObject, null, true).onClick += OnClickGo;
         }
     }
 
