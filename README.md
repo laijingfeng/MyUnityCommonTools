@@ -132,4 +132,6 @@ iTween，官方的，借用
 
 参考UnityExampleProject和iTween
 
+### Gradient
 
+来自[UGUI研究院之Text文本渐变（十一）](http://www.xuanyusong.com/archives/3471)
