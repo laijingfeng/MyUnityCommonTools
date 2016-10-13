@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System;
@@ -34,7 +33,7 @@ public class JerryDebug : MonoBehaviour
     private static string LOG_FILE_PATH = Application.dataPath + "/../JerryDebug.txt";
 
     /// <summary>
-    /// 按原始类型输出的类型
+    /// 按原始类型输出的类型，其他当做结构
     /// </summary>
     private static List<string> m_OriginalTypes = new List<string>()
     {
@@ -67,12 +66,12 @@ public class JerryDebug : MonoBehaviour
         /// <summary>
         /// 警告
         /// </summary>
-        Warning,
+        Warning = 1,
 
         /// <summary>
         /// 错误
         /// </summary>
-        Error,
+        Error = 2,
     }
 
     /// <summary>
@@ -82,6 +81,12 @@ public class JerryDebug : MonoBehaviour
     {
         public string m_strMessage;
         public LogType m_logType;
+    }
+
+    public class ExtenActionConfig
+    {
+        public string name;
+        public Action action;
     }
 
     /// <summary>
@@ -140,33 +145,16 @@ public class JerryDebug : MonoBehaviour
     /// LOG
     /// </summary>
     /// <param name="msg"></param>
-    public static void Log(object msg)
+    /// <param name="type"></param>
+    public static void Log(object msg, LogType type = LogType.Info)
     {
-        AddLog(msg, LogType.Info);
-    }
-
-    /// <summary>
-    /// 警告
-    /// </summary>
-    /// <param name="msg"></param>
-    public static void LogWarning(object msg)
-    {
-        AddLog(msg, LogType.Warning);
-    }
-
-    /// <summary>
-    /// 错误
-    /// </summary>
-    /// <param name="msg"></param>
-    public static void LogError(object msg)
-    {
-        AddLog(msg, LogType.Error);
+        AddLog(msg, type);
     }
 
     /// <summary>
     /// 输出到文件
     /// </summary>
-    /// <param name="logMsg"></param>
+    /// <param name="msg"></param>
     /// <returns></returns>
     public static bool LogFile(object msg)
     {
@@ -201,24 +189,11 @@ public class JerryDebug : MonoBehaviour
 
     #endregion 对外接口
 
-    private static string HandleInfo(object obj)
-    {
-        System.Type t = obj.GetType();
-        foreach (string s in m_OriginalTypes)
-        {
-            if (t.ToString().Equals(s))
-            {
-                return obj.ToString();
-            }
-        }
-        return JsonUtility.ToJson(obj, true);
-    }
-
     /// <summary>
-    /// Log
+    /// AddLog
     /// </summary>
     /// <param name="msg"></param>
-    /// <param name="color"></param>
+    /// <param name="logType"></param>
     private static void AddLog(object msg, LogType logType)
     {
         if (!Application.isPlaying || m_Active == false || m_ReceiveMsg == false)
@@ -352,6 +327,21 @@ public class JerryDebug : MonoBehaviour
         });
     }
 
+    private static string HandleInfo(object obj)
+    {
+        System.Type t = obj.GetType();
+        foreach (string s in m_OriginalTypes)
+        {
+            if (t.ToString().Equals(s))
+            {
+                return obj.ToString();
+            }
+        }
+        return JsonUtility.ToJson(obj, true);
+    }
+
+    #region GUI处理
+
     void OnGUI()
     {
         if (m_Active == false)
@@ -392,50 +382,46 @@ public class JerryDebug : MonoBehaviour
         }
     }
 
-    public static Action CtrAction1;
-    public static string CtrAction1Name = "1";
-
-    public static Action CtrAction2;
-    public static string CtrAction2Name = "2";
-
-    public static Action CtrAction3;
-    public static string CtrAction3Name = "3";
-
+    public static List<ExtenActionConfig> CtrAction = new List<ExtenActionConfig>();
+    
     /// <summary>
     /// 填充控制面板
     /// </summary>
     private void FillCtrButton()
     {
-        GUILayout.BeginHorizontal();
-
         GUI.color = Color.green;
 
-        if (GUILayout.Button(CtrAction1Name))
+        int idx = 0;
+        foreach (ExtenActionConfig config in CtrAction)
         {
-            if(CtrAction1 != null)
+            if (idx % 3 == 0)
             {
-                CtrAction1();
+                GUILayout.BeginHorizontal();
             }
-        }
 
-        if (GUILayout.Button(CtrAction2Name))
-        {
-            if (CtrAction2 != null)
+            if (config != null)
             {
-                CtrAction2();
+                if (GUILayout.Button(config.name))
+                {
+                    if (config.action != null)
+                    {
+                        config.action();
+                    }
+                }
             }
-        }
 
-        if (GUILayout.Button(CtrAction3Name))
-        {
-            if (CtrAction3 != null)
+            if (idx % 3 == 2)
             {
-                CtrAction3();
+                GUILayout.EndHorizontal();
             }
+            idx++;
+        }
+        if (idx % 3 != 0)
+        {
+            GUILayout.EndHorizontal();
         }
 
         GUI.color = Color.white;
-        GUILayout.EndHorizontal();
     }
 
     #endregion 扩展
@@ -550,4 +536,6 @@ public class JerryDebug : MonoBehaviour
         }
         return false;
     }
+
+    #endregion GUI处理
 }
