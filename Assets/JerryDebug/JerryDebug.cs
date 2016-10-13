@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System;
+using System.Collections;
+using System.Reflection;
 
 public class JerryDebug : MonoBehaviour
 {
@@ -146,22 +148,33 @@ public class JerryDebug : MonoBehaviour
     /// </summary>
     /// <param name="msg"></param>
     /// <param name="type"></param>
-    public static void Log(object msg, LogType type = LogType.Info)
+    /// <param name="isProtoMsg"></param>
+    public static void Log(object msg, LogType type = LogType.Info, bool isProtoMsg = false)
     {
-        AddLog(msg, type);
+        AddLog(msg, type, isProtoMsg);
     }
 
     /// <summary>
     /// 输出到文件
     /// </summary>
     /// <param name="msg"></param>
+    /// <param name="isProtoMsg"></param>
     /// <returns></returns>
-    public static bool LogFile(object msg)
+    public static bool LogFile(object msg, bool isProtoMsg = false)
     {
         bool bRet = true;
 
-        string logMsg = HandleInfo(msg);
+        string logMsg = string.Empty;
 
+        if (isProtoMsg)
+        {
+            logMsg = HandleInfo(msg);
+        }
+        else
+        {
+            logMsg = HandleProtoMsg(msg);
+        }
+        
         FileMode fileMode = FileMode.Create;
 
         if (File.Exists(LOG_FILE_PATH))
@@ -189,20 +202,136 @@ public class JerryDebug : MonoBehaviour
 
     #endregion 对外接口
 
+    #region Proto消息处理
+
+    private static string m_CurMsg;
+
+    private static string HandleProtoMsg(object obj)
+    {
+        m_CurMsg = string.Empty;
+        
+        AndMsgLine("************* Begin: " + obj + "*************");
+        PrintProperties(obj, 1);
+        AndMsgLine("************* End: " + obj + "*************");
+
+        return m_CurMsg;
+    }
+
+    private static void AndMsgLine(object msg)
+    {
+        m_CurMsg += (string.IsNullOrEmpty(m_CurMsg) ? "" : "\n") + msg;
+    }
+
+    private static void PrintProperties(object obj, int indent)
+    {
+        if (obj == null)
+        {
+            return;
+        }
+
+        string indentString = new string(' ', indent * 3);
+        Type objType = obj.GetType();
+        PropertyInfo[] properties = objType.GetProperties();
+
+        if (properties != null
+            && properties.Length > 0)
+        {
+            AndMsgLine(string.Format("{0}", new string(' ', (indent - 1) * 3)) + "{");
+        }
+
+        //列表特判
+        if (objType.Name.Equals("List`1"))
+        {
+            AndMsgLine(indentString + obj.ToString().Replace("System.Collections.Generic.List`1", "list") + " Count = " + ((IList)obj).Count + " :");
+            PrintList((IList)obj, indent + 1);
+        }
+        else
+        {
+            foreach (PropertyInfo property in properties)
+            {
+                //找ProtoBuf.ProtoMemberAttribute属性标记的
+                Attribute attri = Attribute.GetCustomAttribute(property, typeof(ProtoBuf.ProtoMemberAttribute));
+                if (attri == null)
+                {
+                    continue;
+                }
+
+                object propValue = property.GetValue(obj, null);
+
+                if (propValue is IList)//列表
+                {
+                    AndMsgLine(indentString + property.Name + " Count = " + ((ICollection)propValue).Count + " :");
+                    PrintList((IList)propValue, indent + 1);
+                }
+                else if (property.PropertyType.Assembly == objType.Assembly
+                    && property.PropertyType.IsEnum == false)//新的结构
+                {
+                    AndMsgLine(indentString + property.Name + ": " + propValue);
+                    PrintProperties(propValue, indent + 1);
+                }
+                else
+                {
+                    AndMsgLine(indentString + property.Name + ": " + propValue);
+                }
+            }
+        }
+
+        if (properties != null
+            && properties.Length > 0)
+        {
+            AndMsgLine(string.Format("{0}", new string(' ', (indent - 1) * 3)) + "}");
+        }
+    }
+
+    /// <summary>
+    /// 输出List
+    /// </summary>
+    /// <param name="list"></param>
+    /// <param name="indent"></param>
+    private static void PrintList(IList list, int indent)
+    {
+        if (list == null)
+        {
+            return;
+        }
+
+        int i = 0;
+        foreach (object o in list)
+        {
+            string indentString = new string(' ', indent * 3);
+            indentString += "--";
+            AndMsgLine(indentString + o + "[" + i + "]");
+            PrintProperties(o, indent + 1);
+            i++;
+        }
+    }
+
+    #endregion Proto消息处理
+
     /// <summary>
     /// AddLog
     /// </summary>
     /// <param name="msg"></param>
     /// <param name="logType"></param>
-    private static void AddLog(object msg, LogType logType)
+    /// <param name="isProtoMsg"></param>
+    private static void AddLog(object msg, LogType logType = LogType.Info, bool isProtoMsg = false)
     {
         if (!Application.isPlaying || m_Active == false || m_ReceiveMsg == false)
         {
             return;
         }
 
-        string strMessage = HandleInfo(msg); 
-
+        string strMessage = string.Empty;
+        
+        if(isProtoMsg)
+        {
+            strMessage = HandleProtoMsg(msg);
+        }
+        else
+        {
+            strMessage = HandleInfo(msg); 
+        }
+        
         if (m_instance == null)
         {
             GameObject go = new GameObject("JerryDebug");
@@ -399,7 +528,7 @@ public class JerryDebug : MonoBehaviour
                 GUILayout.BeginHorizontal();
             }
 
-            if (config != null)
+            if (config != null && config.action != null)
             {
                 if (GUILayout.Button(config.name))
                 {

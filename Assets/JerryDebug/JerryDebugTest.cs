@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using Table;
 
 public class JerryDebugTest : MonoBehaviour
 {
@@ -16,7 +18,7 @@ public class JerryDebugTest : MonoBehaviour
             name = "lai0",
             action = () =>
             {
-                Debug.LogError("lai0");
+                JerryDebug.Log("click lai0");
             },
         });
 
@@ -46,6 +48,14 @@ public class JerryDebugTest : MonoBehaviour
                 Debug.LogError("lai3");
             },
         });
+
+        SCENE scene = new SCENE();
+        scene.desc = "desc";
+        scene.id = 1;
+        scene.num_float = 1.1f;
+        scene.num_uint32.AddRange(new List<uint>() { 1, 2, 3 });
+
+        JerryDebug.Log(scene, JerryDebug.LogType.Warning, true);
     }
 
     public class DebugInfo
