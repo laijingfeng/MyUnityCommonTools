@@ -16,7 +16,6 @@
         - [Fsm](#fsm)
         - [GestureJudge](#gesturejudge)
         - [iTween](#itween)
-        - [JerryDebug](#jerrydebug)
         - [LoopScroll](#loopscroll)
         - [MiniMap](#minimap)
         - [RadarChart](#radarchart)
@@ -105,12 +104,6 @@ EasyFramerateCounter参考EasyFramerateCount(Alterego Games)
 ### iTween
 
 iTween，官方的，借用
-
-### JerryDebug
-
-在移动端打印LOG，支持文件和结构，配置一些指令入口
-
-![图](http://laijingfeng.github.io/MyUnityCommonTools/images/image01.png)
 
 ### LoopScroll
 
