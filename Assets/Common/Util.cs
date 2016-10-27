@@ -351,4 +351,132 @@ public class Util
     }
 
     #endregion 数值转化
+
+    #region LayerMask处理
+
+    /// <summary>
+    /// <para>直接设置LayerMask为Everything或Nothing</para>
+    /// <para>true:Everything</para>
+    /// <para>false:Nothing</para>
+    /// </summary>
+    /// <param name="everythingOrNothing"></param>
+    /// <returns></returns>
+    public static int MakeLayerMask(bool everythingOrNothing)
+    {
+        if (everythingOrNothing)
+        {
+            return -1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    /// <summary>
+    /// 通过id构造LayerMask
+    /// </summary>
+    /// <param name="ids">id组</param>
+    /// <param name="invert">是否反转</param>
+    /// <returns></returns>
+    public static int MakeLayerMask(int[] ids, bool invert = false)
+    {
+        if (ids == null)
+        {
+            return 0;
+        }
+
+        int ret = 0;
+        foreach (int id in ids)
+        {
+            ret |= (1 << id);
+        }
+        if (invert)
+        {
+            ret = ~ret;
+        }
+        return ret;
+    }
+
+    /// <summary>
+    /// 通过name构造LayerMask
+    /// </summary>
+    /// <param name="names">名称组</param>
+    /// <param name="invert">是否反转</param>
+    /// <returns></returns>
+    public static int MakeLayerMask(string[] names, bool invert = false)
+    {
+        if (names == null)
+        {
+            return 0;
+        }
+        int[] ids = new int[names.Length];
+        int idx = 0;
+        foreach (string name in names)
+        {
+            ids[idx++] = LayerMask.NameToLayer(name);
+        }
+        return MakeLayerMask(ids, invert);
+    }
+
+    /// <summary>
+    /// 通过name构造LayerMask
+    /// </summary>
+    /// <param name="oldLayerMask">旧的layerMask</param>
+    /// <param name="addNames">增加的</param>
+    /// <param name="subNames">减去的</param>
+    /// <returns></returns>
+    public static int MakeLayerMask(int oldLayerMask, string[] addNames = null, string[] subNames = null)
+    {
+        int[] addIds = null;
+        if (addNames != null)
+        {
+            addIds = new int[addNames.Length];
+            int idx = 0;
+            foreach (string name in addNames)
+            {
+                addIds[idx++] = LayerMask.NameToLayer(name);
+            }
+        }
+        int[] subIds = null;
+        if (subNames != null)
+        {
+            subIds = new int[subNames.Length];
+            int idx = 0;
+            foreach (string name in subNames)
+            {
+                subIds[idx++] = LayerMask.NameToLayer(name);
+            }
+        }
+        return MakeLayerMask(oldLayerMask, addIds, subIds);
+    }
+
+    /// <summary>
+    /// 通过id构造LayerMask
+    /// </summary>
+    /// <param name="oldLayerMask">旧的layerMask</param>
+    /// <param name="addNames">增加的</param>
+    /// <param name="subNames">减去的</param>
+    /// <returns></returns>
+    public static int MakeLayerMask(int oldLayerMask, int[] addIds = null, int[] subIds = null)
+    {
+        int ret = oldLayerMask;
+        if (addIds != null)
+        {
+            foreach (int id in addIds)
+            {
+                ret |= (1 << id);
+            }
+        }
+        if (subIds != null)
+        {
+            foreach (int id in subIds)
+            {
+                ret &= (-1 - (1 << id));
+            }
+        }
+        return ret;
+    }
+
+    #endregion LayerMask处理
 }
