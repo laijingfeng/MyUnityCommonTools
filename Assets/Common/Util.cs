@@ -472,7 +472,7 @@ public class Util
         {
             foreach (int id in subIds)
             {
-                ret &= (-1 - (1 << id));
+                ret &= ~(1 << id);
             }
         }
         return ret;
