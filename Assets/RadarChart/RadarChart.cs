@@ -3,36 +3,61 @@ using UnityEngine;
 
 public class RadarChart : Graphic
 {
+    /// <summary>
+    /// 起始偏移角度
+    /// </summary>
     [Range(0f, 360f)]
     public float m_AngleOffset;
 
     public float m_LineWidth = 1f;
     public Color m_LineColor = Color.black;
+    /// <summary>
+    /// 分割线
+    /// </summary>
     public bool m_DrawLine = false;
 
     public float m_BoundLineWidth = 1f;
     public Color m_BoundLineColor = Color.black;
+    /// <summary>
+    /// 边界线
+    /// </summary>
     public bool m_DrawBoundLine = false;
 
     /// <summary>
-    /// 百分比
+    /// 百分比，至少三维
     /// </summary>
     [Range(0, 1)]
     [SerializeField]
     private float[] m_Percents;
 
     private Rect m_Rect;
+    /// <summary>
+    /// 维数
+    /// </summary>
     private int m_Cnt;
 
+    #region 对外接口
+
+    /// <summary>
+    /// 重置
+    /// </summary>
+    /// <param name="p"></param>
     public void Reset(float[] p)
     {
         m_Percents = p;
         SetAllDirty();
     }
 
+    /// <summary>
+    /// 改变一维属性
+    /// </summary>
+    /// <param name="idx"></param>
+    /// <param name="p"></param>
     public void Change(int idx, float p)
     {
-        if (m_Percents == null || idx < 0 || idx >= m_Percents.Length)
+        if (m_Percents == null
+            || idx < 0
+            || idx >= m_Percents.Length)
         {
             return;
         }
@@ -40,26 +65,14 @@ public class RadarChart : Graphic
         SetAllDirty();
     }
 
-    private Vector2 GetPoint(int idx, bool full = true)
-    {
-        Vector2 ret = Vector2.zero;
-        float angle = 360f / m_Cnt * idx + m_AngleOffset;
-        ret.x = 0.5f * m_Rect.width * Mathf.Cos(angle * Mathf.Deg2Rad);
-        ret.y = 0.5f * m_Rect.height * Mathf.Sin(angle * Mathf.Deg2Rad);
-        if (!full)
-        {
-            ret *= m_Percents[idx];
-        }
-        ret += m_Rect.center;//最后加偏移量
-
-        return ret;
-    }
+    #endregion 对外接口
 
     protected override void OnPopulateMesh(VertexHelper vh)
     {
         vh.Clear();
 
-        if (m_Percents == null || m_Percents.Length < 3)
+        if (m_Percents == null 
+            || m_Percents.Length < 3)
         {
             return;
         }
@@ -95,11 +108,32 @@ public class RadarChart : Graphic
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="idx"></param>
+    /// <param name="full">是否是满的填充</param>
+    /// <returns></returns>
+    private Vector2 GetPoint(int idx, bool full = true)
+    {
+        Vector2 ret = Vector2.zero;
+        float angle = 360f / m_Cnt * idx + m_AngleOffset;
+        ret.x = 0.5f * m_Rect.width * Mathf.Cos(angle * Mathf.Deg2Rad);
+        ret.y = 0.5f * m_Rect.height * Mathf.Sin(angle * Mathf.Deg2Rad);
+        if (!full)
+        {
+            ret *= m_Percents[idx];
+        }
+        ret += m_Rect.center;//最后加偏移量
+
+        return ret;
+    }
+
     private UIVertex[] GetLine(Vector2 s, Vector2 e, float width, Color color)
     {
         UIVertex[] vers = new UIVertex[4];
         Vector2 v1 = e - s;
-        Vector2 v2 = (v1.y == 0f) ? new Vector2(0f, 1f) : new Vector2(1f, -v1.x / v1.y);
+        Vector2 v2 = (v1.y == 0f) ? new Vector2(0f, 1f) : new Vector2(1f, -v1.x / v1.y);//垂直向量
         v2.Normalize();
         v2 *= 0.5f * width;
         for (int i = 0; i < 4; i++)
