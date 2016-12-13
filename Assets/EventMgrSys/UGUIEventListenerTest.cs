@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
 using Jerry;
 using UnityEngine.EventSystems;
 
@@ -9,6 +7,11 @@ public class UGUIEventListenerTest : MonoBehaviour
     public GameObject m_Cube;
     public GameObject m_Image;
     public GameObject m_Button;
+
+    void Awake()
+    {
+        UserEventMgr.AddEvent("Test1", EventTest1);
+    }
 
     void Start()
     {
@@ -46,14 +49,39 @@ public class UGUIEventListenerTest : MonoBehaviour
     {
         if (Input.GetMouseButtonUp(0))
         {
-            if (EventSystem.current.currentSelectedGameObject == null)
-            {
-                Debug.LogWarning("current selected Go : null");
-            }
-            else
+            if (EventSystem.current != null
+                && EventSystem.current.currentSelectedGameObject != null)
             {
                 Debug.LogWarning("current selected Go : " + EventSystem.current.currentSelectedGameObject.name);
             }
+            else
+            {
+                Debug.LogWarning("current selected Go : null");
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            UserEventMgr.DispatchEvent("Test1", new object[] { true });
+        }
+    }
+
+    void OnDestroy()
+    {
+        UserEventMgr.RemoveEvent("Test1", EventTest1);
+    }
+
+    private void EventTest1(object[] args)
+    {
+        if (args == null
+            || args.Length < 1)
+        {
+            Debug.Log("UGUITest no args");
+        }
+        else
+        {
+            bool hi = (bool)args[0];
+            Debug.Log("UGUITest hi = " + hi);
         }
     }
 }
