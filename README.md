@@ -2,25 +2,33 @@
 - [MyUnityCommonTools](#myunitycommontools)
     - [说明](#)
     - [简介](#)
-        - [AssetsSettings](#assetssettings)
-        - [BakePrefab](#bakeprefab)
-        - [Collect](#collect)
-        - [Common](#common)
-        - [ConditionalHideAttribute](#conditionalhideattribute)
-        - [CurveTool](#curvetool)
-        - [EasyFramerateCount](#easyframeratecount)
-        - [EnumSort](#enumsort)
-        - [FindReferences](#findreferences)
-        - [FixMask](#fixmask)
-        - [Fsm](#fsm)
-        - [GestureJudge](#gesturejudge)
-        - [iTween](#itween)
-        - [LoopScroll](#loopscroll)
-        - [MiniMap](#minimap)
-        - [RadarChart](#radarchart)
-        - [WayPointMgr](#waypointmgr)
-        - [Gradient](#gradient)
-        - [EventMgrSys](#eventmgrsys)
+        - [01.AssetsSettings](#01assetssettings)
+        - [02.BakePrefab](#02bakeprefab)
+        - [03.Collect](#03collect)
+        - [04.Common](#04common)
+        - [05.ConditionalHideAttribute](#05conditionalhideattribute)
+        - [06.CurveTool](#06curvetool)
+        - [07.EasyFramerateCount](#07easyframeratecount)
+        - [08.EnumSort](#08enumsort)
+        - [09.FindReferences](#09findreferences)
+        - [10.FixMask](#10fixmask)
+        - [11.Fsm](#11fsm)
+        - [12.GestureJudge](#12gesturejudge)
+        - [13.iTween](#13itween)
+        - [14.LoopScroll](#14loopscroll)
+        - [15.MiniMap](#15minimap)
+        - [16.RadarChart](#16radarchart)
+        - [17.WayPointMgr](#17waypointmgr)
+        - [18.Gradient](#18gradient)
+        - [19.EventMgrSys](#19eventmgrsys)
+
+项目 | 内容
+---|---
+标题 | MyUnityCommonTools
+目录 | Github
+标签 | Github
+备注 | 无
+最近更新 | 2016-12-14 00:59:13
 
 # MyUnityCommonTools
 
@@ -30,7 +38,7 @@
 
 ## 简介
 
-### AssetsSettings 
+### 01.AssetsSettings 
 
 资源导入配置，配置项细节继续完善中...
 
@@ -43,17 +51,17 @@
 - 常规的模型和贴图的设置项
 - 自定义的路径过滤
 
-![图](http://laijingfeng.github.io/MyUnityCommonTools/images/image00.png)
+![图](http://odk2uwdl8.bkt.clouddn.com/2016-09-19-my-unity-common-tools_00.png)
 
-### BakePrefab
+### 02.BakePrefab
 
 Prefab烘焙
 
-### Collect
+### 03.Collect
 
 收集整理中的
 
-### Common
+### 04.Common
 
 通用工具
 
@@ -62,74 +70,74 @@ Prefab烘焙
 - Drawer 绘制辅助图工具，结构参考iTween
 - DrawGizmos 绘制一个结点的位置信息，可用来快速显示大量结点
 
-### ConditionalHideAttribute 
+### 05.ConditionalHideAttribute 
 
 编辑器工具，按条件隐藏属性
 
 示例见WayPointMgr
 
-### CurveTool
+### 06.CurveTool
 
 动画曲线工具
 
-### EasyFramerateCount
+### 07.EasyFramerateCount
 
 帧率信息
 
 EasyFramerateCounter参考EasyFramerateCount(Alterego Games)
 
-### EnumSort
+### 08.EnumSort
 
 枚举值显示自定义排序
 
-### FindReferences
+### 09.FindReferences
 
 查找资源的引用
 
 参考[Unity3D研究院之查找资源被哪里引用了](http://www.xuanyusong.com/archives/4207)
 
-### FixMask
+### 10.FixMask
 
 把Animation的Mask.Transform都勾上
 
 来自[Fix mask button in the animation's inspector](http://forum.unity3d.com/threads/fix-mask-button-in-the-animations-inspector.224017/)
 
-### Fsm
+### 11.Fsm
 
 一个简单的状态机
 
-### GestureJudge
+### 12.GestureJudge
 
 手势判断
 
-### iTween
+### 13.iTween
 
 iTween，官方的，借用
 
-### LoopScroll
+### 14.LoopScroll
 
 循环无限ScrollView
 
-### MiniMap
+### 15.MiniMap
 
 来自Unity中国官方论坛
 
-### RadarChart
+### 16.RadarChart
 
 雷达图、多维属性图
 
-![图](http://laijingfeng.github.io/MyUnityCommonTools/images/image02.png)
+![图](http://odk2uwdl8.bkt.clouddn.com/2016-09-19-my-unity-common-tools_01.png)
 
-### WayPointMgr
+### 17.WayPointMgr
 
 路点编辑和按路点运动
 
 参考UnityExampleProject和iTween
 
-### Gradient
+### 18.Gradient
 
 来自[UGUI研究院之Text文本渐变（十一）](http://www.xuanyusong.com/archives/3471)
 
-### EventMgrSys
+### 19.EventMgrSys
 
 事件管理
