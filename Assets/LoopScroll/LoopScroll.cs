@@ -68,6 +68,7 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 
     private List<Transform> m_Child = new List<Transform>();
 
+    private bool m_Ready = false;
     private bool m_Inited = false;
     private bool m_Awaked = false;
 
@@ -97,7 +98,7 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         m_ScrollRectSize.anchorMax = Vector2.one * 0.5f;
 
         m_Awaked = true;
-        DoInit();
+        TryDoInit();
     }
 
     void Start()
@@ -150,15 +151,24 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
             m_RefreshJudgePos = 0.5f * (m_ViewCnt * (m_Height + m_Spacing.y));
         }
 
-        m_Inited = true;
+        m_Ready = true;
 
-        DoInit();
+        TryDoInit();
     }
 
     /// <summary>
     /// 关闭的时候清理垃圾
     /// </summary>
-    public void DoClean()
+    public void Clean()
+    {
+        m_Ready = false;
+        m_Inited = false;
+        DoClean();
+    }
+
+    #endregion 对外接口
+
+    private void DoClean()
     {
         if (m_Center)
         {
@@ -169,9 +179,8 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         m_ScrollRect.onValueChanged.RemoveListener(OnScrollChange);
         Util.DestroyAllChildren(m_ContentRect);
         m_Child.Clear();
+        m_ScrollRect.enabled = false;
     }
-
-    #endregion 对外接口
 
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -192,20 +201,27 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         }
     }
 
-    private void DoInit()
+    private void TryDoInit()
     {
-        if (m_Inited == false
+        if (m_Ready == false
             || m_Awaked == false)
         {
             return;
         }
 
+        this.StartCoroutine(DoInit());
+    }
+
+    private IEnumerator DoInit()
+    {
+        DoClean();
+
+        yield return new WaitForEndOfFrame();
+
         if (m_ViewCnt % 2 == 0)
         {
             m_Center = false;
         }
-
-        DoClean();
 
         if (m_Dir == Dir.Horizontal)
         {
@@ -233,9 +249,11 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
             firstPos.y = Mathf.Floor(0.5f * m_ListTotal) * (m_Height + m_Spacing.y);
         }
 
+        m_ContentRect.sizeDelta = new Vector2(10, 10);
+
         if (m_Center)
         {
-            m_ContentRect.localPosition = Vector3.zero;
+            m_ContentRect.anchoredPosition = Vector2.zero;
             m_FIdx = GetIdx(m_StartIdx + 1 - m_ListTotal / 2, false);
         }
         else
@@ -261,7 +279,7 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
                     halfOffset -= 0.5f * m_Width;
                 }
 
-                m_ContentRect.localPosition = new Vector3(-(halfLen - halfOffset + 0.5f * m_Width), 0, 0);
+                m_ContentRect.anchoredPosition = new Vector2(-(halfLen - halfOffset + 0.5f * m_Width), 0);
             }
             else
             {
@@ -272,7 +290,7 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
                     halfOffset -= 0.5f * m_Height;
                 }
 
-                m_ContentRect.localPosition = new Vector3(0, halfLen - halfOffset - 0.5f * m_Height, 0);
+                m_ContentRect.anchoredPosition = new Vector2(0, halfLen - halfOffset - 0.5f * m_Height);
             }
         }
 
@@ -296,7 +314,14 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 
         m_LIdx = GetIdx(m_FIdx + m_ListTotal, false);
 
+        yield return new WaitForEndOfFrame();
+
         ResetSize();
+
+        yield return new WaitForEndOfFrame();
+
+        m_ScrollRect.enabled = true;
+        m_Inited = true;
 
         m_ScrollRect.onValueChanged.AddListener(OnScrollChange);
     }
