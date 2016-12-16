@@ -221,6 +221,11 @@ public class FindReferences : EditorWindow
                     }
                 }
                 break;
+            default:
+                {
+                    Debug.LogWarning("类型[" + m_FindType.ToString() + "]暂不支持FindDetail");
+                }
+                break;
         }
     }
 
