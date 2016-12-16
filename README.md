@@ -28,7 +28,7 @@
 目录 | Github
 标签 | Github
 备注 | 无
-最近更新 | 2016-12-14 00:59:13
+最近更新 | 2016-12-16 09:36:25
 
 # MyUnityCommonTools
 
@@ -93,6 +93,11 @@ EasyFramerateCounter参考EasyFramerateCount(Alterego Games)
 ### 09.FindReferences
 
 查找资源的引用
+
+功能：
+- `Jerry/FindReferences/Find Setting`设置查找路径
+- `Assets/Find References`查找引用
+- `Assets/Find Detail`进一步查找细节
 
 参考[Unity3D研究院之查找资源被哪里引用了](http://www.xuanyusong.com/archives/4207)
 
