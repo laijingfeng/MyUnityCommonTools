@@ -116,6 +116,8 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     public void Reset()
     {
         m_Inited = false;
+        m_Ready = false;
+        m_ScrollRect.enabled = false;
     }
 
     /// <summary>
