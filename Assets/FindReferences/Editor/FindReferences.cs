@@ -7,9 +7,44 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System;
 
+/// <summary>
+/// 查找引用
+/// </summary>
 public class FindReferences : EditorWindow
 {
-    [MenuItem("Window/Find Setting", false)]
+    #region 变量
+
+    /// <summary>
+    /// 配置
+    /// </summary>
+    [SerializeField]
+    private static Config m_Config;
+    /// <summary>
+    /// 当前正在找的类型
+    /// </summary>
+    private static FindType m_FindType = FindType.none;
+    /// <summary>
+    /// 当前正在找的文件路径
+    /// </summary>
+    private static string m_FindPath;
+    /// <summary>
+    /// 当前正在找的文件名，不带后缀
+    /// </summary>
+    private static string m_FindName;
+    /// <summary>
+    /// 当前的关联类型表
+    /// </summary>
+    private static List<RelateType> m_RelateType = new List<RelateType>();
+    private static GameObject m_RelatedGo;
+
+    #endregion 变量
+
+    #region 入口
+
+    /// <summary>
+    /// 设置，路径
+    /// </summary>
+    [MenuItem("Jerry/FindReferences/Find Setting", false)]
     private static void ShowWindow()
     {
         EditorWindow.GetWindow(typeof(FindReferences));
@@ -29,78 +64,35 @@ public class FindReferences : EditorWindow
         }
     }
 
-    [SerializeField]
-    private static Config m_Config;
-
-    [System.Serializable]
-    public class Config
+    /// <summary>
+    /// 查找引用
+    /// </summary>
+    [MenuItem("Assets/Find References", false)]
+    private static void Find()
     {
-        public string Path;
-        public Config()
+        EditorSettings.serializationMode = SerializationMode.ForceText;
+
+        if (CullingFind(true) == false)
         {
-            Path = "Assets/";
+            return;
         }
+
+        DoFind();
     }
 
-    public enum FindType
+    [MenuItem("Assets/Find References", true)]
+    private static bool VFind()
     {
-        none,
-        prefab,
-        mat,
-        unity,
-        asset,
-        cs,
-        ttf,
-    }
-
-    public enum RelateType
-    {
-        prefab,
-        unity,
+        return CullingFind();
     }
 
     /// <summary>
-    /// 当前正在找的类型
+    /// 进一步查找细节
     /// </summary>
-    private static FindType m_FindType = FindType.none;
-    private static List<RelateType> m_RelateType = new List<RelateType>();
-    private static string m_FindPath;
-    private static string m_FindName;
-
-    private static GameObject m_RelatedGo;
-
-    private static void LoadSet()
+    [MenuItem("Assets/Find Detail", false)]
+    private static void FindDetail()
     {
-        string data = PlayerPrefs.GetString("FindRefrences_Set", string.Empty);
-        if (!string.IsNullOrEmpty(data))
-        {
-            m_Config = JsonUtility.FromJson<Config>(data);
-        }
-        else
-        {
-            m_Config = new Config();
-        }
-    }
-
-    private static void SaveSet()
-    {
-        if (m_Config.Path.StartsWith("Assets/") == false)
-        {
-            m_Config.Path = "Assets/";
-        }
-        PlayerPrefs.SetString("FindRefrences_Set", JsonUtility.ToJson(m_Config));
-    }
-
-    [MenuItem("GameObject/Jerry/Find Detail", true, 10)]
-    private static bool VFindDetail2()
-    {
-        return CullingDetail(false, true);
-    }
-
-    [MenuItem("GameObject/Jerry/Find Detail", false, 10)]
-    private static void FindDetail2()
-    {
-        if (CullingDetail(true, true) == false)
+        if (CullingDetail(true, false) == false)
         {
             return;
         }
@@ -113,70 +105,37 @@ public class FindReferences : EditorWindow
         return CullingDetail();
     }
 
-    [MenuItem("Assets/Find Detail", false)]
-    private static void FindDetail()
+    [MenuItem("GameObject/Jerry/Find Detail", false, 10)]
+    private static void FindDetail2()
     {
-        if (CullingDetail(true, false) == false)
+        if (CullingDetail(true, true) == false)
         {
             return;
         }
         DoFindDetail();
     }
 
-    private static void DoFindDetail()
+    [MenuItem("GameObject/Jerry/Find Detail", true, 10)]
+    private static bool VFindDetail2()
     {
-        switch (m_FindType)
-        {
-            case FindType.ttf:
-                {
-                    Text[] ts = m_RelatedGo.GetComponentsInChildren<Text>(true);
-                    foreach (Text t in ts)
-                    {
-                        if (t.font.name.Equals(m_FindName))
-                        {
-                            Debug.LogWarning(GetRelativeAssetsPath(t.transform), t);
-                        }
-                    }
-                }
-                break;
-            case FindType.cs:
-                {
-                    Component[] coms = m_RelatedGo.GetComponentsInChildren<Component>(true);
-                    foreach (Component com in coms)
-                    {
-                        if (com.GetType().ToString().Equals(m_FindName))
-                        {
-                            Debug.LogWarning(GetRelativeAssetsPath(com.transform), com);
-                        }
-                    }
-                }
-                break;
-        }
+        return CullingDetail(false, true);
     }
 
-    [MenuItem("Assets/Find References", false)]
-    private static void Find()
+    #endregion 入口
+
+    #region 查找实现
+
+    private static void DoFind()
     {
-        EditorSettings.serializationMode = SerializationMode.ForceText;
-
-        if (Culling(true) == false)
-        {
-            return;
-        }
-
         m_RelateType.Clear();
         switch (m_FindType)
         {
             case FindType.cs:
             case FindType.mat:
+            case FindType.prefab:
             case FindType.ttf:
                 {
                     m_RelateType.AddRange(new RelateType[] { RelateType.prefab, RelateType.unity });
-                }
-                break;
-            case FindType.prefab:
-                {
-                    m_RelateType.AddRange(new RelateType[] { RelateType.unity });
                 }
                 break;
         }
@@ -192,6 +151,13 @@ public class FindReferences : EditorWindow
         //Debug.Log(string.Format("Find:{0} type={1}", m_FindPath, m_FindType));
 
         string guid = AssetDatabase.AssetPathToGUID(m_FindPath);
+        
+        //Debug.Log(guid + " " + m_Config.Path);
+        //foreach (RelateType rt in m_RelateType)
+        //{
+        //    Debug.Log("x " + rt.ToString());
+        //}
+
         string[] files = Directory.GetFiles(Application.dataPath + "/../" + m_Config.Path, "*.*", SearchOption.AllDirectories)
             .Where(s =>
                 m_RelateType.FindIndex(x =>
@@ -227,10 +193,35 @@ public class FindReferences : EditorWindow
         };
     }
 
-    [MenuItem("Assets/Find References", true)]
-    private static bool VFind()
+    private static void DoFindDetail()
     {
-        return Culling();
+        switch (m_FindType)
+        {
+            case FindType.ttf:
+                {
+                    Text[] ts = m_RelatedGo.GetComponentsInChildren<Text>(true);
+                    foreach (Text t in ts)
+                    {
+                        if (t.font.name.Equals(m_FindName))
+                        {
+                            Debug.LogWarning(GetRelativeAssetsPath(t.transform), t);
+                        }
+                    }
+                }
+                break;
+            case FindType.cs:
+                {
+                    Component[] coms = m_RelatedGo.GetComponentsInChildren<Component>(true);
+                    foreach (Component com in coms)
+                    {
+                        if (com.GetType().ToString().Equals(m_FindName))
+                        {
+                            Debug.LogWarning(GetRelativeAssetsPath(com.transform), com);
+                        }
+                    }
+                }
+                break;
+        }
     }
 
     private static bool CullingDetail(bool work = false, bool canEmpty = false)
@@ -241,7 +232,7 @@ public class FindReferences : EditorWindow
         }
 
         UnityEngine.Object[] objs = Selection.GetFiltered(typeof(UnityEngine.GameObject), SelectionMode.Assets);
-        if (objs == null || objs.Length <= 0)
+        if (objs == null || objs.Length != 1)
         {
             return false;
         }
@@ -290,10 +281,15 @@ public class FindReferences : EditorWindow
         return false;
     }
 
-    private static bool Culling(bool work = false)
+    /// <summary>
+    /// 过滤查找引用
+    /// </summary>
+    /// <param name="work">是否是实际查找</param>
+    /// <returns></returns>
+    private static bool CullingFind(bool work = false)
     {
         UnityEngine.Object[] objs = Selection.GetFiltered(typeof(UnityEngine.Object), SelectionMode.Assets);
-        if (objs == null || objs.Length <= 0)
+        if (objs == null || objs.Length != 1)
         {
             return false;
         }
@@ -307,6 +303,9 @@ public class FindReferences : EditorWindow
         string findName = Path.GetFileNameWithoutExtension(findPath);
 
         string extension = Path.GetExtension(findPath);
+
+        //Debug.Log(findName + " " + extension);
+
         if (string.IsNullOrEmpty(extension))
         {
             return false;
@@ -330,6 +329,32 @@ public class FindReferences : EditorWindow
         return false;
     }
 
+    #endregion 查找实现
+
+    #region 辅助
+
+    private static void LoadSet()
+    {
+        string data = PlayerPrefs.GetString("FindRefrences_Set", string.Empty);
+        if (!string.IsNullOrEmpty(data))
+        {
+            m_Config = JsonUtility.FromJson<Config>(data);
+        }
+        else
+        {
+            m_Config = new Config();
+        }
+    }
+
+    private static void SaveSet()
+    {
+        if (m_Config.Path.StartsWith("Assets/") == false)
+        {
+            m_Config.Path = "Assets/";
+        }
+        PlayerPrefs.SetString("FindRefrences_Set", JsonUtility.ToJson(m_Config));
+    }
+
     private static string GetRelativeAssetsPath(Transform tf)
     {
         if (tf == null)
@@ -350,4 +375,46 @@ public class FindReferences : EditorWindow
     {
         return "Assets" + Path.GetFullPath(path).Replace(Path.GetFullPath(Application.dataPath), "").Replace('\\', '/');
     }
+
+    #endregion 辅助
+
+    #region 结构
+
+    [System.Serializable]
+    public class Config
+    {
+        public string Path;
+        public Config()
+        {
+            Path = "Assets/";
+        }
+    }
+
+    /// <summary>
+    /// 支持的查找类型，对应是文件后缀
+    /// </summary>
+    public enum FindType
+    {
+        /// <summary>
+        /// none是标空
+        /// </summary>
+        none = 0,
+        prefab,
+        mat,
+        unity,
+        asset,
+        cs,
+        ttf,
+    }
+
+    /// <summary>
+    /// 关联类型，将到哪些类型的文件去找目标
+    /// </summary>
+    public enum RelateType
+    {
+        prefab,
+        unity,
+    }
+
+    #endregion 结构
 }
