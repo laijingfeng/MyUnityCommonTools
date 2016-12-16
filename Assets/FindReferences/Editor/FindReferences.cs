@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿//#define HavePrefabInPrefab
+
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 using System.IO;
@@ -35,6 +37,9 @@ public class FindReferences : EditorWindow
     /// 当前的关联类型表
     /// </summary>
     private static List<RelateType> m_RelateType = new List<RelateType>();
+    /// <summary>
+    /// 要查找详情的对象，在m_RelatedGo查找m_FindName
+    /// </summary>
     private static GameObject m_RelatedGo;
 
     #endregion 变量
@@ -223,7 +228,18 @@ public class FindReferences : EditorWindow
                 break;
             default:
                 {
+#if HavePrefabInPrefab
+                    PrefabInPrefab[] coms = m_RelatedGo.GetComponentsInChildren<PrefabInPrefab>(true);
+                    foreach (PrefabInPrefab com in coms)
+                    {
+                        if (com.PrefabName().Equals(m_FindName))
+                        {
+                            Debug.LogWarning(GetRelativeAssetsPath(com.transform), com);
+                        }
+                    }
+#else
                     Debug.LogWarning("类型[" + m_FindType.ToString() + "]暂不支持FindDetail");
+#endif
                 }
                 break;
         }
