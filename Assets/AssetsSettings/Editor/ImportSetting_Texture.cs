@@ -38,6 +38,11 @@ public class ImportSetting_Texture : ImportSetting_Base
 
     public override bool ApplySettings(UnityEditor.AssetImporter importer)
     {
+        if (base.ApplySettings(importer) == false)
+        {
+            return false;
+        }
+
         m_CurImpoter = importer as TextureImporter;
 
         m_CurImpoter.textureType = m_textureType;

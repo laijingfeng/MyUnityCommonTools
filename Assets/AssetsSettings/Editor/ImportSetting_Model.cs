@@ -231,6 +231,11 @@ public class ImportSetting_Model : ImportSetting_Base
 
     public override bool ApplySettings(UnityEditor.AssetImporter importer)
     {
+        if (base.ApplySettings(importer) == false)
+        {
+            return false;
+        }
+
         m_CurImpoter = importer as ModelImporter;
 
         if (m_CurImpoter == null)

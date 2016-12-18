@@ -17,7 +17,16 @@ public class ImportSetting_Base : ScriptableObject
         Path,
     }
 
-    public bool m_InUse;
+    /// <summary>
+    /// <para>是否启用</para>
+    /// <para>不启用相当于不存在</para>
+    /// </summary>
+    public bool m_InUse = true;
+    /// <summary>
+    /// <para>暂时忽略</para>
+    /// <para>要调试某个资源的时候，可以将管辖的设置暂时定义为[暂时忽略]，不会强制设置属性，同时也挡住继续往上查找下一个</para>
+    /// </summary>
+    public bool m_TmpIgnore = false;
     public FilterType m_TypeFilter;
     public PathFilterType m_PathFilterType;
     public string m_PathFilter;
@@ -29,7 +38,8 @@ public class ImportSetting_Base : ScriptableObject
     {
         EditorGUILayout.BeginVertical("box");
 
-        this.m_InUse = EditorGUILayout.Toggle("InUse", this.m_InUse);
+        this.m_InUse = EditorGUILayout.Toggle(new GUIContent("InUse", "是否启用，不启用相当于不存在"), this.m_InUse);
+        this.m_TmpIgnore = EditorGUILayout.Toggle(new GUIContent("TmpIgnore", "暂时忽略，要调试某个资源的时候，可以将管辖的设置暂时定义为[暂时忽略]，不会强制设置属性，同时也挡住继续往上查找下一个"), this.m_TmpIgnore);
 
         EditorGUILayout.LabelField("FilterType", this.m_TypeFilter.ToString());
 
@@ -296,6 +306,10 @@ public class ImportSetting_Base : ScriptableObject
     /// <returns></returns>
     public virtual bool ApplySettings(AssetImporter importer)
     {
+        if (m_TmpIgnore)
+        {
+            return false;
+        }
         return true;
     }
 }

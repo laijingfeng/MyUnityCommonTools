@@ -11,4 +11,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cea5de7aa7c2f044a5f518c03177b5d, type: 3}
   m_Name: NewAssetRule
   m_EditorClassIdentifier: 
+  showLog: 0
   sets: []
