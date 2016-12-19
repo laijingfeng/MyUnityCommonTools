@@ -2,62 +2,65 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
-[System.Serializable]
-public class AssetRule : ScriptableObject
+namespace Jerry
 {
-    public bool showLog;
-    public List<ImportSetting_Base> sets;
-
-    public static AssetRule CreateAssetRule()
+    [System.Serializable]
+    public class AssetRule : ScriptableObject
     {
-        AssetRule assetRule = AssetRule.CreateInstance<AssetRule>();
+        public bool showLog;
+        public List<ImportSetting_Base> sets;
 
-        assetRule.Init();
-
-        return assetRule;
-    }
-
-    public void Init()
-    {
-        sets = new List<ImportSetting_Base>();
-    }
-
-    public bool IsMatch(AssetImporter importer,out string setName)
-    {
-        setName = string.Empty;
-        if (sets == null || sets.Count < 1)
+        public static AssetRule CreateAssetRule()
         {
-            return false;
+            AssetRule assetRule = AssetRule.CreateInstance<AssetRule>();
+
+            assetRule.Init();
+
+            return assetRule;
         }
-        foreach (ImportSetting_Base s in sets)
+
+        public void Init()
         {
-            if (s.Match(importer))
+            sets = new List<ImportSetting_Base>();
+        }
+
+        public bool IsMatch(AssetImporter importer, out string setName)
+        {
+            setName = string.Empty;
+            if (sets == null || sets.Count < 1)
             {
-                setName = s.m_MyName;
-                if (showLog)
+                return false;
+            }
+            foreach (ImportSetting_Base s in sets)
+            {
+                if (s.Match(importer))
                 {
-                    Debug.Log(string.Format("<color=white>{0}</color> <color=yellow>{1}.{2}</color>", importer.assetPath, this.name, setName));
+                    setName = s.m_MyName;
+                    if (showLog)
+                    {
+                        Debug.Log(string.Format("<color=white>{0}</color> <color=yellow>{1}.{2}</color>", importer.assetPath, this.name, setName));
+                    }
+                    return true;
                 }
-                return true;
             }
-        }
-        return false;
-    }
-
-    public bool ApplySettings(AssetImporter importer)
-    {
-        if (sets == null || sets.Count < 1)
-        {
             return false;
         }
-        foreach (ImportSetting_Base s in sets)
+
+        public bool ApplySettings(AssetImporter importer)
         {
-            if (s.Match(importer))
+            if (sets == null || sets.Count < 1)
             {
-                s.ApplySettings(importer);
-                return true;
+                return false;
             }
+            foreach (ImportSetting_Base s in sets)
+            {
+                if (s.Match(importer))
+                {
+                    s.ApplySettings(importer);
+                    return true;
+                }
+            }
+            return false;
         }
-        return false;
     }
 }
