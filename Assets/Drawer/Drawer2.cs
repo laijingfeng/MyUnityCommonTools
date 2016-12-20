@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
 #if UNITY_EDITOR
 using UnityEditor;
-using System;
 #endif
 
 namespace Jerry
 {
+    [ExecuteInEditMode]
     public class Drawer2 : MonoBehaviour
     {
         private static Drawer2 _instance;
@@ -16,8 +17,16 @@ namespace Jerry
             {
                 if (_instance == null)
                 {
-                    GameObject go = new GameObject("Drawer");
-                    _instance = go.AddComponent<Drawer2>();
+                    GameObject go = GameObject.Find("_JerryDrawer2");
+                    if (go == null)
+                    {
+                        go = new GameObject("_JerryDrawer2");
+                    }
+                    _instance = go.GetComponent<Drawer2>();
+                    if (_instance == null)
+                    {
+                        _instance = go.AddComponent<Drawer2>();
+                    }
                 }
                 return _instance;
             }
@@ -82,6 +91,12 @@ namespace Jerry
             _listToDelete.Clear();
             for (int i = 0, imax = _drawerList.Count; i < imax; i++)
             {
+                if(_drawerList[i].IsExecuteInEditMode == false
+                    && Application.isPlaying == false)
+                {
+                    continue;
+                }
+
                 if (_drawerList[i].Draw() == false)
                 {
                     _listToDelete.Add(_drawerList[i]);
@@ -97,14 +112,25 @@ namespace Jerry
     public class Drawer2ElementPath : Drawer2ElementBase
     {
         protected Vector3[] _points;
+        protected Transform[] _tfPoints;
+        protected bool _drawVetPoint;
 
         public Drawer2ElementPath()
             : base()
         {
             _points = null;
+            _tfPoints = null;
+            _drawVetPoint = true;
         }
 
         #region 对外接口
+
+        public virtual Drawer2ElementPath SetPoints(params Transform[] tfPoints)
+        {
+            _tfPoints = tfPoints;
+            _drawVetPoint = false;
+            return this;
+        }
 
         public virtual Drawer2ElementPath SetPoints(params Vector3[] points)
         {
@@ -125,6 +151,7 @@ namespace Jerry
                 tmp.AddRange(points);
                 _points = tmp.ToArray();
             }
+            _drawVetPoint = true;
             return this;
         }
 
@@ -143,6 +170,11 @@ namespace Jerry
             return base.SetLife(time) as Drawer2ElementPath;
         }
 
+        public virtual new Drawer2ElementPath SetExecuteInEditMode(bool executeInEditMode)
+        {
+            return base.SetExecuteInEditMode(executeInEditMode) as Drawer2ElementPath;
+        }
+
         #endregion 对外接口
 
         public override bool Draw()
@@ -153,11 +185,27 @@ namespace Jerry
             }
 
             Gizmos.color = _color;
-            if (_points != null)
+            if (_drawVetPoint)
             {
-                for (int i = 1, imax = _points.Length; i < imax; i++)
+                if (_points != null)
                 {
-                    Gizmos.DrawLine(_points[i - 1], _points[i]);
+                    for (int i = 1, imax = _points.Length; i < imax; i++)
+                    {
+                        Gizmos.DrawLine(_points[i - 1], _points[i]);
+                    }
+                }
+            }
+            else
+            {
+                if (_tfPoints != null)
+                {
+                    for (int i = 1, imax = _tfPoints.Length; i < imax; i++)
+                    {
+                        if (_tfPoints[i - 1] != null && _tfPoints[i] != null)
+                        {
+                            Gizmos.DrawLine(_tfPoints[i - 1].position, _tfPoints[i].position);
+                        }
+                    }
                 }
             }
             Gizmos.color = Color.white;
@@ -221,6 +269,11 @@ namespace Jerry
         public virtual new Drawer2ElementCube SetLife(float time)
         {
             return base.SetLife(time) as Drawer2ElementCube;
+        }
+
+        public virtual new Drawer2ElementCube SetExecuteInEditMode(bool executeInEditMode)
+        {
+            return base.SetExecuteInEditMode(executeInEditMode) as Drawer2ElementCube;
         }
 
         #endregion 对外接口
@@ -290,6 +343,11 @@ namespace Jerry
             return base.SetLife(time) as Drawer2ElementLabel;
         }
 
+        public virtual new Drawer2ElementLabel SetExecuteInEditMode(bool executeInEditMode)
+        {
+            return base.SetExecuteInEditMode(executeInEditMode) as Drawer2ElementLabel;
+        }
+
         #endregion 对外接口
 
         public override bool Draw()
@@ -331,12 +389,15 @@ namespace Jerry
         /// </summary>
         protected float _createTime;
 
+        protected bool _executeInEditMode;
+
         public Drawer2ElementBase()
         {
             _id = string.Empty;
             _life = 0f;
             _color = Color.white;
             _createTime = Time.realtimeSinceStartup;
+            _executeInEditMode = false;
         }
 
         #region 对外接口
@@ -347,6 +408,20 @@ namespace Jerry
             {
                 return _id;
             }
+        }
+
+        public bool IsExecuteInEditMode
+        {
+            get
+            {
+                return _executeInEditMode;
+            }
+        }
+
+        public virtual Drawer2ElementBase SetExecuteInEditMode(bool executeInEditMode)
+        {
+            _executeInEditMode = executeInEditMode;
+            return this;
         }
 
         public virtual Drawer2ElementBase SetID(string id)
