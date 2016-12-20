@@ -9,7 +9,6 @@ namespace Jerry
 {
     public class Drawer : MonoBehaviour
     {
-#if UNITY_EDITOR
         //id id
         //type 类型，DrawType
         //from 起点
@@ -320,14 +319,12 @@ namespace Jerry
             {
                 return;
             }
-
+#if UNITY_EDITOR
             Handles.Label((Vector3)table["pos"], (string)table["text"]);
-
+#endif
             GUI.color = Color.white;
         }
 
         #endregion 绘制
-
-#endif
     }
 }

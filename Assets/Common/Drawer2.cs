@@ -8,8 +8,6 @@ namespace Jerry
 {
     public class Drawer2 : MonoBehaviour
     {
-#if UNITY_EDITOR
-
         private static Drawer2 _instance;
         private static Drawer2 Instance
         {
@@ -95,7 +93,6 @@ namespace Jerry
                 Remove(_listToDelete[i]);
             }
         }
-#endif
     }
 
     public class Drawer2ElementCube : Drawer2ElementBase
@@ -181,7 +178,9 @@ namespace Jerry
             }
 
             GUI.color = _color;
+#if UNITY_EDITOR
             Handles.Label(_pos, _text);
+#endif
             GUI.color = Color.white;
 
             return true;
@@ -208,9 +207,7 @@ namespace Jerry
             }
 
             Gizmos.color = _color;
-#if UNITY_EDITOR
             Gizmos.DrawLine(_from, _to);
-#endif
             Gizmos.color = Color.white;
 
             return true;
