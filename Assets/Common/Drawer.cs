@@ -5,326 +5,329 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 
-public class Drawer : MonoBehaviour
+namespace Jerry
 {
+    public class Drawer : MonoBehaviour
+    {
 #if UNITY_EDITOR
-    //id id
-    //type 类型，DrawType
-    //from 起点
-    //to 终点
-    //pos 位置
-    //size 大小
-    //size_factor 大小比例 
-    //delay 延时秒数删除
-    //color 颜色
-    //wire 网格
-    //text 文本
+        //id id
+        //type 类型，DrawType
+        //from 起点
+        //to 终点
+        //pos 位置
+        //size 大小
+        //size_factor 大小比例 
+        //delay 延时秒数删除
+        //color 颜色
+        //wire 网格
+        //text 文本
 
-    private static Drawer m_Instance;
+        private static Drawer m_Instance;
 
-    private static Drawer Instance
-    {
-        get
+        private static Drawer Instance
         {
-            if (m_Instance == null)
+            get
             {
-                GameObject go = new GameObject("Drawer");
-                m_Instance = go.AddComponent<Drawer>();
+                if (m_Instance == null)
+                {
+                    GameObject go = new GameObject("Drawer");
+                    m_Instance = go.AddComponent<Drawer>();
+                }
+                return m_Instance;
             }
-            return m_Instance;
         }
-    }
 
-    private static List<Hashtable> m_DrawerList = new List<Hashtable>();
+        private static List<Hashtable> m_DrawerList = new List<Hashtable>();
 
-    #region 对外接口
+        #region 对外接口
 
-    /// <summary>
-    /// 删除
-    /// </summary>
-    /// <param name="id"></param>
-    public static void Remove(string id)
-    {
-        Hashtable table = m_DrawerList.Find((x) => ((string)x["id"]).Equals(id));
-        if (table != null)
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="id"></param>
+        public static void Remove(string id)
         {
-            m_DrawerList.Remove(table);
-        }
-    }
-
-    /// <summary>
-    /// 删除所有
-    /// </summary>
-    public static void RemoveAll()
-    {
-        m_DrawerList.Clear();
-    }
-
-    /// <summary>
-    /// 删除
-    /// </summary>
-    /// <param name="table"></param>
-    public static void Remove(Hashtable table)
-    {
-        if (table != null)
-        {
-            if (m_DrawerList.Contains(table))
+            Hashtable table = m_DrawerList.Find((x) => ((string)x["id"]).Equals(id));
+            if (table != null)
             {
                 m_DrawerList.Remove(table);
             }
         }
-    }
 
-    /// <summary>
-    /// 是否存在
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    public static bool Exist(string id)
-    {
-        return m_DrawerList.Exists((x) => ((string)x["id"]).Equals(id));
-    }
-
-    /// <summary>
-    /// 添加
-    /// </summary>
-    /// <param name="table"></param>
-    /// <returns></returns>
-    public static string Add(Hashtable table)
-    {
-        //只是为了创建一下
-        Instance.GetComponent<Transform>();
-
-        table = CleanArgs(table);
-        string id;
-        if (table.Contains("id") == false)
+        /// <summary>
+        /// 删除所有
+        /// </summary>
+        public static void RemoveAll()
         {
-            id = GenerateID();
-            table.Add("id", id);
-        }
-        else
-        {
-            id = (string)table["id"];
+            m_DrawerList.Clear();
         }
 
-        Remove(id);
-        m_DrawerList.Add(table);
-
-        if (table.Contains("delay"))
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="table"></param>
+        public static void Remove(Hashtable table)
         {
-            Instance.StartCoroutine("DelayDelete", table);
-        }
-
-        return id;
-    }
-
-    /// <summary>
-    /// Hash params
-    /// </summary>
-    /// <param name="args"></param>
-    /// <returns></returns>
-    public static Hashtable Hash(params object[] args)
-    {
-        int len = args.Length;
-        Hashtable hashTable = new Hashtable(len >> 1);
-        if ((len ^ 1) == 1)
-        {
-            Debug.LogError("Drawer Error: Hash requires an even number of arguments!");
-            return null;
-        }
-        else
-        {
-            int i = 0;
-            while (i < len - 1)
+            if (table != null)
             {
-                hashTable.Add(args[i], args[i + 1]);
-                i += 2;
-            }
-            return hashTable;
-        }
-    }
-
-    /// <summary>
-    /// 绘制类型
-    /// </summary>
-    public enum DrawType
-    {
-        Line = 0,
-        Cube,
-        Label,
-    }
-
-    #endregion 对外接口
-
-    private IEnumerator DelayDelete(Hashtable table)
-    {
-        if (table == null)
-        {
-            yield break;
-        }
-        yield return new WaitForSeconds((float)table["delay"]);
-        if (table != null)
-        {
-            Remove(table);
-        }
-    }
-
-    /// <summary>
-    /// cast any accidentally supplied doubles and ints as floats as iTween only uses floats internally and unify parameter case
-    /// </summary>
-    /// <param name="args"></param>
-    /// <returns></returns>
-    private static Hashtable CleanArgs(Hashtable args)
-    {
-        Hashtable argsCopy = new Hashtable(args.Count);
-        Hashtable argsCaseUnified = new Hashtable(args.Count);
-
-        foreach (DictionaryEntry item in args)
-        {
-            argsCopy.Add(item.Key, item.Value);
-        }
-
-        foreach (DictionaryEntry item in argsCopy)
-        {
-            if (item.Value.GetType() == typeof(System.Int32))
-            {
-                int original = (int)item.Value;
-                float casted = (float)original;
-                args[item.Key] = casted;
-            }
-            if (item.Value.GetType() == typeof(System.Double))
-            {
-                double original = (double)item.Value;
-                float casted = (float)original;
-                args[item.Key] = casted;
+                if (m_DrawerList.Contains(table))
+                {
+                    m_DrawerList.Remove(table);
+                }
             }
         }
 
-        foreach (DictionaryEntry item in args)
+        /// <summary>
+        /// 是否存在
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static bool Exist(string id)
         {
-            argsCaseUnified.Add(item.Key.ToString().ToLower(), item.Value);
+            return m_DrawerList.Exists((x) => ((string)x["id"]).Equals(id));
         }
 
-        args = argsCaseUnified;
-
-        return args;
-    }
-
-    /// <summary>
-    /// generate id
-    /// </summary>
-    /// <returns></returns>
-    private static string GenerateID()
-    {
-        int strlen = 15;
-        char[] chars = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8' };
-        int num_chars = chars.Length - 1;
-        string randomChar = "";
-        for (int i = 0; i < strlen; i++)
+        /// <summary>
+        /// 添加
+        /// </summary>
+        /// <param name="table"></param>
+        /// <returns></returns>
+        public static string Add(Hashtable table)
         {
-            randomChar += chars[(int)Mathf.Floor(UnityEngine.Random.Range(0, num_chars))];
-        }
-        return randomChar;
-    }
+            //只是为了创建一下
+            Instance.GetComponent<Transform>();
 
-    #region 绘制
-
-    void OnDrawGizmos()
-    {
-        for (int i = 0, imax = m_DrawerList.Count; i < imax; i++)
-        {
-            Hashtable table = (Hashtable)m_DrawerList[i];
-            switch ((DrawType)table["type"])
+            table = CleanArgs(table);
+            string id;
+            if (table.Contains("id") == false)
             {
-                case DrawType.Line:
-                    {
-                        DrawLine(table);
-                    }
-                    break;
-                case DrawType.Cube:
-                    {
-                        DrawCube(table);
-                    }
-                    break;
-                case DrawType.Label:
-                    {
-                        DrawLabel(table);
-                    }
-                    break;
+                id = GenerateID();
+                table.Add("id", id);
+            }
+            else
+            {
+                id = (string)table["id"];
+            }
+
+            Remove(id);
+            m_DrawerList.Add(table);
+
+            if (table.Contains("delay"))
+            {
+                Instance.StartCoroutine("DelayDelete", table);
+            }
+
+            return id;
+        }
+
+        /// <summary>
+        /// Hash params
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static Hashtable Hash(params object[] args)
+        {
+            int len = args.Length;
+            Hashtable hashTable = new Hashtable(len >> 1);
+            if ((len ^ 1) == 1)
+            {
+                Debug.LogError("Drawer Error: Hash requires an even number of arguments!");
+                return null;
+            }
+            else
+            {
+                int i = 0;
+                while (i < len - 1)
+                {
+                    hashTable.Add(args[i], args[i + 1]);
+                    i += 2;
+                }
+                return hashTable;
             }
         }
-    }
 
-    private void DrawLine(Hashtable table)
-    {
-        if (table.Contains("from") == false || table.Contains("to") == false)
+        /// <summary>
+        /// 绘制类型
+        /// </summary>
+        public enum DrawType
         {
-            return;
+            Line = 0,
+            Cube,
+            Label,
         }
 
-        if (table.Contains("color"))
+        #endregion 对外接口
+
+        private IEnumerator DelayDelete(Hashtable table)
         {
-            Gizmos.color = (Color)table["color"];
+            if (table == null)
+            {
+                yield break;
+            }
+            yield return new WaitForSeconds((float)table["delay"]);
+            if (table != null)
+            {
+                Remove(table);
+            }
         }
 
-        Gizmos.DrawLine((Vector3)table["from"], (Vector3)table["to"]);
-        Gizmos.color = Color.white;
-    }
-
-    private void DrawCube(Hashtable table)
-    {
-        if (table.Contains("color"))
+        /// <summary>
+        /// cast any accidentally supplied doubles and ints as floats as iTween only uses floats internally and unify parameter case
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        private static Hashtable CleanArgs(Hashtable args)
         {
-            Gizmos.color = (Color)table["color"];
+            Hashtable argsCopy = new Hashtable(args.Count);
+            Hashtable argsCaseUnified = new Hashtable(args.Count);
+
+            foreach (DictionaryEntry item in args)
+            {
+                argsCopy.Add(item.Key, item.Value);
+            }
+
+            foreach (DictionaryEntry item in argsCopy)
+            {
+                if (item.Value.GetType() == typeof(System.Int32))
+                {
+                    int original = (int)item.Value;
+                    float casted = (float)original;
+                    args[item.Key] = casted;
+                }
+                if (item.Value.GetType() == typeof(System.Double))
+                {
+                    double original = (double)item.Value;
+                    float casted = (float)original;
+                    args[item.Key] = casted;
+                }
+            }
+
+            foreach (DictionaryEntry item in args)
+            {
+                argsCaseUnified.Add(item.Key.ToString().ToLower(), item.Value);
+            }
+
+            args = argsCaseUnified;
+
+            return args;
         }
 
-        if (table.Contains("pos") == false)
+        /// <summary>
+        /// generate id
+        /// </summary>
+        /// <returns></returns>
+        private static string GenerateID()
         {
-            return;
+            int strlen = 15;
+            char[] chars = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8' };
+            int num_chars = chars.Length - 1;
+            string randomChar = "";
+            for (int i = 0; i < strlen; i++)
+            {
+                randomChar += chars[(int)Mathf.Floor(UnityEngine.Random.Range(0, num_chars))];
+            }
+            return randomChar;
         }
 
-        Vector3 size = Vector3.one;
+        #region 绘制
 
-        if (table.Contains("size"))
+        void OnDrawGizmos()
         {
-            size = (Vector3)table["size"];
+            for (int i = 0, imax = m_DrawerList.Count; i < imax; i++)
+            {
+                Hashtable table = (Hashtable)m_DrawerList[i];
+                switch ((DrawType)table["type"])
+                {
+                    case DrawType.Line:
+                        {
+                            DrawLine(table);
+                        }
+                        break;
+                    case DrawType.Cube:
+                        {
+                            DrawCube(table);
+                        }
+                        break;
+                    case DrawType.Label:
+                        {
+                            DrawLabel(table);
+                        }
+                        break;
+                }
+            }
         }
 
-        if (table.Contains("size_factor"))
+        private void DrawLine(Hashtable table)
         {
-            size *= (float)table["size_factor"];
+            if (table.Contains("from") == false || table.Contains("to") == false)
+            {
+                return;
+            }
+
+            if (table.Contains("color"))
+            {
+                Gizmos.color = (Color)table["color"];
+            }
+
+            Gizmos.DrawLine((Vector3)table["from"], (Vector3)table["to"]);
+            Gizmos.color = Color.white;
         }
 
-        if (table.Contains("wire") && ((bool)table["wire"]) == true)
+        private void DrawCube(Hashtable table)
         {
-            Gizmos.DrawWireCube((Vector3)table["pos"], size);
+            if (table.Contains("color"))
+            {
+                Gizmos.color = (Color)table["color"];
+            }
+
+            if (table.Contains("pos") == false)
+            {
+                return;
+            }
+
+            Vector3 size = Vector3.one;
+
+            if (table.Contains("size"))
+            {
+                size = (Vector3)table["size"];
+            }
+
+            if (table.Contains("size_factor"))
+            {
+                size *= (float)table["size_factor"];
+            }
+
+            if (table.Contains("wire") && ((bool)table["wire"]) == true)
+            {
+                Gizmos.DrawWireCube((Vector3)table["pos"], size);
+            }
+            else
+            {
+                Gizmos.DrawCube((Vector3)table["pos"], size);
+            }
+
+            Gizmos.color = Color.white;
         }
-        else
+
+        private void DrawLabel(Hashtable table)
         {
-            Gizmos.DrawCube((Vector3)table["pos"], size);
+            if (table.Contains("color"))
+            {
+                GUI.color = (Color)table["color"];
+            }
+
+            if (table.Contains("pos") == false || table.Contains("text") == false)
+            {
+                return;
+            }
+
+            Handles.Label((Vector3)table["pos"], (string)table["text"]);
+
+            GUI.color = Color.white;
         }
 
-        Gizmos.color = Color.white;
-    }
-
-    private void DrawLabel(Hashtable table)
-    {
-        if (table.Contains("color"))
-        {
-            GUI.color = (Color)table["color"];
-        }
-
-        if (table.Contains("pos") == false || table.Contains("text") == false)
-        {
-            return;
-        }
-
-        Handles.Label((Vector3)table["pos"], (string)table["text"]);
-
-        GUI.color = Color.white;
-    }
-
-    #endregion 绘制
+        #endregion 绘制
 
 #endif
+    }
 }
