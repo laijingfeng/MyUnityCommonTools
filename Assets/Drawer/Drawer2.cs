@@ -44,6 +44,12 @@ namespace Jerry
             return ret;
         }
 
+        public static T GetElement<T>(string id) where T : Drawer2ElementBase
+        {
+            T ele = _drawerList.Find((x) => id.Equals(x.ID)) as T;
+            return ele;
+        }
+
         public static void Remove(Drawer2ElementBase ele)
         {
             if (_drawerList.Contains(ele))
@@ -113,14 +119,12 @@ namespace Jerry
     {
         protected Vector3[] _points;
         protected Transform[] _tfPoints;
-        protected bool _drawVetPoint;
-
+        
         public Drawer2ElementPath()
             : base()
         {
             _points = null;
             _tfPoints = null;
-            _drawVetPoint = true;
         }
 
         #region 对外接口
@@ -128,13 +132,14 @@ namespace Jerry
         public virtual Drawer2ElementPath SetPoints(params Transform[] tfPoints)
         {
             _tfPoints = tfPoints;
-            _drawVetPoint = false;
+            _useVectorPoint = false;
             return this;
         }
 
         public virtual Drawer2ElementPath SetPoints(params Vector3[] points)
         {
             _points = points;
+            _useVectorPoint = true;
             return this;
         }
 
@@ -151,7 +156,7 @@ namespace Jerry
                 tmp.AddRange(points);
                 _points = tmp.ToArray();
             }
-            _drawVetPoint = true;
+            _useVectorPoint = true;
             return this;
         }
 
@@ -185,7 +190,7 @@ namespace Jerry
             }
 
             Gizmos.color = _color;
-            if (_drawVetPoint)
+            if (_useVectorPoint)
             {
                 if (_points != null)
                 {
@@ -216,6 +221,7 @@ namespace Jerry
 
     public class Drawer2ElementCube : Drawer2ElementBase
     {
+        protected Transform _tfPos;
         protected Vector3 _pos;
         protected Vector3 _size;
         protected float _sizeFactor;
@@ -224,6 +230,7 @@ namespace Jerry
         public Drawer2ElementCube()
             : base()
         {
+            _tfPos = null;
             _pos = Vector3.zero;
             _sizeFactor = 1f;
             _wire = false;
@@ -232,9 +239,17 @@ namespace Jerry
 
         #region 对外接口
 
+        public virtual Drawer2ElementCube SetPos(Transform tfPos)
+        {
+            _tfPos = tfPos;
+            _useVectorPoint = false;
+            return this;
+        }
+
         public virtual Drawer2ElementCube SetPos(Vector3 pos)
         {
             _pos = pos;
+            _useVectorPoint = true;
             return this;
         }
 
@@ -289,11 +304,25 @@ namespace Jerry
 
             if (_wire)
             {
-                Gizmos.DrawWireCube(_pos, _size * _sizeFactor);
+                if (_useVectorPoint == false && _tfPos != null)
+                {
+                    Gizmos.DrawWireCube(_tfPos.position, _size * _sizeFactor);
+                }
+                else
+                {
+                    Gizmos.DrawWireCube(_pos, _size * _sizeFactor);
+                }
             }
             else
             {
-                Gizmos.DrawCube(_pos, _size * _sizeFactor);
+                if (_useVectorPoint == false && _tfPos != null)
+                {
+                    Gizmos.DrawCube(_tfPos.position, _size * _sizeFactor);
+                }
+                else
+                {
+                    Gizmos.DrawCube(_pos, _size * _sizeFactor);
+                }
             }
 
             Gizmos.color = Color.white;
@@ -304,6 +333,7 @@ namespace Jerry
 
     public class Drawer2ElementLabel : Drawer2ElementBase
     {
+        protected Transform _tfPos;
         protected Vector3 _pos;
         protected string _text;
 
@@ -316,9 +346,17 @@ namespace Jerry
 
         #region 对外接口
 
+        public virtual Drawer2ElementLabel SetPos(Transform tfPos)
+        {
+            _tfPos = tfPos;
+            _useVectorPoint = false;
+            return this;
+        }
+
         public virtual Drawer2ElementLabel SetPos(Vector3 pos)
         {
             _pos = pos;
+            _useVectorPoint = true;
             return this;
         }
 
@@ -359,7 +397,14 @@ namespace Jerry
 
             GUI.color = _color;
 #if UNITY_EDITOR
-            Handles.Label(_pos, _text);
+            if (_useVectorPoint == false && _tfPos != null)
+            {
+                Handles.Label(_tfPos.position, _text);
+            }
+            else
+            {
+                Handles.Label(_pos, _text);
+            }
 #endif
             GUI.color = Color.white;
 
@@ -391,6 +436,11 @@ namespace Jerry
 
         protected bool _executeInEditMode;
 
+        /// <summary>
+        /// 点使用Vector而不是Transform
+        /// </summary>
+        protected bool _useVectorPoint;
+
         public Drawer2ElementBase()
         {
             _id = string.Empty;
@@ -398,6 +448,7 @@ namespace Jerry
             _color = Color.white;
             _createTime = Time.realtimeSinceStartup;
             _executeInEditMode = false;
+            _useVectorPoint = true;
         }
 
         #region 对外接口
@@ -418,6 +469,11 @@ namespace Jerry
             }
         }
 
+        /// <summary>
+        /// 编辑器模式可用
+        /// </summary>
+        /// <param name="executeInEditMode"></param>
+        /// <returns></returns>
         public virtual Drawer2ElementBase SetExecuteInEditMode(bool executeInEditMode)
         {
             _executeInEditMode = executeInEditMode;
@@ -432,6 +488,7 @@ namespace Jerry
 
         public virtual Drawer2ElementBase SetLife(float time)
         {
+            _createTime = Time.realtimeSinceStartup;
             _life = time;
             return this;
         }
