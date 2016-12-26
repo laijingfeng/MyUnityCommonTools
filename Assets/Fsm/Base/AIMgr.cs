@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
-namespace JerryFsm
+//version: 2016-12-27-00
+namespace Jerry
 {
     public abstract class AIMgr : MonoBehaviour
     {
@@ -11,7 +12,7 @@ namespace JerryFsm
             MakeFsm();
             if (m_Fsm != null)
             {
-                m_Fsm.SetTrans(this.transform);
+                m_Fsm.SetMgr(this);
             }
         }
 

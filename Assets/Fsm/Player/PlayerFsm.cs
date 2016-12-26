@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using JerryFsm;
+using Jerry;
 
 public class PlayerFsm : Fsm
 {

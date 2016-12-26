@@ -1,17 +1,15 @@
 ﻿using System.Collections.Generic;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+using UnityEngine;
 
-namespace JerryFsm
+namespace Jerry
 {
     public abstract class State
     {
         private int i, m_TransitionCnt;
 
-        protected List<Transition> m_Transitions;
+        private List<Transition> m_Transitions;
 
-        protected Fsm m_Fsm;
+        private Fsm m_Fsm;
 
         public Fsm CurFsm
         {
@@ -26,16 +24,15 @@ namespace JerryFsm
             m_Fsm = mgr;
         }
 
-        public State()
+        public State(int id)
         {
+            m_ID = id;
             m_Transitions = new List<Transition>();
         }
 
-        /// <summary>
-        /// ID
-        /// </summary>
-        /// <returns></returns>
-        public abstract int ID();
+        private int m_ID;
+
+        public int ID { get { return m_ID; } }
 
         /// <summary>
         /// base.Enter()需要执行
@@ -54,12 +51,12 @@ namespace JerryFsm
             {
                 return;
             }
-
+            
             for (i = 0; i < m_TransitionCnt; i++)
             {
                 if (m_Transitions[i] != null && m_Transitions[i].Check())
                 {
-                    m_Fsm.ChangeState(m_Transitions[i].NextID());
+                    m_Fsm.ChangeState(m_Transitions[i].NextID);
                     return;
                 }
             }
@@ -74,9 +71,9 @@ namespace JerryFsm
                 return;
             }
 
-            t.SetState(this);
             if (m_Transitions.Contains(t) == false)
             {
+                t.SetState(this);
                 m_Transitions.Add(t);
             }
         }
@@ -87,37 +84,6 @@ namespace JerryFsm
 
         public virtual void DrawSelected()
         {
-        }
-    }
-
-    public class DrawNameState : State
-    {
-        public virtual string Name()
-        {
-            return ID().ToString();
-        }
-
-        public override int ID()
-        {
-            return 0;
-        }
-
-        public override void Draw()
-        {
-            base.Draw();
-
-#if UNITY_EDITOR
-            Handles.Label(m_Fsm.Trans.position, Name());
-#endif
-        }
-
-        public override void DrawSelected()
-        {
-            base.DrawSelected();
-
-#if UNITY_EDITOR
-            Handles.Label(m_Fsm.Trans.position, Name());
-#endif
         }
     }
 }

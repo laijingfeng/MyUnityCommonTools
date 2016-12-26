@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using JerryFsm;
+using Jerry;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -8,10 +8,7 @@ public class PlayerState_Walk : State
 {
     public int frame;
 
-    public override int ID()
-    {
-        return (int)PlayerStateID.Walk;
-    }
+    public PlayerState_Walk(int id) : base(id) { }
 
     public override void Enter()
     {
@@ -23,30 +20,30 @@ public class PlayerState_Walk : State
     {
         base.Draw();
 #if UNITY_EDITOR
-        Handles.Label(m_Fsm.Trans.position, "Walk");
+        Handles.Label(CurFsm.GetMgr.transform.position, "Walk");
 #endif
     }
 
     public override void Update()
     {
         base.Update();
-        
+
         frame++;
 
-        PlayerFsm fsm = m_Fsm as PlayerFsm;
+        PlayerFsm fsm = CurFsm as PlayerFsm;
 
         if (fsm.path == null || fsm.path.Length <= 0)
         {
             return;
         }
 
-        Vector3 moveDir = fsm.path[fsm.curIdx].position - fsm.Trans.position;
+        Vector3 moveDir = fsm.path[fsm.curIdx].position - fsm.GetMgr.transform.position;
         if (moveDir.magnitude < 0.1f)
         {
             fsm.curIdx = (fsm.curIdx + 1) % fsm.path.Length;
-            moveDir = fsm.path[fsm.curIdx].position - fsm.Trans.position;
+            moveDir = fsm.path[fsm.curIdx].position - fsm.GetMgr.transform.position;
         }
-        fsm.Trans.rotation = Quaternion.LookRotation(moveDir);
-        fsm.Trans.position = fsm.Trans.position + fsm.Trans.forward * 0.015f;
+        fsm.GetMgr.transform.rotation = Quaternion.LookRotation(moveDir);
+        fsm.GetMgr.transform.position = fsm.GetMgr.transform.position + fsm.GetMgr.transform.forward * 0.015f;
     }
 }

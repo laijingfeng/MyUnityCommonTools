@@ -1,11 +1,8 @@
-﻿using JerryFsm;
+﻿using Jerry;
 
 public class Tr_Move_Run2Walk : Transition
 {
-    public override int NextID()
-    {
-        return (int)PlayerStateID.Walk;
-    }
+    public Tr_Move_Run2Walk(int nextID) : base(nextID) { }
 
     public override bool Check()
     {

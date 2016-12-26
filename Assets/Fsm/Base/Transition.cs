@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-
-namespace JerryFsm
+﻿
+namespace Jerry
 {
     /// <summary>
     /// 转换条件
@@ -17,7 +16,14 @@ namespace JerryFsm
             m_CurState = s;
         }
 
-        public abstract int NextID();
+        private int m_NextID;
+        public int NextID { get { return m_NextID; } }
+
+        public Transition(int nextID)
+        {
+            m_NextID = nextID;
+        }
+
         public abstract bool Check();
     }
 }

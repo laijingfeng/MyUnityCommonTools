@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace JerryFsm
+namespace Jerry
 {
     public class Fsm
     {
@@ -9,7 +9,7 @@ namespace JerryFsm
 
         private State m_CurState;
 
-        private Transform m_Trans;
+        private AIMgr m_AIMgr;
 
         /// <summary>
         /// 运行中
@@ -35,29 +35,15 @@ namespace JerryFsm
             }
         }
 
-        public GameObject Go
-        {
-            get
-            {
-                return m_Trans.gameObject;
-            }
-        }
-
-        public Transform Trans
-        {
-            get
-            {
-                return m_Trans;
-            }
-        }
+        public AIMgr GetMgr { get { return m_AIMgr; } }
 
         /// <summary>
         /// System Use
         /// </summary>
-        /// <param name="tf"></param>
-        public void SetTrans(Transform tf)
+        /// <param name="aiMgr"></param>
+        public void SetMgr(AIMgr aiMgr)
         {
-            m_Trans = tf;
+            m_AIMgr = aiMgr;
         }
 
         public Fsm()
@@ -119,7 +105,7 @@ namespace JerryFsm
         {
             foreach (State state in m_States)
             {
-                if (state.ID() == stateID)
+                if (state.ID == stateID)
                 {
                     m_CurState.Exit();
                     m_CurState = state;
@@ -131,7 +117,6 @@ namespace JerryFsm
 
         public virtual void DrawSelected()
         {
-#if UNITY_EDITOR
             if (m_DoDrawSelected == false)
             {
                 return;
@@ -140,12 +125,10 @@ namespace JerryFsm
             {
                 m_CurState.DrawSelected();
             }
-#endif
         }
 
         public virtual void Draw()
         {
-#if UNITY_EDITOR
             if (m_DoDraw == false)
             {
                 return;
@@ -155,7 +138,6 @@ namespace JerryFsm
             {
                 m_CurState.Draw();
             }
-#endif
         }
     }
 }
