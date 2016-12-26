@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-//version: 2016-12-26
+//version: 2016-12-26-00
 namespace Jerry
 {
     public class AssetImport : AssetPostprocessor
