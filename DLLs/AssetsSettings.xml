@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AssetsSettings</name>
+    </assembly>
+    <members>
+        <member name="F:Jerry.ImportSetting_Base.m_InUse">
+            <summary>
+            <para>是否启用</para>
+            <para>不启用相当于不存在</para>
+            </summary>
+        </member>
+        <member name="F:Jerry.ImportSetting_Base.m_TmpIgnore">
+            <summary>
+            <para>暂时忽略</para>
+            <para>要调试某个资源的时候，可以将管辖的设置暂时定义为[暂时忽略]，不会强制设置属性，同时也挡住继续往上查找下一个</para>
+            </summary>
+        </member>
+        <member name="M:Jerry.ImportSetting_Base.CheckPath(System.String,System.String)">
+            <summary>
+            路径匹配
+            </summary>
+            <param name="path"></param>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.ImportSetting_Base.GrammarPass(System.String)">
+            <summary>
+            语法检测
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.ImportSetting_Base.GetOneLogicPiece(System.String)">
+            <summary>
+            获取一个逻辑语句
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.ImportSetting_Base.ApplySettings(UnityEditor.AssetImporter)">
+            <param name="importer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.AssetRuleInspector.DrawAddBtn">
+            <summary>
+            绘制增加按钮
+            </summary>
+        </member>
+        <member name="M:Jerry.AssetImport.FindAssetRule(System.String)">
+            <summary>
+            查找一个AssetRule
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.AssetImport.SearchRecursive(System.String)">
+            <summary>
+            当前目录查找，然后往上递归
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
