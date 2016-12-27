@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Fsm</name>
+    </assembly>
+    <members>
+        <member name="T:Jerry.Transition">
+            <summary>
+            转换条件
+            </summary>
+        </member>
+        <member name="F:Jerry.Transition.m_CurState">
+            <summary>
+            判条件的时候要用到state的信息
+            </summary>
+        </member>
+        <member name="M:Jerry.State.Enter">
+            <summary>
+            base.Enter()需要执行
+            </summary>
+        </member>
+        <member name="M:Jerry.State.Update">
+            <summary>
+            base.Update()需要执行
+            </summary>
+        </member>
+        <member name="F:Jerry.Fsm.m_Running">
+            <summary>
+            运行中
+            </summary>
+        </member>
+        <member name="M:Jerry.Fsm.SetMgr(Jerry.AIMgr)">
+            <summary>
+            System Use
+            </summary>
+            <param name="aiMgr"></param>
+        </member>
+    </members>
+</doc>

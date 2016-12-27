@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Singleton</name>
+    </assembly>
+    <members>
+        <member name="T:Jerry.Singleton`1">
+            <summary>
+            单例
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="F:Jerry.Singleton`1.m_instance">
+            <summary>
+            单例
+            </summary>
+        </member>
+        <member name="P:Jerry.Singleton`1.Inst">
+            <summary>
+            单例
+            </summary>
+        </member>
+        <member name="T:Jerry.SingletonMono`1">
+            <summary>
+            <para>单例Mono</para>
+            <para>脚本的悬挂点要和脚本同名</para>
+            </summary>
+        </member>
+        <member name="F:Jerry.SingletonMono`1.m_instance">
+            <summary>
+            单例
+            </summary>
+        </member>
+        <member name="P:Jerry.SingletonMono`1.Inst">
+            <summary>
+            单例
+            </summary>
+        </member>
+    </members>
+</doc>
