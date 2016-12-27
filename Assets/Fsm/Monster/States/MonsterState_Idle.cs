@@ -6,21 +6,31 @@ public class MonsterState_Idle : State
 {
     public MonsterState_Idle(int id) : base(id) { }
 
+    private Task _task;
+
     public override void Enter()
     {
         base.Enter();
-        //CurFsm.GetMgr.StartCoroutine("IE_Idle");
+        Debug.LogWarning("Enter");
+        _task = new Task(this.IE_Idle());
     }
 
     public override void Exit()
     {
         base.Exit();
-        //CurFsm.GetMgr.StopCoroutine("IE_Idle");
+        if (_task != null)
+        {
+            _task.Stop();
+        }
+        Debug.LogWarning("Exit");
     }
 
-    public IEnumerator IE_Idle()
+    private IEnumerator IE_Idle()
     {
-        yield return new WaitForSeconds(1f);
-        Debug.Log("idle");
+        while (true)
+        {
+            Debug.Log("idle");
+            yield return new WaitForSeconds(0.5f);
+        }
     }
 }
