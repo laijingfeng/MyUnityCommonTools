@@ -142,5 +142,54 @@ namespace Jerry
                 m_CurState.Draw();
             }
         }
+
+        #region Graph
+
+        public string GetNode()
+        {
+            return string.Format("{0}[{1}]", GetNodeName(), this.GetType());
+        }
+
+        public string GetNodeName()
+        {
+            return string.Format("{0}", this.GetType());
+        }
+
+        public string GetNodes()
+        {
+            string ret = "";
+            ret += string.Format("{0}\n\n", GetNode());
+            foreach (State s in m_States)
+            {
+                ret += string.Format("{0}\n", s.GetNodes());
+            }
+            return ret;
+        }
+
+        public string GetSubGraph()
+        {
+            string ret = "";
+            foreach (State s in m_States)
+            {
+                ret += string.Format("{0}\n", s.GetSubGraph());
+            }
+            return ret;
+        }
+
+        public string GetLinks()
+        {
+            string ret = "";
+            //foreach (State s in m_States)
+            //{
+            //    ret += string.Format("{0}-->{1}\n", GetNodeName(), s.GetNodeName());
+            //}
+            foreach (State s in m_States)
+            {
+                ret += string.Format("{0}", s.GetLinks());
+            }
+            return ret;
+        }
+
+        #endregion Graph
     }
 }

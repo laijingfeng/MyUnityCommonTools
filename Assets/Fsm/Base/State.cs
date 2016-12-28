@@ -170,5 +170,61 @@ namespace Jerry
         public virtual void DrawSelected()
         {
         }
+
+        #region Graph
+
+        public string GetNode()
+        {
+            return string.Format("{0}[{1}]", GetNodeName(), this.GetType());
+        }
+
+        public string GetNodeName()
+        {
+            return string.Format("{0}", ID);
+        }
+
+        public string GetNodes()
+        {
+            string ret = "";
+            ret += string.Format("{0}\n", GetNode());
+            foreach (Action ac in m_Actions)
+            {
+                ret += string.Format("{0}\n", ac.GetNode());
+            }
+            return ret;
+        }
+
+        public string GetSubGraph()
+        {
+            string ret = string.Format("subgraph {0}\n", this.GetType());
+            ret += string.Format("{0}\n", GetNodeName());
+            foreach (Action ac in m_Actions)
+            {
+                ret += string.Format("{0}\n", ac.GetNodeName());
+            }
+            if (m_SequnceAction)
+            {
+                string preName = GetNodeName();
+                foreach (Action ac in m_Actions)
+                {
+                    ret += string.Format("{0}-->{1}\n", preName, ac.GetNodeName());
+                    preName = ac.GetNodeName();
+                }
+            }
+            ret += "end\n";
+            return ret;
+        }
+
+        public string GetLinks()
+        {
+            string ret = "";
+            foreach (Transition tr in m_Transitions)
+            {
+                ret += string.Format("{0}-->|{1}|{2}\n", GetNodeName(), tr.GetNodeName(), tr.GetNextNodeName());
+            }
+            return ret;
+        }
+
+        #endregion Graph
     }
 }

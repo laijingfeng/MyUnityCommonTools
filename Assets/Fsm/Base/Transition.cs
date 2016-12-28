@@ -27,5 +27,19 @@ namespace Jerry
         }
 
         public abstract bool Check();
+
+        #region Graph
+
+        public string GetNextNodeName()
+        {
+            return string.Format("{0}", NextID);
+        }
+
+        public string GetNodeName()
+        {
+            return string.Format("{0}", this.GetType());
+        }
+
+        #endregion Graph
     }
 }

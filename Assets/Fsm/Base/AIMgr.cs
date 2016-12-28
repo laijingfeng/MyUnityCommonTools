@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-//version: 2016-12-28-01
+//version: 2016-12-28-02
 namespace Jerry
 {
     public abstract class AIMgr : MonoBehaviour
@@ -44,22 +44,63 @@ namespace Jerry
 
         public virtual void OnDrawGizmosSelected()
         {
-#if UNITY_EDITOR
             if (m_Fsm != null)
             {
                 m_Fsm.DrawSelected();
             }
-#endif
         }
 
         public virtual void OnDrawGizmos()
         {
-#if UNITY_EDITOR
             if (m_Fsm != null)
             {
                 m_Fsm.Draw();
             }
-#endif
         }
+
+        #region Graph
+
+        public string GetNode()
+        {
+            return string.Format("{0}[{1}]", GetNodeName(), this.GetType());
+        }
+
+        public string GetNodeName()
+        {
+            return string.Format("{0}", this.GetType());
+        }
+
+        public string GetNodes()
+        {
+            string ret = "";
+            ret += string.Format("{0}\n", GetNode());
+            ret += string.Format("{0}", m_Fsm.GetNodes());
+            return ret;
+        }
+
+        public string GetSubGraph()
+        {
+            return m_Fsm.GetSubGraph();
+        }
+
+        public string GetLinks()
+        {
+            string ret = "";
+            ret += string.Format("{0}-->{1}\n", GetNodeName(), m_Fsm.GetNodeName());
+            ret += m_Fsm.GetLinks();
+            return ret;
+        }
+
+        public string GetGraph()
+        {
+            string ret = "";
+            ret += string.Format("graph TB\n");
+            ret += GetNodes();
+            ret += GetSubGraph();
+            ret += GetLinks();
+            return ret;
+        }
+
+        #endregion Graph
     }
 }

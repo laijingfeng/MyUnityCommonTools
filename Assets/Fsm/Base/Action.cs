@@ -48,5 +48,19 @@ namespace Jerry
             m_Finished = true;
             Exit();
         }
+
+        #region Graph
+
+        public string GetNode()
+        {
+            return string.Format("{0}>{1}]", GetNodeName(), this.GetType());
+        }
+
+        public string GetNodeName()
+        {
+            return string.Format("{0}.{1}", CurState.GetNodeName(), this.GetType());
+        }
+
+        #endregion Graph
     }
 }
