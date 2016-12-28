@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace Jerry
 {
@@ -93,7 +92,7 @@ namespace Jerry
                 return;
             }
 
-            state.SetStateMgr(this);
+            state.SetFsm(this);
 
             if (m_States.Contains(state) == false)
             {
@@ -101,6 +100,10 @@ namespace Jerry
             }
         }
 
+        /// <summary>
+        /// 可供外部调用，用来强制跳转
+        /// </summary>
+        /// <param name="stateID"></param>
         public void ChangeState(int stateID)
         {
             foreach (State state in m_States)

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-//version: 2016-12-27-00
+//version: 2016-12-28-00
 namespace Jerry
 {
     public abstract class AIMgr : MonoBehaviour

@@ -7,7 +7,7 @@ public class Tr_Run_FollowPlay2RunWay : Transition
 
     public override bool Check()
     {
-        MonsterFsm fsm = m_CurState.CurFsm as MonsterFsm;
+        MonsterFsm fsm = CurState.CurFsm as MonsterFsm;
         if (Vector3.Distance(fsm.Player.position, fsm.GetMgr.transform.position) >= 2)
         {
             return true;

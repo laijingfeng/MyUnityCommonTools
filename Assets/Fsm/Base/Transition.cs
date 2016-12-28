@@ -9,7 +9,9 @@ namespace Jerry
         /// <summary>
         /// 判条件的时候要用到state的信息
         /// </summary>
-        protected State m_CurState;
+        private State m_CurState;
+
+        protected State CurState { get { return m_CurState; } }
 
         public void SetState(State s)
         {

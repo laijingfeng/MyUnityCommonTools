@@ -11,7 +11,7 @@ public class MonsterState_Idle : State
     public override void Enter()
     {
         base.Enter();
-        Debug.LogWarning("Enter");
+        //Debug.LogWarning("Enter");
         _task = new Task(this.IE_Idle());
     }
 
@@ -22,14 +22,14 @@ public class MonsterState_Idle : State
         {
             _task.Stop();
         }
-        Debug.LogWarning("Exit");
+        //Debug.LogWarning("Exit");
     }
 
     private IEnumerator IE_Idle()
     {
         while (true)
         {
-            Debug.Log("idle");
+            //Debug.Log("idle");
             yield return new WaitForSeconds(0.5f);
         }
     }

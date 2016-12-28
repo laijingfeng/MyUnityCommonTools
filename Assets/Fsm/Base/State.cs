@@ -1,16 +1,14 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace Jerry
 {
     public abstract class State
     {
-        private int i, m_TransitionCnt;
-
         private List<Transition> m_Transitions;
+        private List<Action> m_Actions;
+        private bool m_SequnceAction;
 
         private Fsm m_Fsm;
-
         public Fsm CurFsm
         {
             get
@@ -19,15 +17,22 @@ namespace Jerry
             }
         }
 
-        public void SetStateMgr(Fsm mgr)
+        public void SetSequnceAction(bool sequnce)
         {
-            m_Fsm = mgr;
+            m_SequnceAction = sequnce;
+        }
+
+        public void SetFsm(Fsm fsm)
+        {
+            m_Fsm = fsm;
         }
 
         public State(int id)
         {
             m_ID = id;
             m_Transitions = new List<Transition>();
+            m_Actions = new List<Action>();
+            m_SequnceAction = false;
         }
 
         private int m_ID;
@@ -39,8 +44,27 @@ namespace Jerry
         /// </summary>
         public virtual void Enter()
         {
-            m_TransitionCnt = m_Transitions.Count;
+            foreach (Action ac in m_Actions)
+            {
+                if (ac.Started)
+                {
+                    ac.Reset();
+                }
+            }
+
+            if (m_SequnceAction == false)
+            {
+                foreach (Action ac in m_Actions)
+                {
+                    if (ac.Started)
+                    {
+                        ac.Enter();
+                    }
+                }
+            }
         }
+
+        private bool m_HaveActionUpdate = false;
 
         /// <summary>
         /// base.Update()需要执行
@@ -51,18 +75,79 @@ namespace Jerry
             {
                 return;
             }
-            
-            for (i = 0; i < m_TransitionCnt; i++)
+
+            m_HaveActionUpdate = false;
+
+            if (m_SequnceAction == false)
             {
-                if (m_Transitions[i] != null && m_Transitions[i].Check())
+                foreach (Action ac in m_Actions)
                 {
-                    m_Fsm.ChangeState(m_Transitions[i].NextID);
+                    if (ac.Finished == false)
+                    {
+                        ac.Update();
+                        m_HaveActionUpdate = true;
+                    }
+                }
+            }
+            else
+            {
+                foreach (Action ac in m_Actions)
+                {
+                    if (ac.Finished == false)
+                    {
+                        if (ac.Started == false)
+                        {
+                            ac.Enter();
+                        }
+                        else
+                        {
+                            ac.Update();
+                        }
+                        m_HaveActionUpdate = true;
+                        break;
+                    }
+                }
+            }
+
+            if (m_HaveActionUpdate)
+            {
+                return;
+            }
+
+            foreach (Transition tr in m_Transitions)
+            {
+                if (tr != null && tr.Check())
+                {
+                    m_Fsm.ChangeState(tr.NextID);
                     return;
                 }
             }
         }
 
-        public virtual void Exit() { }
+        public virtual void Exit()
+        {
+            foreach (Action ac in m_Actions)
+            {
+                if (ac.Started == true && ac.Finished == false)
+                {
+                    ac.Finish();
+                }
+            }
+        }
+
+        public void AddAction(Action a)
+        {
+            if (a == null)
+            {
+                return;
+            }
+
+            if (m_Actions.Contains(a) == false)
+            {
+                a.SetState(this);
+                m_Actions.Add(a);
+            }
+        }
 
         public void AddTransition(Transition t)
         {
