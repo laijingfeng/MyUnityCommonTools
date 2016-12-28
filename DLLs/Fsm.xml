@@ -35,5 +35,11 @@
             </summary>
             <param name="aiMgr"></param>
         </member>
+        <member name="M:Jerry.Fsm.ChangeState(System.Int32)">
+            <summary>
+            可供外部调用，用来强制跳转
+            </summary>
+            <param name="stateID"></param>
+        </member>
     </members>
 </doc>
