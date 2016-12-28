@@ -31,7 +31,9 @@ namespace Jerry
 
         public virtual void Update()
         {
-            if (m_State == null)
+            if (m_State == null
+                || m_Started == false
+                || m_Finished == true)
             {
                 return;
             }
