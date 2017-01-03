@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System;
 
-//version: 2016-12-27-00
 namespace Jerry
 {
     /// <summary>
@@ -33,7 +32,6 @@ namespace Jerry
 
     /// <summary>
     /// <para>单例Mono</para>
-    /// <para>脚本的悬挂点要和脚本同名</para>
     /// </summary>
     public class SingletonMono<T> : MonoBehaviour where T : UnityEngine.Component
     {
@@ -42,10 +40,11 @@ namespace Jerry
         /// </summary>
         private static T m_instance = default(T);
 
-        public virtual void Awake()
-        {
-            m_instance = (T)(System.Object)(this);
-        }
+        //会给子类带来一个警告，去掉
+        //public virtual void Awake()
+        //{
+        //    m_instance = (T)(System.Object)(this);
+        //}
 
         /// <summary>
         /// 单例
