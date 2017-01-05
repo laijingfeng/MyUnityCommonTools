@@ -23,7 +23,6 @@
         <member name="T:Jerry.SingletonMono`1">
             <summary>
             <para>单例Mono</para>
-            <para>脚本的悬挂点要和脚本同名</para>
             </summary>
         </member>
         <member name="F:Jerry.SingletonMono`1.m_instance">
