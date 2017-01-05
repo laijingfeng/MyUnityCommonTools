@@ -39,12 +39,15 @@ namespace Jerry
         /// 单例
         /// </summary>
         private static T m_instance = default(T);
-
-        //会给子类带来一个警告，去掉
-        //public virtual void Awake()
-        //{
-        //    m_instance = (T)(System.Object)(this);
-        //}
+        
+        /// <summary>
+        /// <para>会给子类带来一个警告，注意用override</para>
+        /// <para>这个不能去掉，预先挂载好的脚本走的是这个实例化</para>
+        /// </summary>
+        public virtual void Awake()
+        {
+            m_instance = (T)(System.Object)(this);
+        }
 
         /// <summary>
         /// 单例
