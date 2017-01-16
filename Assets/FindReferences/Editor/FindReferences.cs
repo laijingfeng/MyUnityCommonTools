@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System;
 
-//version: 2016-12-26-00
+//version: 2017-01-16 20:28:52
 namespace Jerry
 {
     /// <summary>
@@ -75,7 +75,7 @@ namespace Jerry
         /// <summary>
         /// 查找引用
         /// </summary>
-        [MenuItem("Assets/Find References", false)]
+        [MenuItem("Assets/Jerry/FindReferences/Find References", false)]
         private static void Find()
         {
             EditorSettings.serializationMode = SerializationMode.ForceText;
@@ -88,32 +88,13 @@ namespace Jerry
             DoFind();
         }
 
-        [MenuItem("Assets/Find References", true)]
+        [MenuItem("Assets/Jerry/FindReferences/Find References", true)]
         private static bool VFind()
         {
             return CullingFind();
         }
 
-        /// <summary>
-        /// 进一步查找细节
-        /// </summary>
-        [MenuItem("Assets/Find Detail", false)]
-        private static void FindDetail()
-        {
-            if (CullingDetail(true, false) == false)
-            {
-                return;
-            }
-            DoFindDetail();
-        }
-
-        [MenuItem("Assets/Find Detail", true)]
-        private static bool VFindDetail()
-        {
-            return CullingDetail();
-        }
-
-        [MenuItem("GameObject/Jerry/Find Detail", false, 10)]
+        [MenuItem("GameObject/Jerry/FindReferences/Find Detail", false, 10)]
         private static void FindDetail2()
         {
             if (CullingDetail(true, true) == false)
@@ -123,7 +104,7 @@ namespace Jerry
             DoFindDetail();
         }
 
-        [MenuItem("GameObject/Jerry/Find Detail", true, 10)]
+        [MenuItem("GameObject/Jerry/FindReferences/Find Detail", true, 10)]
         private static bool VFindDetail2()
         {
             return CullingDetail(false, true);
@@ -217,6 +198,45 @@ namespace Jerry
                         }
                     }
                     break;
+                case FindType.mat:
+                    {
+                        SkinnedMeshRenderer[] smrs = m_RelatedGo.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+                        foreach (SkinnedMeshRenderer smr in smrs)
+                        {
+                            foreach (Material mat in smr.sharedMaterials)
+                            {
+                                if (mat.name.Equals(m_FindName))
+                                {
+                                    Debug.LogWarning(GetRelativeAssetsPath(smr.transform), smr);
+                                }
+                            }
+                        }
+
+                        MeshRenderer[] mrs = m_RelatedGo.GetComponentsInChildren<MeshRenderer>(true);
+                        foreach (MeshRenderer mr in mrs)
+                        {
+                            foreach (Material mat in mr.sharedMaterials)
+                            {
+                                if (mat.name.Equals(m_FindName))
+                                {
+                                    Debug.LogWarning(GetRelativeAssetsPath(mr.transform), mr);
+                                }
+                            }
+                        }
+
+                        ParticleSystemRenderer[] psrs = m_RelatedGo.GetComponentsInChildren<ParticleSystemRenderer>(true);
+                        foreach (ParticleSystemRenderer psr in psrs)
+                        {
+                            foreach (Material mat in psr.sharedMaterials)
+                            {
+                                if (mat.name.Equals(m_FindName))
+                                {
+                                    Debug.LogWarning(GetRelativeAssetsPath(psr.transform), psr);
+                                }
+                            }
+                        }
+                    }
+                    break;
                 case FindType.cs:
                     {
                         Component[] coms = m_RelatedGo.GetComponentsInChildren<Component>(true);
@@ -229,20 +249,23 @@ namespace Jerry
                         }
                     }
                     break;
-                default:
+                case FindType.prefab:
                     {
 #if HavePrefabInPrefab
-                    PrefabInPrefab[] coms = m_RelatedGo.GetComponentsInChildren<PrefabInPrefab>(true);
-                    foreach (PrefabInPrefab com in coms)
-                    {
-                        if (com.PrefabName().Equals(m_FindName))
+                        PrefabInPrefab[] coms = m_RelatedGo.GetComponentsInChildren<PrefabInPrefab>(true);
+                        foreach (PrefabInPrefab com in coms)
                         {
-                            Debug.LogWarning(GetRelativeAssetsPath(com.transform), com);
+                            if (com.PrefabName().Equals(m_FindName))
+                            {
+                                Debug.LogWarning(GetRelativeAssetsPath(com.transform), com);
+                            }
                         }
-                    }
-#else
-                        Debug.LogWarning("类型[" + m_FindType.ToString() + "]暂不支持FindDetail");
 #endif
+                    }
+                    break;
+                default:
+                    {
+                        Debug.LogWarning("类型[" + m_FindType.ToString() + "]暂不支持FindDetail");
                     }
                     break;
             }
