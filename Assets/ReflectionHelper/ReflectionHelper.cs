@@ -136,7 +136,7 @@ internal static class ReflectionHelper
     {
         if (member is MethodInfo)
         {
-            var method = ((MethodInfo)member);
+            MethodInfo method = ((MethodInfo)member);
 
             if (method.GetParameters().Any())
             {
@@ -154,6 +154,25 @@ internal static class ReflectionHelper
         else
         {
             ((FieldInfo)member).SetValue(instance, value);
+        }
+    }
+
+    /// <summary>
+    /// 执行静态函数
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="methodName"></param>
+    /// <param name="pars"></param>
+    internal static void ExecuteStaticMethod(Type type, string methodName, params object[] pars)
+    {
+        MethodInfo method = type.GetMethod(methodName);
+        if (method.GetParameters().Any())
+        {
+            method.Invoke(null, pars);
+        }
+        else
+        {
+            method.Invoke(null, null);
         }
     }
 
