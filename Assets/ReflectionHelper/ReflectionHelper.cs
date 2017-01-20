@@ -166,6 +166,10 @@ internal static class ReflectionHelper
     internal static void ExecuteStaticMethod(Type type, string methodName, params object[] pars)
     {
         MethodInfo method = type.GetMethod(methodName);
+        if (method == null)
+        {
+            return;
+        }
         if (method.GetParameters().Any())
         {
             method.Invoke(null, pars);
