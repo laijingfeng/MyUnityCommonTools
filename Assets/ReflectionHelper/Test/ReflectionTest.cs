@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Jerry;
 
 public class ReflectionTest : MonoBehaviour
 {
@@ -21,9 +22,6 @@ public class ReflectionTest : MonoBehaviour
 
 public class RTest
 {
-    /// <summary>
-    /// private不行
-    /// </summary>
     private static void Test1()
     {
         Debug.LogError("Test1");
