@@ -4,16 +4,17 @@ public class ReflectionTest : MonoBehaviour
 {
     void Start()
     {
-
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.M))
         {
-            ReflectionHelper.ExecuteStaticMethod(typeof(RTest), "Test1");
-            ReflectionHelper.ExecuteStaticMethod(typeof(RTest), "Test2", 100);
-            //ReflectionHelper.ExecuteStaticMethod(typeof(RTest), "Test3");
+            ReflectionHelper.GetStaticMemberValue(typeof(RTest), "Test1");
+            ReflectionHelper.SetStaticMemberValue(typeof(RTest), "Test2", 100);
+            
+            ReflectionHelper.SetNonStaticMemberValue(new RTest(), "Test3");
+            ReflectionHelper.SetNonStaticMemberValue(new RTest(), "Test4");
         }
     }
 }
@@ -23,7 +24,7 @@ public class RTest
     /// <summary>
     /// private不行
     /// </summary>
-    public static void Test1()
+    private static void Test1()
     {
         Debug.LogError("Test1");
     }
@@ -36,5 +37,10 @@ public class RTest
     public void Test3()
     {
         Debug.LogError("Test3");
+    }
+
+    private void Test4()
+    {
+        Debug.LogError("Test4");
     }
 }

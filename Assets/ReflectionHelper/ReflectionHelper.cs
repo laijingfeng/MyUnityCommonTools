@@ -157,60 +157,132 @@ internal static class ReflectionHelper
         }
     }
 
+    #region SetMemberValue
+
     /// <summary>
-    /// 执行静态函数
+    /// 设置静态值
     /// </summary>
     /// <param name="type"></param>
-    /// <param name="methodName"></param>
-    /// <param name="pars"></param>
-    internal static void ExecuteStaticMethod(Type type, string methodName, params object[] pars)
+    /// <param name="memberName"></param>
+    internal static void SetStaticMemberValue(Type type, string memberName, params object[] values)
     {
-        MethodInfo method = type.GetMethod(methodName);
-        if (method == null)
+        BindingFlags flag = GetFlag();
+        MemberInfo member = type.GetMember(memberName, flag).FirstOrDefault();
+        if (member == null)
         {
             return;
         }
-        if (method.GetParameters().Any())
+
+        SetMemberValue(member, null, values);
+    }
+
+    internal static void SetNonStaticMemberValue(object instance, string memberName, params object[] values)
+    {
+        BindingFlags flag = GetFlag();
+        MemberInfo member = instance.GetType().GetMember(memberName, flag).FirstOrDefault();
+        if (member == null)
         {
-            method.Invoke(null, pars);
+            return;
         }
-        else
+
+        SetMemberValue(member, instance, values);
+    }
+
+    /// <summary>
+    /// Set the member value
+    /// </summary>
+    /// <returns></returns>
+    internal static void SetMemberValue(this MemberInfo member, object instance = null, params object[] values)
+    {
+        if (member is MethodInfo)
         {
-            method.Invoke(null, null);
+            MethodInfo method = (MethodInfo)member;
+
+            BindingFlags flag = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic;
+
+            if (method.GetParameters().Any())
+            {
+                method.Invoke(instance, flag, Type.DefaultBinder, values, null);
+            }
+            else
+            {
+                method.Invoke(instance, flag, Type.DefaultBinder, null, null);
+            }
+        }
+        else if (member is PropertyInfo)
+        {
+            PropertyInfo property = (PropertyInfo)member;
+            if (values == null)
+            {
+                property.SetValue(instance, null, null);
+            }
+            else
+            {
+                property.SetValue(instance, values[0], null);
+            }
+        }
+        else if (member is FieldInfo)
+        {
+            FieldInfo field = (FieldInfo)member;
+            if (values == null)
+            {
+                field.SetValue(instance, null);
+            }
+            else
+            {
+                field.SetValue(instance, values[0]);
+            }
         }
     }
+
+    #endregion SetMemberValue
 
     #region GetMemberValue
 
     /// <summary>
-    /// Get the member's instances value
+    /// 获取静态值
     /// </summary>
-    /// <returns></returns>
-    internal static object GetMemberValue(this MemberInfo member, object instance)
+    /// <param name="type"></param>
+    /// <param name="memberName"></param>
+    /// <param name="values"></param>
+    internal static object GetStaticMemberValue(Type type, string memberName)
     {
-        if (member is MethodInfo)
+        if (type == null)
         {
-            return ((MethodInfo)member).Invoke(instance, null);
+            return null;
         }
-        if (member is PropertyInfo)
-        {
-            return ((PropertyInfo)member).GetValue(instance, null);
-        }
-        return ((FieldInfo)member).GetValue(instance);
-    }
 
-    /// <summary>
-    /// Get the member's instances value
-    /// </summary>
-    /// <returns></returns>
-    internal static object GetMemberValue(this object instance, string memberName)
-    {
-        MemberInfo member = instance.GetType().GetMember(memberName).FirstOrDefault();
-
+        BindingFlags flag = GetFlag();
+        MemberInfo member = type.GetMember(memberName, flag).FirstOrDefault();
         if (member == null)
         {
             return null;
         }
+
+        return GetMemberValue(member, null);
+    }
+
+    /// <summary>
+    /// Get member value
+    /// </summary>
+    /// <returns></returns>
+    internal static object GetNonStaticMemberValue(object instance, string memberName)
+    {
+        if (instance == null)
+        {
+            return null;
+        }
+        BindingFlags flag = GetFlag();
+        MemberInfo member = instance.GetType().GetMember(memberName, flag).FirstOrDefault();
+        return GetMemberValue(member, instance);
+    }
+
+    /// <summary>
+    /// Get member value
+    /// </summary>
+    /// <returns></returns>
+    internal static object GetMemberValue(MemberInfo member, object instance)
+    {
         if (member is MethodInfo)
         {
             return ((MethodInfo)member).Invoke(instance, null);
@@ -220,17 +292,16 @@ internal static class ReflectionHelper
             return ((PropertyInfo)member).GetValue(instance, null);
         }
         return ((FieldInfo)member).GetValue(instance);
-
-    }
-
-    /// <summary>
-    /// Get the member's instances value
-    /// </summary>
-    /// <returns></returns>
-    internal static T GetMemberValue<T>(this MemberInfo member, object instance)
-    {
-        return (T)GetMemberValue(member, instance);
     }
 
     #endregion GetMemberValue
+
+    #region 辅助
+
+    private static BindingFlags GetFlag()
+    {
+        return BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static;
+    }
+
+    #endregion 辅助
 }
