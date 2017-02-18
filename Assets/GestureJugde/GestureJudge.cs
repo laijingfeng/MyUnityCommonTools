@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Jerry;
 
 public class GestureJudge : MonoBehaviour
 {
@@ -86,7 +87,7 @@ public class GestureJudge : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             m_TouchStarted = true;
-            m_TouchStartPos = Util.GetClickPos();
+            m_TouchStartPos = JerryUtil.GetClickPos();
         }
         else if (Input.GetMouseButtonUp(0))
         {
@@ -148,7 +149,7 @@ public class GestureJudge : MonoBehaviour
     private void Judge()
     {
         Vector3 start = m_TouchStartPos;
-        Vector3 end = Util.GetClickPos();
+        Vector3 end = JerryUtil.GetClickPos();
 
         float dis = Vector2.Distance(start, end);
 

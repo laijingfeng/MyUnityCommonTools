@@ -2,6 +2,7 @@
 
 using UnityEngine;
 using System.Collections.Generic;
+using Jerry;
 
 [ExecuteInEditMode]
 public class WayPointMgrEditor : MonoBehaviour
@@ -125,7 +126,7 @@ public class WayPointMgrEditor : MonoBehaviour
             return;
         }
 
-        int[] arr = Util.StringToTArray<int>(m_DrawStr, ',');
+        int[] arr = JerryUtil.String2TArray<int>(m_DrawStr, ',');
         m_NodeList.Clear();
         List<Vector3> list = new List<Vector3>();
 

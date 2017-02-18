@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
+using Jerry;
 
 public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 {
@@ -179,7 +180,7 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         }
 
         m_ScrollRect.onValueChanged.RemoveListener(OnScrollChange);
-        Util.DestroyAllChildren(m_ContentRect);
+        JerryUtil.DestroyAllChildren(m_ContentRect);
         m_Child.Clear();
         m_ScrollRect.enabled = false;
     }
