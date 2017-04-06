@@ -87,7 +87,7 @@ public class GestureJudge : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             m_TouchStarted = true;
-            m_TouchStartPos = JerryUtil.GetClickPos();
+            m_TouchStartPos = Vector3.zero;//JerryUtil.GetClickPos();
         }
         else if (Input.GetMouseButtonUp(0))
         {
@@ -149,7 +149,7 @@ public class GestureJudge : MonoBehaviour
     private void Judge()
     {
         Vector3 start = m_TouchStartPos;
-        Vector3 end = JerryUtil.GetClickPos();
+        Vector3 end = Vector3.zero;//JerryUtil.GetClickPos();
 
         float dis = Vector2.Distance(start, end);
 
