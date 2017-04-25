@@ -180,7 +180,7 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         }
 
         m_ScrollRect.onValueChanged.RemoveListener(OnScrollChange);
-        //JerryUtil.DestroyAllChildren(m_ContentRect);
+        JerryUtil.DestroyAllChildren(m_ContentRect);
         m_Child.Clear();
         m_ScrollRect.enabled = false;
     }

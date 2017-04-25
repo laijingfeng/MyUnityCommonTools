@@ -126,7 +126,7 @@ public class WayPointMgrEditor : MonoBehaviour
             return;
         }
 
-        int[] arr = null;// = JerryUtil.String2TArray<int>(m_DrawStr, ',');
+        int[] arr = JerryUtil.String2TArray<int>(m_DrawStr, ',');
         m_NodeList.Clear();
         List<Vector3> list = new List<Vector3>();
 

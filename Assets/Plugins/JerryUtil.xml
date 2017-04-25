@@ -1,0 +1,279 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>JerryUtil</name>
+    </assembly>
+    <members>
+        <member name="M:Jerry.JerryMath.Contains(UnityEngine.Vector3[],UnityEngine.Vector3)">
+            <summary>
+            <para>计算点是否在一个区域内部</para>
+            <para>支持凸/凹多边形</para>
+            </summary>
+            <param name="point">至少3个点组成的区域.</param>
+            <param name="p">目标点.</param>
+        </member>
+        <member name="M:Jerry.JerryMath.LineLineIntersection(UnityEngine.Vector3@,UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Vector3)">
+            <summary>
+            直线和直线相交
+            </summary>
+            <param name="intersection"></param>
+            <param name="linePoint1"></param>
+            <param name="lineVec1"></param>
+            <param name="linePoint2"></param>
+            <param name="lineVec2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryMath.LineSegmentPlaneIntersection(UnityEngine.Vector3@,UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Vector3)">
+            <summary>
+            线段与平面相交
+            </summary>
+            <param name="intersection"></param>
+            <param name="linePoint1"></param>
+            <param name="linePoint2"></param>
+            <param name="planeNormal"></param>
+            <param name="planePoint"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryMath.LinePlaneIntersection(UnityEngine.Vector3@,UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Vector3)">
+            <summary>
+            直线与平面相交
+            </summary>
+            <param name="intersection"></param>
+            <param name="linePoint1"></param>
+            <param name="linePoint2"></param>
+            <param name="planeNormal"></param>
+            <param name="planePoint"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryMath.PointOnWhichSideOfLineSegment(UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Vector3)">
+            <summary>
+            <para>点在线段的位置</para>
+            <para>Returns 0 if point is on the line segment.</para>
+            <para>Returns 1 if point is outside of the line segment and located on the side of linePoint1.</para>
+            <para>Returns 2 if point is outside of the line segment and located on the side of linePoint2.</para>
+            </summary>
+            <param name="linePoint1"></param>
+            <param name="linePoint2"></param>
+            <param name="point"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.CloneGo(Jerry.JerryUtil.CloneGoData)">
+            <summary>
+            克隆对象
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.CloneGo``1(Jerry.JerryUtil.CloneGoData)">
+            <summary>
+            克隆对象
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.FindGo``1(UnityEngine.GameObject,System.String,System.Boolean)">
+            <summary>
+            查找
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="parent"></param>
+            <param name="name"></param>
+            <param name="includeInactive"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.FindGo(UnityEngine.GameObject,System.String,System.Boolean)">
+            <summary>
+            查找
+            </summary>
+            <param name="parent"></param>
+            <param name="name"></param>
+            <param name="includeInactive"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.FindCo``1(UnityEngine.GameObject,System.String,System.Boolean)">
+            <summary>
+            查找
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="parent"></param>
+            <param name="name"></param>
+            <param name="includeInactive"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.FindCo``1(UnityEngine.Transform,System.String,System.Boolean)">
+            <summary>
+            查找子结点
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="parent"></param>
+            <param name="name"></param>
+            <param name="includeInactive"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.DestroyAllChildren(UnityEngine.GameObject)">
+            <summary>
+            删除所有儿子结点
+            </summary>
+            <param name="go"></param>
+        </member>
+        <member name="M:Jerry.JerryUtil.DestroyAllChildren(UnityEngine.Component)">
+            <summary>
+            删除所有儿子结点
+            </summary>
+            <param name="comp"></param>
+        </member>
+        <member name="M:Jerry.JerryUtil.CalUIPosRelateToCanvas(UnityEngine.Transform,System.Boolean)">
+            <summary>
+            <para>计算UI相对父节点的偏移量</para>
+            <para>返回值z轴为0</para>
+            </summary>
+            <param name="child"></param>
+            <returns>z轴为0</returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.PosWorld2Canvas(UnityEngine.Vector3,UnityEngine.Canvas,UnityEngine.Transform)">
+            <summary>
+            <para>World->Canvas</para>
+            <para>返回值z轴为0</para>
+            </summary>
+            <param name="pos">世界位置</param>
+            <param name="canvas">UI的Canvas</param>
+            <param name="tf">使用结果的UI结点，空则是相对Canvas</param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.PosCanvas2Screen(UnityEngine.Canvas,UnityEngine.Transform)">
+            <summary>
+            <para>Canvas->Screen</para>
+            <para>返回值z轴为0</para>
+            </summary>
+            <param name="canvas"></param>
+            <param name="tf"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.PosCanvas2Screen(UnityEngine.Canvas,UnityEngine.Vector3)">
+            <summary>
+            <para>Canvas->Screen</para>
+            <para>返回值z轴为0</para>
+            </summary>
+            <param name="canvas"></param>
+            <param name="pos">点</param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.PosMouse2Canvas(UnityEngine.Canvas,UnityEngine.Transform)">
+            <summary>
+            <para>ScreenMouse->Canvas</para>
+            <para>返回值z轴为0</para>
+            </summary>
+            <param name="canvas">Canvas</param>
+            <param name="tf">使用结果的UI结点，空则是相对Canvas</param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.PosScreen2Canvas(UnityEngine.Canvas,UnityEngine.Vector3,UnityEngine.Transform)">
+            <summary>
+            <para>Screen->Canvas</para>
+            <para>返回值z轴为0</para>
+            </summary>
+            <param name="canvas">Canvas</param>
+            <param name="pos">Screen Position</param>
+            <param name="tf">使用结果的UI结点，空则是相对Canvas</param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.GetClickPos">
+            <summary>
+            <para>获得点击位置</para>
+            <para>移动设备用第一个触摸点</para>
+            <para>返回值z轴为0</para>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.String2TArray``1(System.String,System.Char)">
+            <summary>
+            <para>StringToTArray</para>
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.TArray2String``1(``0[],System.Char)">
+            <summary>
+            TArrayToString
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.MakeLayerMask(System.Boolean)">
+            <summary>
+            <para>直接设置LayerMask为Everything或Nothing</para>
+            <para>true:Everything</para>
+            <para>false:Nothing</para>
+            </summary>
+            <param name="everythingOrNothing"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.MakeLayerMask(System.Int32,System.String[],System.String[])">
+            <summary>
+            通过name构造LayerMask
+            </summary>
+            <param name="oldLayerMask">旧的layerMask</param>
+            <param name="addNames">增加的</param>
+            <param name="subNames">减去的</param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.MakeLayerMask(System.Int32,System.Int32[],System.Int32[])">
+            <summary>
+            通过id构造LayerMask
+            </summary>
+            <param name="oldLayerMask">旧的layerMask</param>
+            <param name="addNames">增加的</param>
+            <param name="subNames">减去的</param>
+            <returns></returns>
+        </member>
+        <member name="M:Jerry.JerryUtil.LayerMaskContainAny(System.Int32,System.Int32[])">
+            <summary>
+            包含
+            </summary>
+            <param name="mask"></param>
+            <param name="check"></param>
+            <returns></returns>
+        </member>
+        <member name="F:Jerry.JerryUtil.CloneGoData.prefab">
+            <summary>
+            预设
+            </summary>
+        </member>
+        <member name="F:Jerry.JerryUtil.CloneGoData.parant">
+            <summary>
+            父节点，空则在外部
+            </summary>
+        </member>
+        <member name="F:Jerry.JerryUtil.CloneGoData.name">
+            <summary>
+            名称，空则用默认
+            </summary>
+        </member>
+        <member name="F:Jerry.JerryUtil.CloneGoData.isStretchUI">
+            <summary>
+            是否是要Stretch的UI
+            </summary>
+        </member>
+        <member name="F:Jerry.JerryUtil.CloneGoData.scale">
+            <summary>
+            缩放系数
+            </summary>
+        </member>
+        <member name="F:Jerry.JerryUtil.CloneGoData.clean">
+            <summary>
+            清理父节点
+            </summary>
+        </member>
+        <member name="F:Jerry.JerryUtil.CloneGoData.useOrignal">
+            <summary>
+            使用原始位置信息
+            </summary>
+        </member>
+        <member name="F:Jerry.JerryUtil.CloneGoData.active">
+            <summary>
+            激活
+            </summary>
+        </member>
+    </members>
+</doc>
