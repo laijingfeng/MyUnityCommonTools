@@ -764,22 +764,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1559143069}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40fdbdaf1bcb3ef488dcd66f30c137df, type: 3}
+  m_Script: {fileID: 11500000, guid: c887db1e8a366dd42ab7d6b8b36b6f21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Prefab: {fileID: 1831541791}
-  m_Width: 200
-  m_Height: 50
-  m_Spacing: {x: 2, y: 2}
-  m_ViewCnt: 3
-  m_StartIdx: 0
-  m_Dir: 1
-  m_Center: 1
-  m_Loop: 1
-  m_TotalCnt: 100
-  m_RefreshRate: 1
-  m_Debug: 1
-  m_AddCnt: 1
 --- !u!114 &1559143072
 MonoBehaviour:
   m_ObjectHideFlags: 0
