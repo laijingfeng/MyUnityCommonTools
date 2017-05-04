@@ -7,6 +7,9 @@ using Jerry;
 
 public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 {
+    /// <summary>
+    /// 方向
+    /// </summary>
     public enum Dir
     {
         Horizontal,
@@ -20,6 +23,9 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     public OnFillItem m_OnFillItem;
     public OnFillItem m_OnCenterItem;
 
+    /// <summary>
+    /// 预设
+    /// </summary>
     public GameObject m_Prefab;
 
     public int m_Width = 100, m_Height = 100;
