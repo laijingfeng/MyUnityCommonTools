@@ -1,11 +1,11 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.EventSystems;
 using Jerry;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
+public class LoopScroll2 : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 {
     /// <summary>
     /// 方向
@@ -29,71 +29,90 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     /// 填充回调
     /// </summary>
     public OnFillItem m_OnFillItem;
+
     /// <summary>
     /// 居中定位回调
     /// </summary>
     public OnFillItem m_OnCenterItem;
 
+    #region 编辑器
+
     /// <summary>
     /// 预设
     /// </summary>
-    public GameObject m_Prefab;
+    [SerializeField]
+    private GameObject m_Prefab;
 
-    /// <summary>
-    /// 宽度
-    /// </summary>
-    public int m_Width = 100;
-    
-    /// <summary>
-    /// 高度
-    /// </summary>
-    public int m_Height = 100;
-    
     /// <summary>
     /// 间隔
     /// </summary>
-    public Vector2 m_Spacing = new Vector2(2, 2);
+    [SerializeField]
+    private Vector2 m_Spacing = new Vector2(2, 2);
 
     /// <summary>
     /// 一屏能看见的数量，若不是整数向上取整
     /// </summary>
-    public int m_ViewCnt = 3;
-
-    /// <summary>
-    /// 第一个显示的idx，[0,m_TotalCnt)
-    /// </summary>
-    public int m_StartIdx = 0;
-    /// <summary>
-    /// 方向
-    /// </summary>
-    public Dir m_Dir = Dir.Horizontal;
-    /// <summary>
-    /// 是否居中定位
-    /// </summary>
-    public bool m_Center = false;
-    /// <summary>
-    /// 是否循环
-    /// </summary>
-    public bool m_Loop = false;
-
-    /// <summary>
-    /// 总数量
-    /// </summary>
-    public int m_TotalCnt = 100;
-
-    /// <summary>
-    /// 每几帧刷新一次
-    /// </summary>
-    public int m_RefreshRate = 2;
-
-    public bool m_Debug = false;
+    [SerializeField]
+    private int m_ViewCnt = 3;
 
     /// <summary>
     /// 两端增加的数量，缓冲数量
     /// </summary>
-    public int m_AddCnt = 1;
+    [SerializeField]
+    private int m_AddCnt = 1;
+
+    /// <summary>
+    /// 方向
+    /// </summary>
+    [SerializeField]
+    private Dir m_Dir = Dir.Horizontal;
+    
+    /// <summary>
+    /// 是否居中定位
+    /// </summary>
+    [SerializeField]
+    private bool m_Center = false;
+
+    /// <summary>
+    /// 是否循环
+    /// </summary>
+    [SerializeField]
+    private bool m_Loop = false;
+
+    #endregion 编辑器
+
+    /// <summary>
+    /// 第一个显示的idx，[0,m_TotalCnt)
+    /// </summary>
+    [HideInInspector]
+    public int m_StartIdx = 0;
+
+    /// <summary>
+    /// 每几帧刷新一次
+    /// </summary>
+    [HideInInspector]
+    public int m_RefreshRate = 2;
+
+    /// <summary>
+    /// 总数量
+    /// </summary>
+    [HideInInspector]
+    public int m_TotalCnt = 100;
+
+    [HideInInspector]
+    public bool m_Debug = false;
 
     #endregion 对外变量
+
+    /// <summary>
+    /// 单个元素的高度
+    /// </summary>
+    private float m_Height = 100;
+    
+    /// <summary>
+    /// 单个元素的宽度
+    /// </summary>
+    private float m_Width = 100;
 
     private int m_JudgeF;
     private int m_JudgeL;
@@ -105,7 +124,6 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     private Vector3 m_PosJudgeF, m_PosJudgeL;
 
     private ScrollRect m_ScrollRect;
-    private RectTransform m_ScrollRectSize;
 
     private RectTransform m_ContentRect;
 
@@ -132,15 +150,15 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
             Debug.LogError("ScrollRect.Content is null");
             return;
         }
-        
-        m_ContentRect.pivot = Vector2.one * 0.5f;
-        m_ContentRect.anchorMin = Vector2.one * 0.5f;
-        m_ContentRect.anchorMax = Vector2.one * 0.5f;
 
-        m_ScrollRectSize = m_ScrollRect.GetComponent<RectTransform>();
-        m_ScrollRectSize.pivot = Vector2.one * 0.5f;
-        m_ScrollRectSize.anchorMin = Vector2.one * 0.5f;
-        m_ScrollRectSize.anchorMax = Vector2.one * 0.5f;
+        if (this.m_Prefab == null)
+        {
+            Debug.LogError("Prefab is null");
+            return;
+        }
+        RectTransform prefabRect = this.m_Prefab.transform as RectTransform;
+        m_Width = m_ContentRect.sizeDelta.x;
+        m_Height = m_ContentRect.sizeDelta.y;
 
         m_Awaked = true;
         TryDoInit();
