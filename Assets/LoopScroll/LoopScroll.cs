@@ -393,7 +393,27 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         else
         {
             m_ContentTrans.anchoredPosition = Vector2.zero;
-            m_FIdx = GetIdx(m_StartIdx - m_AddCnt + 1, false);
+            if (!m_Loop)
+            {
+                m_FIdx = m_StartIdx - m_AddCnt;
+                if (m_FIdx < 0)
+                {
+                    int cutCnt = -m_FIdx;
+                    m_FIdx = 0;
+                    switch (m_Dir)
+                    {
+                        case Dir.Vertical:
+                            {
+                                firstPos.y -= cutCnt * m_PrefabHeight;
+                            }
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                m_FIdx = GetIdx(m_StartIdx - m_AddCnt + 1, false);
+            }
         }
 
         Debug.LogError("FIdx=" + m_FIdx);
