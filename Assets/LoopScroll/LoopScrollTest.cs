@@ -32,8 +32,6 @@ public class LoopScrollTest : MonoBehaviour
 
         m_LoopScroll.m_Center = true;
         m_LoopScroll.m_Loop = true;
-        m_LoopScroll.m_Height = 50;
-        m_LoopScroll.m_Width = 200;
 
         m_LoopScroll.m_Dir = LoopScroll.Dir.Vertical;
         m_LoopScroll.m_Prefab = m_Prefab.gameObject;
@@ -47,9 +45,8 @@ public class LoopScrollTest : MonoBehaviour
         m_LoopScroll.m_TotalCnt = data.Count;
         m_LoopScroll.m_RefreshRate = 2;
         
-        m_LoopScroll.m_Spacing = new Vector2(2, 2);
+        m_LoopScroll.m_OutSide = new Vector2(2, 2);
         m_LoopScroll.m_StartIdx = 0;
-        m_LoopScroll.m_ViewCnt = 3;
         m_LoopScroll.m_AddCnt = 1;
 
         m_LoopScroll.m_OnCenterItem = (item, idx) =>
@@ -63,6 +60,6 @@ public class LoopScrollTest : MonoBehaviour
             Debug.LogWarning("fillItem " + idx + " " + data[idx]);
         };
 
-        m_LoopScroll.Init();
+        m_LoopScroll.ApplySetting();
     }
 }
