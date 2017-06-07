@@ -98,31 +98,91 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     /// 实例化元素(数量是m_ListTotal)列表里负方向可视范围外的第一个元素索引
     /// </summary>
     private int m_JudgeF;
-    
+
     /// <summary>
     /// 实例化元素(数量是m_ListTotal)列表里正方向可视范围外的第一个元素索引
     /// </summary>
     private int m_JudgeL;
-    
-    /// <summary>
-    /// 实例化元素的数量
-    /// </summary>
-    private int m_ListTotal;
 
     /// <summary>
-    /// 填充元素后，边缘位置的绝对值
+    /// <para>实例化元素的数量</para>
+    /// <para>Min(m_ViewCnt + 2 * m_AddCnt, m_TotalCnt)</para>
+    /// </summary>
+    private int ListTotal
+    {
+        get
+        {
+            if (m_Loop)
+            {
+                return m_ViewCnt + 2 * m_AddCnt;
+            }
+            return Mathf.Min(m_ViewCnt + 2 * m_AddCnt, m_TotalCnt);
+        }
+    }
+
+    /// <summary>
+    /// <para>填充元素后，可视范围边缘坐标的绝对值，用来判断是否需要刷新</para>
     /// </summary>
     private float m_RefreshJudgePos;
 
     /// <summary>
-    /// 创建对象第一个在数据列表里的索引
+    /// 创建元素第一个在数据列表的索引
     /// </summary>
-    private int m_FIdx = 0;
-    
+    private int m_CreateFirstDataIdx = 0;
+
     /// <summary>
-    /// 创建对象最后一个数据列表里的索引
+    /// <para>创建对象最后一个在数据列表里的索引</para>
+    /// <para>(m_CreateFirstDataIdx + m_ListTotal - 1 + m_TotalCnt) % m_TotalCnt</para>
     /// </summary>
-    private int m_LIdx = 0;
+    private int m_CreateLastDataIdx = 0;
+    /// <summary>
+    /// 创建对象最后一个在数据列表里的索引
+    /// </summary>
+    private int CreateLastDataIdx
+    {
+        get
+        {
+            m_CreateLastDataIdx = m_CreateFirstDataIdx + ListTotal - 1;
+            if (m_Loop)
+            {
+                m_CreateLastDataIdx = (m_CreateLastDataIdx + m_TotalCnt) % m_TotalCnt;
+            }
+            else
+            {
+                if (m_CreateLastDataIdx > m_TotalCnt - 1)
+                {
+                    m_CreateLastDataIdx = m_TotalCnt - 1;
+                }
+            }
+            return m_CreateLastDataIdx;
+        }
+    }
+
+    /// <summary>
+    /// 可视元素第一个是创建元素的第几个
+    /// </summary>
+    private int m_ViewFirstCreateIdx = 0;
+
+    /// <summary>
+    /// 可视元素最后一个是创建元素的第几个
+    /// </summary>
+    private int m_ViewLastCreateIdx = 0;
+
+    /// <summary>
+    /// 可视元素最后一个是创建元素的第几个
+    /// </summary>
+    private int ViewLastCreateIdx
+    {
+        get
+        {
+            m_ViewLastCreateIdx = m_ViewFirstCreateIdx + m_ViewCnt - 1;
+            if (m_ViewLastCreateIdx > ListTotal - 1)
+            {
+                m_ViewLastCreateIdx = ListTotal - 1;
+            }
+            return m_ViewLastCreateIdx;
+        }
+    }
 
     /// <summary>
     /// m_JudgeF的位置
@@ -198,6 +258,20 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 #endif
     }
 
+    void Update()
+    {
+        UpdateCtr();
+    }
+
+    private void UpdateCtr()
+    {
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            Debug.LogWarning("ViewCreateIdx : " + m_ViewFirstCreateIdx + " " + ViewLastCreateIdx);
+            Debug.LogWarning("CreateDataIdx : " + m_CreateFirstDataIdx + " " + CreateLastDataIdx);
+        }
+    }
+
     #region 对外接口
 
     public void Reset()
@@ -250,8 +324,6 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 
         m_Frame = 0;
 
-        m_ListTotal = m_ViewCnt + 2 * m_AddCnt;
-        
         switch (m_Dir)
         {
             case Dir.Horizontal:
@@ -353,18 +425,14 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         }
 
         m_LastPos = 0f;
-        //m_ListTotal = 8
-        //0(m_JudgeF) [1 2 3 4 5] 6(m_JudgeL)
-        m_JudgeF = m_AddCnt - 1;
-        m_JudgeL = m_ListTotal - m_AddCnt;
 
         Vector3 firstPos = Vector3.zero;//填充元素列表里第一个的位置
         switch (m_Dir)
         {
             case Dir.Horizontal:
                 {
-                    firstPos.x = ((int)(m_ListTotal / 2)) * m_PrefabWidth;
-                    if ((m_ListTotal & 1) == 0)
+                    firstPos.x = ((int)(ListTotal >> 1)) * m_PrefabWidth;
+                    if ((ListTotal & 1) == 0)
                     {
                         firstPos.x += 0.5f * m_PrefabWidth;
                     }
@@ -372,8 +440,8 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
                 break;
             case Dir.Vertical:
                 {
-                    firstPos.y = ((int)(m_ListTotal / 2)) * m_PrefabHeight;
-                    if ((m_ListTotal & 1) == 0)
+                    firstPos.y = ((int)(ListTotal >> 1)) * m_PrefabHeight;
+                    if ((ListTotal & 1) == 0)
                     {
                         firstPos.y -= 0.5f * m_PrefabHeight;
                     }
@@ -381,50 +449,47 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
                 break;
         }
 
-        Debug.LogError("y0=" + firstPos.y + " " + m_PrefabHeight + " " + m_ListTotal);
+        Debug.LogError("y0=" + firstPos.y + " " + m_PrefabHeight + " " + ListTotal);
 
         m_ContentTrans.sizeDelta = new Vector2(10, 10);
 
         if (m_Center)
         {
             m_ContentTrans.anchoredPosition = Vector2.zero;
-            m_FIdx = GetIdx(m_StartIdx + 1 - m_ListTotal / 2, false);
+            m_CreateFirstDataIdx = GetDataIdx(m_StartIdx + 1 - ListTotal / 2, false);
         }
         else
         {
             m_ContentTrans.anchoredPosition = Vector2.zero;
-            if (!m_Loop)
+
+            m_CreateFirstDataIdx = m_StartIdx - m_AddCnt;
+            m_ViewFirstCreateIdx = m_AddCnt;
+
+            if (!m_Loop && m_CreateFirstDataIdx < 0)
             {
-                m_FIdx = m_StartIdx - m_AddCnt;
-                if (m_FIdx < 0)
+                int cutCnt = -m_CreateFirstDataIdx;
+                m_CreateFirstDataIdx = 0;
+                m_ViewFirstCreateIdx = m_AddCnt - cutCnt;
+                switch (m_Dir)
                 {
-                    int cutCnt = -m_FIdx;
-                    m_FIdx = 0;
-                    switch (m_Dir)
-                    {
-                        case Dir.Vertical:
-                            {
-                                firstPos.y -= cutCnt * m_PrefabHeight;
-                            }
-                            break;
-                    }
+                    case Dir.Vertical:
+                        {
+                            firstPos.y -= cutCnt * m_PrefabHeight;
+                        }
+                        break;
                 }
-            }
-            else
-            {
-                m_FIdx = GetIdx(m_StartIdx - m_AddCnt + 1, false);
             }
         }
 
-        Debug.LogError("FIdx=" + m_FIdx);
+        Debug.LogError("FIdx=" + m_CreateFirstDataIdx);
 
-        for (int i = 0; i < m_ListTotal; i++)
+        for (int i = 0; i < ListTotal; i++)
         {
             GameObject go = CloneGo();
 
             go.transform.localPosition = firstPos;
             m_Child.Add(go.transform);
-            Fill(go.transform, GetIdx(m_FIdx + i + 1, false));
+            Fill(go.transform, GetDataIdx(m_CreateFirstDataIdx + i + 1, false));
 
             switch (m_Dir)
             {
@@ -440,10 +505,6 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
                     break;
             }
         }
-
-        m_LIdx = GetIdx(m_FIdx + m_ListTotal, false);
-
-        Debug.LogError("LIdx=" + m_LIdx);
 
         yield return new WaitForEndOfFrame();
 
@@ -468,12 +529,12 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     }
 
     /// <summary>
-    /// 获得idx
+    /// 获得数据idx
     /// </summary>
     /// <param name="idx"></param>
     /// <param name="next">上一个或下一个</param>
     /// <returns></returns>
-    private int GetIdx(int idx, bool next)
+    private int GetDataIdx(int idx, bool next)
     {
         int ret;
         if (next)
@@ -518,53 +579,86 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         return tf.localPosition + tf.parent.localPosition;
     }
 
-    private bool NeedRefresh(bool left)
+    private bool NeedRefresh(bool left, out bool needCreateNew)
     {
-        if (m_Dir == Dir.Horizontal)
+        needCreateNew = false;
+        switch (m_Dir)
         {
+            case Dir.Horizontal:
+                {
+                    if (left)
+                    {
+                        if (m_Loop == false && m_CreateFirstDataIdx == 0)
+                        {
+                            return false;
+                        }
+                        m_PosJudgeF = GetPos(m_Child[m_JudgeF]);
+                        return (m_PosJudgeF.x > -m_RefreshJudgePos);
+                    }
+                    else
+                    {
+                        if (m_Loop == false && m_CreateLastDataIdx == m_TotalCnt - 1)
+                        {
+                            return false;
+                        }
+                        m_PosJudgeL = GetPos(m_Child[m_JudgeL]);
+                        return (m_PosJudgeL.x < m_RefreshJudgePos);
+                    }
+                }
+            case Dir.Vertical:
+                {
+                    if (left)
+                    {
+                        //边缘
+                        if (m_Loop == false
+                            && m_ViewFirstCreateIdx <= 0)
+                        {
+                            return false;
+                        }
 
-            if (left)
-            {
-                if (m_Loop == false && m_FIdx == 0)
-                {
-                    return false;
+                        m_JudgeF = m_ViewFirstCreateIdx - 1;
+
+                        if (m_Loop
+                            || (m_CreateFirstDataIdx > 0 && m_ViewFirstCreateIdx <= m_AddCnt))
+                        {
+                            needCreateNew = true;
+                        }
+
+                        m_PosJudgeF = GetPos(m_Child[m_JudgeF]);
+                        return (m_PosJudgeF.y < m_RefreshJudgePos);
+                    }
+                    else
+                    {
+                        //边缘
+                        if (m_Loop == false
+                            && ViewLastCreateIdx >= ListTotal - 1)
+                        {
+                            return false;
+                        }
+
+                        //Debug.LogWarning(m_ViewFirstCreateIdx + " " + ViewLastCreateIdx + " dd " + (ListTotal - 1));
+
+                        m_JudgeL = ViewLastCreateIdx + 1;
+
+                        if (m_Loop
+                            || (CreateLastDataIdx < m_TotalCnt - 1 && m_ViewFirstCreateIdx >= m_AddCnt))
+                        {
+                            needCreateNew = true;
+                        }
+
+                        m_PosJudgeL = GetPos(m_Child[m_JudgeL]);
+                        return (m_PosJudgeL.y > -m_RefreshJudgePos);
+                    }
                 }
-                return (m_PosJudgeF.x > -m_RefreshJudgePos);
-            }
-            else
-            {
-                if (m_Loop == false && m_LIdx == m_TotalCnt - 1)
-                {
-                    return false;
-                }
-                return (m_PosJudgeL.x < m_RefreshJudgePos);
-            }
         }
-        else
-        {
-            if (left)
-            {
-                if (m_Loop == false && m_FIdx == 0)
-                {
-                    return false;
-                }
-                return (m_PosJudgeF.y < m_RefreshJudgePos);
-            }
-            else
-            {
-                if (m_Loop == false && m_LIdx == m_TotalCnt - 1)
-                {
-                    return false;
-                }
-                return (m_PosJudgeL.y > -m_RefreshJudgePos);
-            }
-        }
+        return false;
     }
 
     /// <summary>
     /// 减小刷新频率，当前帧
     /// </summary>
     private int m_Frame = 0;
+    private bool m_NeedCreateNew = false;
 
     private void OnScrollChange(Vector2 vet)
     {
@@ -580,48 +674,79 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
             return;
         }
 
-        m_PosJudgeF = GetPos(m_Child[m_JudgeF]);
-        m_PosJudgeL = GetPos(m_Child[m_JudgeL]);
-
-        if (NeedRefresh(true))
+        if (NeedRefresh(true, out m_NeedCreateNew))
         {
-            m_HandleTf = m_Child[m_ListTotal - 1];
-
-            if (m_Dir == Dir.Horizontal)
+            if (m_NeedCreateNew)
             {
-                m_HandleTf.localPosition = m_Child[0].localPosition - (new Vector3(m_PrefabWidth, 0, 0));
+                m_HandleTf = m_Child[ListTotal - 1];
+
+                if (m_Dir == Dir.Horizontal)
+                {
+                    m_HandleTf.localPosition = m_Child[0].localPosition - (new Vector3(m_PrefabWidth, 0, 0));
+                }
+                else
+                {
+                    m_HandleTf.localPosition = m_Child[0].localPosition + (new Vector3(0, m_PrefabHeight, 0));
+                }
+                m_Child.RemoveAt(ListTotal - 1);
+                m_Child.Insert(0, m_HandleTf);
+
+                m_CreateFirstDataIdx = GetDataIdx(m_CreateFirstDataIdx, false);
+                Fill(m_HandleTf, m_CreateFirstDataIdx);
             }
             else
             {
-                m_HandleTf.localPosition = m_Child[0].localPosition + (new Vector3(0, m_PrefabHeight, 0));
+                if (m_ViewFirstCreateIdx > 0)
+                {
+                    m_ViewFirstCreateIdx--;
+                }
             }
-            m_Child.RemoveAt(m_ListTotal - 1);
-            m_Child.Insert(0, m_HandleTf);
 
-            m_FIdx = GetIdx(m_FIdx, false);
-            m_LIdx = GetIdx(m_LIdx, false);
-            Fill(m_HandleTf, m_FIdx);
+            Debug.LogError("xx " + m_CreateFirstDataIdx + " " + m_CreateLastDataIdx);
 
-            ResetSize();
+            if (m_Loop)
+            {
+                ResetSize();
+            }
         }
-        else if (NeedRefresh(false))
+        else if (NeedRefresh(false, out m_NeedCreateNew))
         {
-            m_HandleTf = m_Child[0];
-            if (m_Dir == Dir.Horizontal)
+            if (m_NeedCreateNew)
             {
-                m_HandleTf.localPosition = m_Child[m_ListTotal - 1].localPosition + (new Vector3(m_PrefabWidth, 0, 0));
+                m_HandleTf = m_Child[0];
+                if (m_Dir == Dir.Horizontal)
+                {
+                    m_HandleTf.localPosition = m_Child[ListTotal - 1].localPosition + (new Vector3(m_PrefabWidth, 0, 0));
+                }
+                else
+                {
+                    m_HandleTf.localPosition = m_Child[ListTotal - 1].localPosition - (new Vector3(0, m_PrefabHeight, 0));
+                }
+                m_Child.RemoveAt(0);
+                m_Child.Add(m_HandleTf);
+
+                m_CreateFirstDataIdx = GetDataIdx(m_CreateFirstDataIdx, true);
+                m_CreateLastDataIdx = GetDataIdx(m_CreateLastDataIdx, true);
+                Fill(m_HandleTf, m_CreateLastDataIdx);
             }
             else
             {
-                m_HandleTf.localPosition = m_Child[m_ListTotal - 1].localPosition - (new Vector3(0, m_PrefabHeight, 0));
+                if (m_ViewFirstCreateIdx < m_TotalCnt - 1)
+                {
+                    m_ViewFirstCreateIdx++;
+                }
             }
-            m_Child.RemoveAt(0);
-            m_Child.Add(m_HandleTf);
 
-            m_FIdx = GetIdx(m_FIdx, true);
-            m_LIdx = GetIdx(m_LIdx, true);
-            Fill(m_HandleTf, m_LIdx);
+            Debug.LogError("yy " + m_CreateFirstDataIdx + " " + CreateLastDataIdx + " " + m_NeedCreateNew);
 
+            if (m_Loop)
+            {
+                ResetSize();
+            }
+        }
+
+        if (!m_Loop)
+        {
             ResetSize();
         }
     }
@@ -653,14 +778,30 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         m_OldDelta = m_ContentTrans.sizeDelta;
         if (m_Dir == Dir.Horizontal)
         {
-            m_BoundPos = Mathf.Max(Mathf.Abs(m_Child[0].localPosition.x), Mathf.Abs(m_Child[m_ListTotal - 1].localPosition.x));
+            m_BoundPos = Mathf.Max(Mathf.Abs(m_Child[0].localPosition.x), Mathf.Abs(m_Child[ListTotal - 1].localPosition.x));
             m_BoundPos = 2 * m_BoundPos + m_PrefabWidth;
             m_OldDelta.x = m_BoundPos;
             m_OldDelta.y = m_PrefabHeight;
         }
         else
         {
-            m_BoundPos = Mathf.Max(Mathf.Abs(m_Child[0].localPosition.y), Mathf.Abs(m_Child[m_ListTotal - 1].localPosition.y));
+            //Debug.LogWarning("xx " + m_RefreshJudgePos);
+            //Debug.LogWarning("x + " + m_ViewFirstCreateIdx + " " + m_Child[0].localPosition.y + " " + Mathf.Abs(m_Child[ListTotal - 1].localPosition.y));
+            if (GetPos(m_Child[0]).y + 0.5f * m_PrefabHeight <= m_RefreshJudgePos)
+            {
+                Debug.LogWarning("xx111 ");
+                m_BoundPos = Mathf.Abs(m_Child[0].localPosition.y);
+            }
+            else if (GetPos(m_Child[ListTotal - 1]).y - 0.5f * m_PrefabHeight >= -m_RefreshJudgePos)
+            {
+                Debug.LogWarning("xx333 ");
+                m_BoundPos = Mathf.Abs(m_Child[ListTotal - 1].localPosition.y);
+            }
+            else
+            {
+                Debug.LogWarning("xx222 ");
+                m_BoundPos = Mathf.Max(Mathf.Abs(m_Child[0].localPosition.y), Mathf.Abs(m_Child[ListTotal - 1].localPosition.y));
+            }
             m_BoundPos = 2 * m_BoundPos + m_PrefabHeight;
             m_OldDelta.y = m_BoundPos;
             m_OldDelta.x = m_PrefabWidth;
@@ -722,7 +863,7 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         Transform centerTf = null;
         int centerIdx = 0;
 
-        for (int i = 0; i < m_ListTotal; i++)
+        for (int i = 0; i < ListTotal; i++)
         {
             ve = GetPos(m_Child[i]);
             if (m_Dir == Dir.Horizontal)
@@ -748,7 +889,7 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         if (centerTf != null
             && m_OnCenterItem != null)
         {
-            centerIdx = GetIdx(m_FIdx + centerIdx + 1, false);
+            centerIdx = GetDataIdx(m_CreateFirstDataIdx + centerIdx + 1, false);
             m_OnCenterItem(centerTf, centerIdx);
         }
 

@@ -41,7 +41,7 @@ RenderSettings:
 LightmapSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 6
-  m_GIWorkflowMode: 0
+  m_GIWorkflowMode: 1
   m_LightmapsMode: 1
   m_GISettings:
     serializedVersion: 2
@@ -398,7 +398,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &738602650
 GameObject:
@@ -601,7 +601,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Prefab: {fileID: 1267157967}
   m_OutSide: {x: 2, y: 2}
-  m_StartIdx: 0
+  m_StartIdx: 4
   m_Dir: 1
   m_Center: 0
   m_Loop: 0
