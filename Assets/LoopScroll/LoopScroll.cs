@@ -235,9 +235,9 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
             return;
         }
 
-        m_ContentTrans.pivot = Vector2.one * 0.5f;
-        m_ContentTrans.anchorMin = Vector2.one * 0.5f;
-        m_ContentTrans.anchorMax = Vector2.one * 0.5f;
+        //m_ContentTrans.pivot = Vector2.one * 0.5f;
+        //m_ContentTrans.anchorMin = Vector2.one * 0.5f;
+        //m_ContentTrans.anchorMax = Vector2.one * 0.5f;
 
         m_ScrollRectTrans = m_ScrollRect.GetComponent<RectTransform>();
         m_ScrollRectTrans.pivot = Vector2.one * 0.5f;
@@ -426,6 +426,11 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 
         m_LastPos = 0f;
 
+        if (!m_Loop && m_StartIdx > m_TotalCnt - m_ViewCnt)
+        {
+            m_StartIdx = m_TotalCnt - m_ViewCnt;
+        }
+
         Vector3 firstPos = Vector3.zero;//填充元素列表里第一个的位置
         switch (m_Dir)
         {
@@ -460,23 +465,41 @@ public class LoopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         }
         else
         {
-            m_ContentTrans.anchoredPosition = Vector2.zero;
-
             m_CreateFirstDataIdx = m_StartIdx - m_AddCnt;
             m_ViewFirstCreateIdx = m_AddCnt;
 
-            if (!m_Loop && m_CreateFirstDataIdx < 0)
+            if (!m_Loop)
             {
-                int cutCnt = -m_CreateFirstDataIdx;
-                m_CreateFirstDataIdx = 0;
-                m_ViewFirstCreateIdx = m_AddCnt - cutCnt;
-                switch (m_Dir)
+                Debug.LogWarning("dddaf " + " " + m_ViewFirstCreateIdx + " " + (m_ViewFirstCreateIdx + m_ViewCnt - 1));
+
+                if (m_CreateFirstDataIdx < 0)
                 {
-                    case Dir.Vertical:
-                        {
-                            firstPos.y -= cutCnt * m_PrefabHeight;
-                        }
-                        break;
+                    int cutCnt = -m_CreateFirstDataIdx;
+                    m_CreateFirstDataIdx = 0;
+                    m_ViewFirstCreateIdx = m_AddCnt - cutCnt;
+                    switch (m_Dir)
+                    {
+                        case Dir.Vertical:
+                            {
+                                firstPos.y -= cutCnt * m_PrefabHeight;
+                            }
+                            break;
+                    }
+                }
+                else if (m_CreateFirstDataIdx + ListTotal - 1 > m_TotalCnt - 1)
+                {
+                    Debug.LogWarning("daf");
+                    int addCnt = m_CreateFirstDataIdx + ListTotal - 1 - (m_TotalCnt - 1);
+                    m_ViewFirstCreateIdx -= addCnt;
+                    m_CreateFirstDataIdx -= addCnt;
+                    switch (m_Dir)
+                    {
+                        case Dir.Vertical:
+                            {
+                                firstPos.y += addCnt * m_PrefabHeight;
+                            }
+                            break;
+                    }
                 }
             }
         }

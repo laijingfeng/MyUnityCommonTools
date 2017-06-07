@@ -399,7 +399,7 @@ RectTransform:
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &738602650
 GameObject:
   m_ObjectHideFlags: 0
@@ -601,11 +601,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Prefab: {fileID: 1267157967}
   m_OutSide: {x: 2, y: 2}
-  m_StartIdx: 4
+  m_StartIdx: 0
   m_Dir: 1
   m_Center: 0
   m_Loop: 0
-  m_TotalCnt: 8
+  m_TotalCnt: 4
   m_RefreshRate: 1
   m_Debug: 1
   m_AddCnt: 1
