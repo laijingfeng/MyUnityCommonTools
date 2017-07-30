@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
+using UnityEngine;
 
 namespace Jerry
 {
@@ -44,7 +44,7 @@ namespace Jerry
         /// <para>会给子类带来一个警告，注意用override</para>
         /// <para>这个不能去掉，预先挂载好的脚本走的是这个实例化</para>
         /// </summary>
-        public virtual void Awake()
+        protected virtual void Awake()
         {
             m_instance = (T)(System.Object)(this);
         }
