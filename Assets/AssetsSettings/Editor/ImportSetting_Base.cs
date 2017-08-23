@@ -118,9 +118,9 @@ namespace Jerry
         }
 
         private static List<char> m_oks = new List<char>() 
-    {
-        '&','|','_','(',')',' ','!'
-    };
+        {
+            '&','|','_','(',')',' ','!'
+        };
 
         /// <summary>
         /// 语法检测
