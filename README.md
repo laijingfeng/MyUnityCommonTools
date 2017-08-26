@@ -103,12 +103,6 @@ TODO：
 - [下载](http://download.csdn.net/download/tankerhunter/9439789) 保存到百度网盘了
 - http://download.csdn.net/detail/nippyli/9758792
 
-## WayPointMgr
-
-路点编辑和按路点运动
-
-参考UnityExampleProject和iTween
-
 ## Gradient
 
 来自[UGUI研究院之Text文本渐变（十一）](http://www.xuanyusong.com/archives/3471)
