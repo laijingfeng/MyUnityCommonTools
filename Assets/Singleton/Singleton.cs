@@ -58,16 +58,11 @@ namespace Jerry
             {
                 if (m_instance == null)
                 {
-                    GameObject root = GameObject.Find((typeof(T).Name));
-                    if (root != null)
+                    m_instance = FindObjectOfType<T>();
+                    if (m_instance == null)
                     {
-                        m_instance = root.GetComponent<T>();
-                    }
-
-                    if (root == null && m_instance == null)
-                    {
-                        root = new GameObject(typeof(T).Name);
-                        m_instance = root.AddComponent<T>();
+                        GameObject go = new GameObject(typeof(T).Name);
+                        m_instance = go.AddComponent<T>();
                     }
                 }
 
