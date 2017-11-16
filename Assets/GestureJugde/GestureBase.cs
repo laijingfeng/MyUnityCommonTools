@@ -1,26 +1,17 @@
-﻿using UnityEngine;
-using System.Collections;
-using Jerry;
+﻿using Jerry;
+using UnityEngine;
 
-public class GestureJudge : MonoBehaviour
+public abstract class GestureBase : MonoBehaviour
 {
-    private string m_Info = "touch to start";
-
-    public float m_MinSwipeDistance = 0.1f;
-    
     /// <summary>
-    /// 正方向可以偏差的判断角度
+    /// 最小滑动对角线的百分比
     /// </summary>
-    [Range(5, 45)]
-    public float m_Angle = 45;
-
-    public enum GestureDir
-    {
-        Right = 0,
-        Down,
-        Left,
-        Up,
-    }
+    public float m_MinSwipeDistance = 0.1f;
+    protected int m_CutPart = 4;
+    /// <summary>
+    /// 每一份的角度
+    /// </summary>
+    private int m_PartAngle = 0;
 
     /// <summary>
     /// 已经开始滑动
@@ -33,11 +24,6 @@ public class GestureJudge : MonoBehaviour
     private Vector2 m_TouchStartPos;
 
     /// <summary>
-    /// 开始的时间
-    /// </summary>
-    //private float touchStartTime;
-
-    /// <summary>
     /// 最小像素距离
     /// </summary>
     private float m_MinSwipeDistancePixels;
@@ -47,10 +33,12 @@ public class GestureJudge : MonoBehaviour
     /// </summary>
     private bool m_IsPhone;
 
-    void Start()
+    protected virtual void Start()
     {
         float screenDiagonalSize = Mathf.Sqrt(Screen.width * Screen.width + Screen.height * Screen.height);
         m_MinSwipeDistancePixels = m_MinSwipeDistance * screenDiagonalSize;
+
+        m_PartAngle = 360 / m_CutPart;
 
 #if UNITY_EDITOR
         m_IsPhone = false;
@@ -75,13 +63,6 @@ public class GestureJudge : MonoBehaviour
         }
     }
 
-    void OnGUI()
-    {
-        GUILayout.BeginHorizontal();
-        GUILayout.Label(m_Info);
-        GUILayout.EndHorizontal();
-    }
-
     private void UpdatePC()
     {
         if (Input.GetMouseButtonDown(0))
@@ -103,15 +84,13 @@ public class GestureJudge : MonoBehaviour
     {
         if (Input.touchCount > 0)
         {
-            var touch = Input.touches[0];
-
+            Touch touch = Input.touches[0];
             switch (touch.phase)
             {
                 case TouchPhase.Began:
                     {
                         m_TouchStarted = true;
                         m_TouchStartPos = touch.position;
-                        //m_TouchStartTime = Time.realtimeSinceStartup;
                     }
                     break;
                 case TouchPhase.Ended:
@@ -130,16 +109,10 @@ public class GestureJudge : MonoBehaviour
                     break;
                 case TouchPhase.Stationary:
                     {
-                        //if (m_TouchStarted)
-                        //{
-                        //    m_TouchStartPos = touch.position;
-                        //    m_TouchStartTime = Time.realtimeSinceStartup;
-                        //}
                     }
                     break;
                 case TouchPhase.Moved:
                     {
-
                     }
                     break;
             }
@@ -158,38 +131,17 @@ public class GestureJudge : MonoBehaviour
             return;
         }
 
-        float dy = end.y - start.y;
-        float dx = end.x - start.x;
+        float angle = Mathf.Rad2Deg * Mathf.Atan2(end.y - start.y, end.x - start.x);
+        angle = (360 + angle) % 360;
+        int iAngle = (int)((angle + m_PartAngle * 0.5f) % 360);
 
-        //结果是：上0，右90，左-90
-        float angle = Mathf.Rad2Deg * Mathf.Atan2(dx, dy);
+        //Debug.LogWarning("i:" + iAngle + " " + angle);
 
-        angle = (360 + angle - 45) % 360;//正右是45度
-
-        if (angle >= 45 - m_Angle && angle <= 45 + m_Angle)
-        {
-            GestureEvent(GestureDir.Right);
-        }
-        else if (angle >= 135 - m_Angle && angle <= 135 + m_Angle)
-        {
-            GestureEvent(GestureDir.Down);
-        }
-        else if (angle >= 225 - m_Angle && angle <= 225 + m_Angle)
-        {
-            GestureEvent(GestureDir.Left);
-        }
-        else if (angle >= 315 - m_Angle && angle <= 315 + m_Angle)
-        {
-            GestureEvent(GestureDir.Up);
-        }
-        else
-        {
-            m_Info = "touch false";
-        }
+        JudgeDir(iAngle / m_PartAngle);
     }
 
-    private void GestureEvent(GestureDir dir)
+    protected virtual void JudgeDir(int idx)
     {
-        m_Info = "touch ok:" + dir.ToString();
+        Debug.LogWarning(idx);
     }
 }
