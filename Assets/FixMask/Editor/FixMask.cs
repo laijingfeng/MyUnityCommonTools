@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using System;
 using System.Reflection;
-using UnityEditor.Animations;
+
 
 public class FixMask
 {
@@ -22,7 +22,7 @@ public class FixMask
             SerializedObject so = new SerializedObject(mi);
             SerializedProperty clips = so.FindProperty("m_ClipAnimations");
 
-            AvatarMask avatarMask = new AvatarMask();
+            UnityEngine.AvatarMask avatarMask = new UnityEngine.AvatarMask();
             avatarMask.transformCount = mi.transformPaths.Length;
             for (int i = 0; i < mi.transformPaths.Length; i++)
             {

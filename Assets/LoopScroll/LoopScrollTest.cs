@@ -11,7 +11,7 @@ public class LoopScrollTest : MonoBehaviour
 
     void Awake()
     {
-        m_Prefab = this.transform.FindChild("Prefab");
+        m_Prefab = this.transform.Find("Prefab");
         m_Prefab.gameObject.SetActive(false);
 
         m_LoopScroll = this.gameObject.AddComponent<LoopScroll>();
@@ -55,7 +55,7 @@ public class LoopScrollTest : MonoBehaviour
         };
         m_LoopScroll.m_OnFillItem = (item, idx) =>
         {
-            Text tex = item.FindChild("Text").GetComponent<Text>();
+            Text tex = item.Find("Text").GetComponent<Text>();
             tex.text = data[idx].ToString();
             Debug.LogWarning("fillItem " + idx + " " + data[idx]);
         };

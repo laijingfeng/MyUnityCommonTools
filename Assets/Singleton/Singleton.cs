@@ -46,7 +46,14 @@ namespace Jerry
         /// </summary>
         protected virtual void Awake()
         {
-            m_instance = (T)(System.Object)(this);
+            if(m_instance == null)
+            {
+                m_instance = (T)(System.Object)(this);
+            }
+            else if(m_instance != (T)(System.Object)(this))
+            {
+                UnityEngine.Debug.LogError(string.Format("{0}的单例重复，新发现的忽略", typeof(T).Name));
+            }
         }
 
         /// <summary>

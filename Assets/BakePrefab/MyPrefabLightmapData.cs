@@ -52,8 +52,8 @@ public class MyPrefabLightmapData : MonoBehaviour
                 idxs[i] = datas.Count;
 
                 LightmapData newData = new LightmapData();
-                newData.lightmapFar = m_LightmapFars[i];
-                newData.lightmapNear = m_LightmapNears[i];
+                newData.lightmapColor = m_LightmapFars[i];
+                newData.lightmapDir = m_LightmapNears[i];
 
                 datas.Add(newData);
             }
@@ -77,7 +77,7 @@ public class MyPrefabLightmapData : MonoBehaviour
         int ret = -1;
         for (int i = 0, imax = datas.Count; i < imax; i++)
         {
-            if (tex.Equals(datas[i].lightmapFar))
+            if (tex.Equals(datas[i].lightmapColor))
             {
                 ret = i;
                 break;

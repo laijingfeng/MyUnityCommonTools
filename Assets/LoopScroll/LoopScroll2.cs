@@ -537,7 +537,7 @@ public class LoopScroll2 : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 #if UNITY_EDITOR
         if (m_Debug)
         {
-            Text tex = tf.FindChild("Text").GetComponent<Text>();
+            Text tex = tf.Find("Text").GetComponent<Text>();
             tex.text = idx.ToString();
         }
 #endif

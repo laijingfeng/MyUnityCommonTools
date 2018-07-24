@@ -62,18 +62,18 @@ namespace Jerry
             }
 
             sUserMemory = "";
-            MonoUsedM = Profiler.GetMonoUsedSize() / 1000000;
-            AllMemory = Profiler.GetTotalAllocatedMemory() / 1000000;
+            MonoUsedM = UnityEngine.Profiling.Profiler.GetMonoUsedSize() / 1000000;
+            AllMemory = UnityEngine.Profiling.Profiler.GetTotalAllocatedMemory() / 1000000;
 
             sUserMemory += string.Format("MonoUsed:{0}M\n", MonoUsedM);
             sUserMemory += string.Format("AllMemory:{0}M\n", AllMemory);
-            sUserMemory += string.Format("UnUsedReserved:{0}M\n", Profiler.GetTotalUnusedReservedMemory() / 1000000);
-            sUserMemory += string.Format("MonoHeap:{0}K\n", Profiler.GetMonoHeapSize() / 1000);
-            sUserMemory += string.Format("MonoUsed:{0}K\n", Profiler.GetMonoUsedSize() / 1000);
-            sUserMemory += string.Format("Allocated:{0}K\n", Profiler.GetTotalAllocatedMemory() / 1000);
-            sUserMemory += string.Format("Reserved:{0}K\n", Profiler.GetTotalReservedMemory() / 1000);
-            sUserMemory += string.Format("UnusedReserved:{0}K\n", Profiler.GetTotalUnusedReservedMemory() / 1000);
-            sUserMemory += string.Format("UsedHeap:{0}K", Profiler.usedHeapSize / 1000);
+            sUserMemory += string.Format("UnUsedReserved:{0}M\n", UnityEngine.Profiling.Profiler.GetTotalUnusedReservedMemory() / 1000000);
+            sUserMemory += string.Format("MonoHeap:{0}K\n", UnityEngine.Profiling.Profiler.GetMonoHeapSize() / 1000);
+            sUserMemory += string.Format("MonoUsed:{0}K\n", UnityEngine.Profiling.Profiler.GetMonoUsedSize() / 1000);
+            sUserMemory += string.Format("Allocated:{0}K\n", UnityEngine.Profiling.Profiler.GetTotalAllocatedMemory() / 1000);
+            sUserMemory += string.Format("Reserved:{0}K\n", UnityEngine.Profiling.Profiler.GetTotalReservedMemory() / 1000);
+            sUserMemory += string.Format("UnusedReserved:{0}K\n", UnityEngine.Profiling.Profiler.GetTotalUnusedReservedMemory() / 1000);
+            sUserMemory += string.Format("UsedHeap:{0}K", UnityEngine.Profiling.Profiler.usedHeapSize / 1000);
         }
 
         #endregion Memory
