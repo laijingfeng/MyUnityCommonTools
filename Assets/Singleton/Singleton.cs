@@ -33,7 +33,8 @@ namespace Jerry
     /// <summary>
     /// <para>单例Mono</para>
     /// </summary>
-    public class SingletonMono<T> : MonoBehaviour where T : UnityEngine.Component
+    /// <typeparam name="T"></typeparam>
+	public class SingletonMono<T> : MonoBehaviour where T : UnityEngine.Component
     {
         /// <summary>
         /// 单例
