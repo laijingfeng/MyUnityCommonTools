@@ -1,81 +1,93 @@
-ï»¿using System;
+//Version: 2018-11-15-00
+
+using Jerry;
+using System;
 using UnityEngine;
 
-namespace Jerry
+/// <summary>
+/// µ¥Àı
+/// </summary>
+/// <typeparam name="T"></typeparam>
+[System.Reflection.Obfuscation(ApplyToMembers = true, Exclude = true, Feature = "renaming")]
+public class Singleton<T>
 {
     /// <summary>
-    /// å•ä¾‹
+    /// µ¥Àı
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class Singleton<T>
-    {
-        /// <summary>
-        /// å•ä¾‹
-        /// </summary>
-        private static T m_instance = default(T);
+    private static T m_instance = default(T);
 
-        /// <summary>
-        /// å•ä¾‹
-        /// </summary>
-        public static T Inst
+    /// <summary>
+    /// µ¥Àı
+    /// </summary>
+    public static T Instance
+    {
+        get
         {
-            get
+            if (m_instance == null)
             {
+                m_instance = (T)Activator.CreateInstance(typeof(T), true);
+            }
+            return m_instance;
+        }
+    }
+}
+
+/// <summary>
+/// <para>µ¥ÀıMono</para>
+/// </summary>
+/// <typeparam name="T"></typeparam>
+[System.Reflection.Obfuscation(ApplyToMembers = true, Exclude = true, Feature = "renaming")]
+public class SingletonMono<T> : MonoBehaviour where T : UnityEngine.Component
+{
+    /// <summary>
+    /// µ¥Àı
+    /// </summary>
+    private static T m_instance = default(T);
+
+    /// <summary>
+    /// µ¥Àı
+    /// </summary>
+    public static T Instance
+    {
+        get
+        {
+            if (m_instance == null)
+            {
+                m_instance = FindObjectOfType<T>();
                 if (m_instance == null)
                 {
-                    m_instance = (T)Activator.CreateInstance(typeof(T), true);
+                    GameObject go = new GameObject(typeof(T).Name);
+                    m_instance = go.AddComponent<T>();
                 }
-                return m_instance;
             }
+            return m_instance;
         }
     }
 
     /// <summary>
-    /// <para>å•ä¾‹Mono</para>
+    /// <para>»á¸ø×ÓÀà´øÀ´Ò»¸ö¾¯¸æ£¬×¢ÒâÓÃoverride</para>
+    /// <para>Õâ¸ö²»ÄÜÈ¥µô£¬Ô¤ÏÈ¹ÒÔØºÃµÄ½Å±¾×ßµÄÊÇÕâ¸öÊµÀı»¯</para>
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-	public class SingletonMono<T> : MonoBehaviour where T : UnityEngine.Component
+    protected virtual void Awake()
     {
-        /// <summary>
-        /// å•ä¾‹
-        /// </summary>
-        private static T m_instance = default(T);
-        
-        /// <summary>
-        /// <para>ä¼šç»™å­ç±»å¸¦æ¥ä¸€ä¸ªè­¦å‘Šï¼Œæ³¨æ„ç”¨override</para>
-        /// <para>è¿™ä¸ªä¸èƒ½å»æ‰ï¼Œé¢„å…ˆæŒ‚è½½å¥½çš„è„šæœ¬èµ°çš„æ˜¯è¿™ä¸ªå®ä¾‹åŒ–</para>
-        /// </summary>
-        protected virtual void Awake()
+        if (m_instance == null)
         {
-            if(m_instance == null)
-            {
-                m_instance = (T)(System.Object)(this);
-            }
-            else if(m_instance != (T)(System.Object)(this))
-            {
-                UnityEngine.Debug.LogError(string.Format("{0}çš„å•ä¾‹é‡å¤ï¼Œæ–°å‘ç°çš„å¿½ç•¥", typeof(T).Name));
-            }
+            m_instance = (T)(System.Object)(this);
         }
-
-        /// <summary>
-        /// å•ä¾‹
-        /// </summary>
-        public static T Inst
+        else if(m_instance != (T)(System.Object)(this))
         {
-            get
+            string oldPath = "";
+            string newPath = "";
+            if (m_instance.transform != null)
             {
-                if (m_instance == null)
-                {
-                    m_instance = FindObjectOfType<T>();
-                    if (m_instance == null)
-                    {
-                        GameObject go = new GameObject(typeof(T).Name);
-                        m_instance = go.AddComponent<T>();
-                    }
-                }
-
-                return m_instance;
+                oldPath = JerryUtil.GetTransformHieraichyPath(m_instance.transform);
             }
+            if (this.transform != null)
+            {
+                newPath = JerryUtil.GetTransformHieraichyPath(this.transform);
+            }
+            UnityEngine.Debug.LogError(string.Format("{0}µÄµ¥ÀıÖØ¸´£¬ĞÂ·¢ÏÖµÄºöÂÔ\nÒÑÓĞµÄÂ·¾¶:{1}\nĞÂ·¢ÏÖµÄÂ·¾¶:{2}",
+                typeof(T).Name, oldPath, newPath));
         }
     }
 }
